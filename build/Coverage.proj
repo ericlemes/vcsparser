@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<VisualStudioRoot>$(InstallDir)</VisualStudioRoot>
+		<XUnitConsoleRunner>$(MSBuildProjectDirectory)\..\src\packages\xunit.runner.console.2.3.1\tools\net452\xunit.console.exe</XUnitConsoleRunner>
+		<OpenCoverPath>..\src\packages\OpenCover.4.6.519\tools\OpenCover.Console.exe</OpenCoverPath>
+		<ReportGeneratorPath>..\src\packages\ReportGenerator.3.1.2\tools\ReportGenerator.exe</ReportGeneratorPath>		
+	</PropertyGroup>
+	
+	<ItemGroup>	   
+		<Tests Include="$(MSBuildProjectDirectory)\..\src\*.UnitTests\bin\**\*.UnitTests.dll" />
+	</ItemGroup>
+			
+	<Target Name="RunCoverage">
+		<Message Text="$(InstallDir)" />
+	
+		<RemoveDir Directories="$(MSBuildProjectDirectory)\coverage_tmp" />
+		<RemoveDir Directories="$(MSBuildProjectDirectory)\coverage" />
+		<MakeDir Directories="$(MSBuildProjectDirectory)\coverage_tmp" />
+		<Exec Command="$(OpenCoverPath) -target:$(XUnitConsoleRunner) -oldStyle -filter:&quot;+[*]* -[p4codechurn.unittests]* -[Moq]*&quot;  -targetdir:&quot;$(MSBuildProjectDirectory)\..\src\p4codechurn.unittests\bin\Debug&quot; -targetargs:&quot;%(Tests.FullPath)&quot; -register:user -output:$(MSBuildProjectDirectory)\coverage_tmp\%(Tests.Filename).xml " />		
+		<Exec Command="$(ReportGeneratorPath) -targetdir:$(MSBuildProjectDirectory)\coverage -reports:$(MSBuildProjectDirectory)\Coverage_tmp\*.xml" />
+	</Target>		
+	
+</Project>
+

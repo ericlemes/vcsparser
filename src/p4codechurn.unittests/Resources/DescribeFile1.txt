@@ -1,0 +1,43 @@
+Change 141284 by author.name@author.name_workspace-machine on 2018/06/29 18:57:47
+
+	Long description of the change set
+
+Affected files ...
+
+... //depot/Dir1/Dir2/EntityModel/AuctionNotification.cpp#4 edit
+... //depot/Dir1/Dir2/EntityModel/map/MapContextVehicleProviderComponent.cpp#4 edit
+... //depot/Dir1/Dir2/EntityModel/StuntParty/StuntPartyHudCountdownComponent.cpp#9 edit
+... //depot/Dir1/Dir2/UI5/UIHelpers.cpp#132 edit
+... //depot/Dir1/Dir2/UI5/UIHelpers.h#72 edit
+
+Differences ...
+
+==== //depot/Dir1/Dir2/EntityModel/AuctionNotification.cpp#4 (text) ====
+
+add 1 chunks 1 lines
+deleted 1 chunks 4 lines
+changed 2 chunks 12 / 6 lines
+
+==== //depot/Dir1/Dir2/EntityModel/map/MapContextVehicleProviderComponent.cpp#4 (text) ====
+
+add 0 chunks 0 lines
+deleted 0 chunks 0 lines
+changed 4 chunks 12 / 15 lines
+
+==== //depot/Dir1/Dir2/EntityModel/StuntParty/StuntPartyHudCountdownComponent.cpp#9 (text) ====
+
+add 1 chunks 1 lines
+deleted 0 chunks 0 lines
+changed 3 chunks 24 / 13 lines
+
+==== //depot/Dir1/Dir2/UI5/UIHelpers.cpp#132 (text) ====
+
+add 1 chunks 30 lines
+deleted 0 chunks 0 lines
+changed 0 chunks 0 / 0 lines
+
+==== //depot/Dir1/Dir2/UI5/UIHelpers.h#72 (text) ====
+
+add 2 chunks 7 lines
+deleted 0 chunks 0 lines
+changed 0 chunks 0 / 0 lines

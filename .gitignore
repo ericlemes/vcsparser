@@ -1,0 +1,10 @@
+/build/coverage_tmp
+/build/coverage
+/src/packages
+/src/.vs
+/src/p4codechurn/obj
+/src/p4codechurn/bin
+/src/p4codechurn.core/obj
+/src/p4codechurn.core/bin
+/src/p4codechurn.unittests/obj
+/src/p4codechurn.unittests/bin
