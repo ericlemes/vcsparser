@@ -14,7 +14,7 @@ namespace p4codechurn.unittests
         public void WhenGettingExtensionShouldReturnExpectedValue()
         {
             var churn = new DailyCodeChurn();
-            churn.FileName = "//sunrise/bin/Latest/BuildSystem/Wrappers/DatabaseExport.ps1";
+            churn.FileName = "//somepath/bin/Latest/BuildSystem/Wrappers/DatabaseExport.ps1";
             Assert.Equal(".ps1", churn.Extension);
         }
 
@@ -32,6 +32,14 @@ namespace p4codechurn.unittests
             var churn = new DailyCodeChurn();
             churn.FileName = "";
             Assert.Equal("", churn.Extension);
+        }
+
+        [Fact]
+        public void WhenGettingExtensionForBigFilePathShouldReturnExpectedValue()
+        {
+            var churn = new DailyCodeChurn();
+            churn.FileName = "//sunrise/bin/Latest/Tools/AssemblyCache/GameTestLibrary.Opus.TestDependencies/AnyCPU/v1/GameTestLibrary.Opus.Exceptions.dll";
+            Assert.Equal(".dll", churn.Extension);
         }
     }
 }

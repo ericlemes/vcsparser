@@ -32,7 +32,7 @@ namespace p4codechurn.core
         {
             get
             {
-                return Added + Deleted + Math.Abs(ChangesAfter - ChangesBefore);
+                return Added + Deleted + Math.Max(ChangesAfter, ChangesBefore);
             }
         }
 
