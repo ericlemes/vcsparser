@@ -25,7 +25,7 @@ clone_folder: c:\projects\myproject
 
 # scripts that run after cloning repository
 install:
-  - nuget restore  
+  - nuget restore src\p4codechurn.sln
 
 assembly_info:
   patch: true
