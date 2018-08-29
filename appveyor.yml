@@ -10,15 +10,6 @@ branches:
   except:
     - gh-pages
 
-# Do not build on tags (GitHub and BitBucket)
-skip_tags: true
-
-# Start builds on tags only (GitHub and BitBucket)
-skip_non_tags: true
-
-# Do not build feature branch with open Pull Requests
-skip_branch_with_pr: true
-
 # Maximum number of concurrent jobs for the project
 max_jobs: 1
 
@@ -68,3 +59,7 @@ artifacts:
   # pushing entire folder as a zip archive
   - path: src\p4codechurn\bin\Release
 
+notifications:  
+  - provider: Email
+    to:
+      - ericlemes@gmail.com        
