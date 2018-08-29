@@ -1,0 +1,70 @@
+# version format
+version: 1.0.{build}
+
+branches:
+  # whitelist
+  only:
+    - master
+
+  # blacklist
+  except:
+    - gh-pages
+
+# Do not build on tags (GitHub and BitBucket)
+skip_tags: true
+
+# Start builds on tags only (GitHub and BitBucket)
+skip_non_tags: true
+
+# Do not build feature branch with open Pull Requests
+skip_branch_with_pr: true
+
+# Maximum number of concurrent jobs for the project
+max_jobs: 1
+
+# Build worker image (VM template)
+image: Visual Studio 2017
+
+# scripts that are called at very beginning, before repo cloning
+init:
+  - git config --global core.autocrlf input
+
+# clone directory
+clone_folder: c:\projects\myproject
+
+# scripts that run after cloning repository
+install:
+  - nuget restore  
+
+assembly_info:
+  patch: true
+  file: AssemblyInfo.*
+  assembly_version: "{version}"
+  assembly_file_version: "{version}"
+  assembly_informational_version: "{version}"
+
+
+platform: Any CPU
+configuration: Release
+
+build:
+  parallel: true              
+  project: src\p4codechurn.sln  
+
+before_build:
+
+build_script:
+
+after_build:
+
+before_package:
+
+test_script:  
+
+after_test:
+
+artifacts:
+
+  # pushing entire folder as a zip archive
+  - path: src\p4codechurn\bin\Release
+
