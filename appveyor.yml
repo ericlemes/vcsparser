@@ -48,6 +48,7 @@ after_build:
 before_package:
 
 test_script:  
+  - .\packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -target:".\packages\xunit.runner.console.2.3.1\tools\net452\xunit.console.x86.exe" -targetargs:".\src\p4codechurn.unittests\bin\Release\p4codechurn.unittests.dll -noshadow" -output:"coverage.xml" -filter:"+[p4codechurn.core*]* -[p4codechurn.unittests*]*"
 
 after_test:
 
