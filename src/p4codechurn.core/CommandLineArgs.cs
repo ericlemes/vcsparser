@@ -15,7 +15,10 @@ namespace p4codechurn.core
         [Option("describe", HelpText = "p4 describe command line to describe every changeset. Usually \"p4 describe -ds {0}\" should work. {0} will be substituted by the change number during execution", Required = true)]
         public string P4DescribeCommandLine { get; set; }
 
-        [Option("output", HelpText ="path to dump csv output")]
+        [Option("output", HelpText ="File path for single file or file prefix for multiple files.")]
         public string OutputFile { get; set; }
+
+        [Option("output-type", HelpText = "SingleFile or MultipleFile. MultipleFile dumps one file per date.")]
+        public OutputType OutputType { get; set; }
     }
 }

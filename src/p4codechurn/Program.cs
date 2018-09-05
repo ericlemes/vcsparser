@@ -1,5 +1,4 @@
 ﻿using CommandLine;
-using CsvHelper;
 using p4codechurn.core;
 using System;
 using System.Collections.Generic;
@@ -20,31 +19,17 @@ namespace p4codechurn
 
         private static void RunCodeChurnProcessor(CommandLineArgs a)
         {
-            var fs = new FileStream(a.OutputFile, FileMode.Create, FileAccess.Write);            
-            var sw = new StreamWriter(fs);            
-
             var processWrapper = new ProcessWrapper();
             var changesParser = new ChangesParser();
             var describeParser = new DescribeParser();
             var commandLineParser = new CommandLineParser();
             var logger = new ConsoleLogger();
             var stopWatch = new StopWatchWrapper();
-            var processor = new CodeChurnProcessor(processWrapper, changesParser, describeParser, commandLineParser, logger, stopWatch);
+            var outputProcessor = new OutputProcessor(new FileStreamFactory(), logger);
+            var processor = new CodeChurnProcessor(processWrapper, changesParser, describeParser, commandLineParser, logger, stopWatch, outputProcessor);
 
-            var result = processor.Process(a.P4ChangesCommandLine, a.P4DescribeCommandLine);
-           
-            var csvWriter = new CsvWriter(sw);
-            csvWriter.Configuration.HasHeaderRecord = true;            
-            using (fs)
-            {
-                using (sw)
-                {
-                    logger.LogToConsole("Writing csv to " + a.OutputFile);
-                    csvWriter.WriteRecords(result);
-                    csvWriter.Flush();                    
-                    sw.Flush();                    
-                }
-            }
+            processor.Process(OutputType.SingleFile, a.OutputFile, a.P4ChangesCommandLine, a.P4DescribeCommandLine);          
         }
+        
     }
 }

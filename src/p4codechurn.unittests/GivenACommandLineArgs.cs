@@ -21,7 +21,9 @@ namespace p4codechurn.unittests
                 "--describe",
                 "describe",
                 "--output",
-                "output"
+                "output",
+                "--output-type",
+                "MultipleFile"
             };
 
             Parser.Default.ParseArguments<CommandLineArgs>(args).WithParsed<CommandLineArgs>((a) =>
@@ -29,6 +31,7 @@ namespace p4codechurn.unittests
                 Assert.Equal("changes", a.P4ChangesCommandLine);
                 Assert.Equal("describe", a.P4DescribeCommandLine);
                 Assert.Equal("output", a.OutputFile);
+                Assert.Equal(OutputType.MultipleFile, a.OutputType);
             });
         }
     }
