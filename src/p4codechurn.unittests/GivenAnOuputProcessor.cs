@@ -48,6 +48,41 @@ namespace p4codechurn.unittests
         }
 
         [Fact]
+        public void WhenProcessingOutputAndNoChurnAndSingleFileShouldReturnNoOutput()
+        {
+            var dict = new Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>()
+            {
+                { new DateTime(2018, 08, 30), new Dictionary<string, DailyCodeChurn>()
+                    {
+                        { "filename", new DailyCodeChurn() { FileName = "abc", Timestamp = new DateTime(2018, 08, 30) } }
+                    }
+                }
+            };
+
+            this.outputProcessor.ProcessOutputSingleFile("filename", dict);
+            var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.GetBuffer());
+            Assert.NotEmpty(resultString);
+            Assert.Equal(2, resultString.Split('\n').Length);
+        }
+
+        [Fact]
+        public void WhenProcessingOutputAndNoChurnAndMultipleFilesShouldReturnNoOutput()
+        {
+            var dict = new Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>()
+            {
+                { new DateTime(2018, 08, 30), new Dictionary<string, DailyCodeChurn>()
+                    {
+                        { "filename", new DailyCodeChurn() { FileName = "abc", Timestamp = new DateTime(2018, 08, 30) } }
+                    }
+                }
+            };
+
+            this.outputProcessor.ProcessOutputMultipleFile("filename", dict);
+            var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.GetBuffer());
+            Assert.Empty(resultString);            
+        }
+
+        [Fact]
         public void WhenProcessingOutputSplitingDateShouldWriteMultipleCsvFiles()
         {
             var dict = new Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>();
