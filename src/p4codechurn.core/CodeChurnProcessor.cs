@@ -7,6 +7,12 @@ using System.Threading.Tasks;
 
 namespace p4codechurn.core
 {
+    public enum OutputType
+    {
+        SingleFile,
+        MultipleFile
+    }
+
     public class CodeChurnProcessor
     {
         private IProcessWrapper processWrapper;
@@ -15,8 +21,9 @@ namespace p4codechurn.core
         private ICommandLineParser commandLineParser;
         private ILogger logger;
         private IStopWatch stopWatch;
+        private IOutputProcessor outputProcessor;
 
-        public CodeChurnProcessor(IProcessWrapper processWrapper, IChangesParser changesParser, IDescribeParser describeParser, ICommandLineParser commandLineParser, ILogger logger, IStopWatch stopWatch)
+        public CodeChurnProcessor(IProcessWrapper processWrapper, IChangesParser changesParser, IDescribeParser describeParser, ICommandLineParser commandLineParser, ILogger logger, IStopWatch stopWatch, IOutputProcessor outputProcessor)
         {
             this.processWrapper = processWrapper;
             this.changesParser = changesParser;
@@ -24,15 +31,22 @@ namespace p4codechurn.core
             this.commandLineParser = commandLineParser;
             this.logger = logger;
             this.stopWatch = stopWatch;
+            this.outputProcessor = outputProcessor;
         }
 
-        public IList<DailyCodeChurn> Process(string changesCommandLine, string describeCommandLine)
+        private IList<int> ParseChangeSets(string changesCommandLine)
         {
             this.logger.LogToConsole("Invoking: " + changesCommandLine);
-            var parsedCommandLine = this.commandLineParser.ParseCommandLine(changesCommandLine);            
+            var parsedCommandLine = this.commandLineParser.ParseCommandLine(changesCommandLine);
             var stdOutStream = this.processWrapper.Invoke(parsedCommandLine.Item1, parsedCommandLine.Item2);
 
-            var changes = this.changesParser.Parse(stdOutStream);
+            return this.changesParser.Parse(stdOutStream);
+        }
+
+        public void Process(OutputType outputType, string outputFileNameOrFilePrefix, string changesCommandLine, string describeCommandLine)
+        {
+            var changes = ParseChangeSets(changesCommandLine);
+
             this.logger.LogToConsole(String.Format("Found {0} changesets to parse", changes.Count));
             Dictionary<DateTime, Dictionary<string, DailyCodeChurn>> dict = new Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>();
             
@@ -41,11 +55,7 @@ namespace p4codechurn.core
             
             foreach (var change in changes)
             {
-                if (this.stopWatch.TotalSecondsElapsed() > 60)
-                {
-                    this.logger.LogToConsole(String.Format("Processed {0}/{1} changesets", i, changes.Count));
-                    this.stopWatch.Restart();
-                }
+                ReportProgressAfterOneMinute(i, changes);                
 
                 var cmd = commandLineParser.ParseCommandLine(String.Format(describeCommandLine, change));
                 ProcessChurn(dict, describeParser.Parse(this.processWrapper.Invoke(cmd.Item1, cmd.Item2)));
@@ -54,17 +64,19 @@ namespace p4codechurn.core
             }
             this.stopWatch.Stop();
 
-            return ConvertDictToOrderedList(dict);
+            if (outputType == OutputType.SingleFile)
+                this.outputProcessor.ProcessOutputSingleFile(outputFileNameOrFilePrefix, dict);
+            else
+                this.outputProcessor.ProcessOutputMultipleFile(outputFileNameOrFilePrefix, dict);
         }
 
-        private IList<DailyCodeChurn> ConvertDictToOrderedList(Dictionary<DateTime, Dictionary<string, DailyCodeChurn>> dict)
+        private void ReportProgressAfterOneMinute(int currentChangeset, IList<int> changes)
         {
-            SortedList<DailyCodeChurn, DailyCodeChurn> sortedList = new SortedList<DailyCodeChurn, DailyCodeChurn>();
-            foreach (var a in dict)
-                foreach (var b in a.Value)
-                    if (b.Value.TotalLinesChanged > 0)               
-                        sortedList.Add(b.Value, b.Value);                
-            return sortedList.Values;
+            if (this.stopWatch.TotalSecondsElapsed() > 60)
+            {
+                this.logger.LogToConsole(String.Format("Processed {0}/{1} changesets", currentChangeset, changes.Count));
+                this.stopWatch.Restart();
+            }
         }
 
         private void ProcessChurn(Dictionary<DateTime, Dictionary<string, DailyCodeChurn>> dict, Changeset changeset)

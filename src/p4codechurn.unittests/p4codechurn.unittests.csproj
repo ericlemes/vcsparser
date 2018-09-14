@@ -89,6 +89,8 @@
     <Compile Include="GivenAConsoleLog.cs" />
     <Compile Include="GivenADailyCodeChurn.cs" />
     <Compile Include="GivenADescribeParser.cs" />
+    <Compile Include="GivenAFileStreamFactory.cs" />
+    <Compile Include="GivenAnOuputProcessor.cs" />
     <Compile Include="GivenAProcessWrapper.cs" />
     <Compile Include="GivenAStopWatchWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

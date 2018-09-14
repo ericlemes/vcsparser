@@ -8,3 +8,4 @@
 /src/p4codechurn.core/bin
 /src/p4codechurn.unittests/obj
 /src/p4codechurn.unittests/bin
+/src/p4codechurn.core/*.user
