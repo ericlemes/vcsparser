@@ -87,11 +87,17 @@
     <Compile Include="GivenACommandLineArgs.cs" />
     <Compile Include="GivenACommandLineParser.cs" />
     <Compile Include="GivenAConsoleLog.cs" />
+    <Compile Include="GivenACsvParser.cs" />
     <Compile Include="GivenADailyCodeChurn.cs" />
     <Compile Include="GivenADescribeParser.cs" />
     <Compile Include="GivenAFileStreamFactory.cs" />
+    <Compile Include="GivenAFileSystem.cs" />
+    <Compile Include="GivenAJsonExporter.cs" />
+    <Compile Include="GivenAMeasureConverterListBuilder.cs" />
+    <Compile Include="GivenAMeasureConverter.cs" />
     <Compile Include="GivenAnOuputProcessor.cs" />
     <Compile Include="GivenAProcessWrapper.cs" />
+    <Compile Include="GivenASonarGenericMetricsProcessor.cs" />
     <Compile Include="GivenAStopWatchWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
