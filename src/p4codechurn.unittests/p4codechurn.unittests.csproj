@@ -95,6 +95,8 @@
     <Compile Include="GivenAJsonExporter.cs" />
     <Compile Include="GivenAMeasureConverterListBuilder.cs" />
     <Compile Include="GivenAMeasureConverter.cs" />
+    <Compile Include="GivenAMetric.cs" />
+    <Compile Include="GivenAnEnvironmentImpl.cs" />
     <Compile Include="GivenAnOuputProcessor.cs" />
     <Compile Include="GivenAProcessWrapper.cs" />
     <Compile Include="GivenASonarGenericMetricsProcessor.cs" />
