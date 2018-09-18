@@ -40,6 +40,23 @@ namespace p4codechurn.unittests
         }
 
         [Fact]
+        public void WhenBuildingWithoutEndDateShouldUseSystemDate()
+        {
+            var args = new SonarGenericMetricsCommandLineArgs();
+            args.EndDate = null;
+            args.Generate1Day = "true";
+
+            var converters = builder.Build(args);
+            Assert.Equal(2, converters.Count);
+            var changesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.CHANGES_METRIC_KEY + "_1d").First();
+            var linesChangedMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_METRIC_KEY + "_1d").First();
+            Assert.Equal(new DateTime(2018, 9, 16, 00, 00, 00), changesMeasure.StartDate);
+            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesMeasure.EndDate);
+            Assert.Equal(new DateTime(2018, 9, 16, 00, 00, 00), linesChangedMeasure.StartDate);
+            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedMeasure.EndDate);
+        }
+
+        [Fact]
         public void WhenBuilding1DayShouldComputeDatesCorrectly()
         {
             var args = new SonarGenericMetricsCommandLineArgs();

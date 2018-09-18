@@ -38,6 +38,24 @@ namespace p4codechurn.unittests
         }
 
         [Fact]
+        public void WhenConvertingWithinRangeSameMetricTwiceShouldAppendMetricsOnce()
+        {
+            var dailyCodeChurn = new DailyCodeChurn()
+            {
+                Timestamp = new DateTime(2018, 9, 17),
+                FileName = "file1",
+                Added = 10,
+                Deleted = 10
+            };
+            var measures = new SonarMeasuresJson();
+
+            this.measureConverter.Process(dailyCodeChurn, measures);
+            this.measureConverter.Process(dailyCodeChurn, measures);
+
+            Assert.Single(measures.Metrics.Where(m => m.MetricKey == "key"));
+        }
+
+        [Fact]
         public void WhenConvertingWithinRangeShouldRemoveFilePrefix()
         {
             var dailyCodeChurn = new DailyCodeChurn()
@@ -71,6 +89,26 @@ namespace p4codechurn.unittests
 
             Assert.Equal(dailyCodeChurn.TotalLinesChanged, 
                 measures.Measures.Where(m => m.MetricKey == "key" && m.File == dailyCodeChurn.FileName).Single().Value);            
+        }
+
+        [Fact]
+        public void WhenConvertingWithinRangeAndNumChangesShouldAppendNumChanges()
+        {
+            this.measureConverter = new MeasureConverter(new DateTime(2018, 9, 17), new DateTime(2018, 9, 18), metric, MeasureConverterType.NumberOfChanges, "//prefix/");
+            var dailyCodeChurn = new DailyCodeChurn()
+            {
+                Timestamp = new DateTime(2018, 9, 17),
+                FileName = "file1",
+                Added = 0,
+                Deleted = 0,
+                NumberOfChanges = 1
+            };
+            var measures = new SonarMeasuresJson();
+
+            this.measureConverter.Process(dailyCodeChurn, measures);
+
+            Assert.Equal(dailyCodeChurn.NumberOfChanges,
+                measures.Measures.Where(m => m.MetricKey == "key" && m.File == dailyCodeChurn.FileName).Single().Value);
         }
 
         [Fact]
