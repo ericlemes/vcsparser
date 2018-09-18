@@ -32,9 +32,11 @@ namespace p4codechurn.core
         {
             get
             {
-                return Added + Deleted + Math.Max(ChangesAfter, ChangesBefore);
+                return Added + Deleted + ChangesAfter + ChangesBefore;
             }
         }
+
+        public int NumberOfChanges { get; set; }
 
         public int CompareTo(object obj)
         {

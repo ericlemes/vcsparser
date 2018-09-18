@@ -13,5 +13,10 @@ namespace p4codechurn.core
         {
             return new FileStream(fileName, fileMode, fileAccess);
         }
+
+        public Stream readFile(string fileName)
+        {
+            return new FileStream(fileName, FileMode.Open, FileAccess.Read);            
+        }
     }
 }

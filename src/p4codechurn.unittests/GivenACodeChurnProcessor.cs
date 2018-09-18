@@ -56,7 +56,7 @@ namespace p4codechurn.unittests
         [Fact]
         public void WhenProcessingShouldInvokeChangesCommandLine()
         {
-            this.processor.Process(OutputType.SingleFile, "filename", "changes commandline", "describe {0}");
+            this.processor.Extract(OutputType.SingleFile, "filename", "changes commandline", "describe {0}");
 
             this.processWrapperMock.Verify(m => m.Invoke("changes", "commandline"), Times.Once());
         }
@@ -69,7 +69,7 @@ namespace p4codechurn.unittests
             this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(ms);
             this.changesParserMock.Setup(m => m.Parse(ms)).Returns(new List<int>());
 
-            this.processor.Process(OutputType.SingleFile, "filename", "changes commandline", "describe {0}");
+            this.processor.Extract(OutputType.SingleFile, "filename", "changes commandline", "describe {0}");
 
             this.changesParserMock.Verify(m => m.Parse(ms), Times.Once());
         }
@@ -82,7 +82,7 @@ namespace p4codechurn.unittests
             this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(changesMemoryStream);
             this.changesParserMock.Setup(m => m.Parse(changesMemoryStream)).Returns(new List<int>() { 1, 2 });            
 
-            this.processor.Process(OutputType.SingleFile, "filename", "changes commandline", "describe {0}");
+            this.processor.Extract(OutputType.SingleFile, "filename", "changes commandline", "describe {0}");
             this.processWrapperMock.Verify(m => m.Invoke("describe", "1"), Times.Once());
             this.processWrapperMock.Verify(m => m.Invoke("describe", "2"), Times.Once());
         }
@@ -104,7 +104,7 @@ namespace p4codechurn.unittests
             this.describeParserMock.Setup(m => m.Parse(describeMemoryStream1)).Returns(changeset1);
             this.describeParserMock.Setup(m => m.Parse(describeMemoryStream2)).Returns(changeset2);
 
-            this.processor.Process(OutputType.SingleFile, "filename", "changes commandline", "describe {0}");
+            this.processor.Extract(OutputType.SingleFile, "filename", "changes commandline", "describe {0}");
 
             this.describeParserMock.Verify(m => m.Parse(describeMemoryStream1), Times.Once());
             this.describeParserMock.Verify(m => m.Parse(describeMemoryStream2), Times.Once());
@@ -183,7 +183,7 @@ namespace p4codechurn.unittests
             this.describeParserMock.Setup(m => m.Parse(describeMemoryStream2)).Returns(changeset2);
             this.describeParserMock.Setup(m => m.Parse(describeMemoryStream3)).Returns(changeset3);
 
-            this.processor.Process(OutputType.SingleFile, "filename", "changes commandline", "describe {0}");
+            this.processor.Extract(OutputType.SingleFile, "filename", "changes commandline", "describe {0}");
             var result = this.output;
 
             Assert.Equal(2, result.Count);
@@ -197,6 +197,7 @@ namespace p4codechurn.unittests
             Assert.Equal(4, dailyCodeChurn.Deleted);
             Assert.Equal(20, dailyCodeChurn.ChangesBefore);
             Assert.Equal(10, dailyCodeChurn.ChangesAfter);
+            Assert.Equal(2, dailyCodeChurn.NumberOfChanges);
 
             dailyCodeChurn = result[new DateTime(2018, 07, 05)]["File2.cs"];
             Assert.Equal(new DateTime(2018, 07, 05), dailyCodeChurn.Timestamp);
@@ -205,6 +206,7 @@ namespace p4codechurn.unittests
             Assert.Equal(2, dailyCodeChurn.Deleted);
             Assert.Equal(10, dailyCodeChurn.ChangesBefore);
             Assert.Equal(5, dailyCodeChurn.ChangesAfter);
+            Assert.Equal(1, dailyCodeChurn.NumberOfChanges);
 
             dailyCodeChurn = result[new DateTime(2018, 07, 06)]["File1.cs"];
             Assert.Equal(new DateTime(2018, 07, 06), dailyCodeChurn.Timestamp);
@@ -213,6 +215,7 @@ namespace p4codechurn.unittests
             Assert.Equal(2, dailyCodeChurn.Deleted);
             Assert.Equal(10, dailyCodeChurn.ChangesBefore);
             Assert.Equal(5, dailyCodeChurn.ChangesAfter);
+            Assert.Equal(1, dailyCodeChurn.NumberOfChanges);
         }
 
         [Fact]
@@ -232,7 +235,7 @@ namespace p4codechurn.unittests
             this.describeParserMock.Setup(m => m.Parse(describeMemoryStream1)).Returns(changeset1);
             this.describeParserMock.Setup(m => m.Parse(describeMemoryStream2)).Returns(changeset2);
 
-            this.processor.Process(OutputType.MultipleFile, "filename", "changes commandline", "describe {0}");
+            this.processor.Extract(OutputType.MultipleFile, "filename", "changes commandline", "describe {0}");
 
             this.outputProcessorMock.Verify(m => m.ProcessOutputMultipleFile(It.IsAny<string>(), It.IsAny<Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>()), Times.Once());
         }
@@ -256,7 +259,7 @@ namespace p4codechurn.unittests
 
             this.stopWatchMock.SetupSequence(m => m.TotalSecondsElapsed()).Returns(10).Returns(70);
 
-            this.processor.Process(OutputType.SingleFile, "filename", "changes commandline", "describe {0}");
+            this.processor.Extract(OutputType.SingleFile, "filename", "changes commandline", "describe {0}");
 
             this.loggerMock.Verify(m => m.LogToConsole("Processed 1/2 changesets"), Times.Once());
         }

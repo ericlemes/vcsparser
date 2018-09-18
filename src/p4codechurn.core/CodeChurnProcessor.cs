@@ -43,7 +43,7 @@ namespace p4codechurn.core
             return this.changesParser.Parse(stdOutStream);
         }
 
-        public void Process(OutputType outputType, string outputFileNameOrFilePrefix, string changesCommandLine, string describeCommandLine)
+        public void Extract(OutputType outputType, string outputFileNameOrFilePrefix, string changesCommandLine, string describeCommandLine)
         {
             var changes = ParseChangeSets(changesCommandLine);
 
@@ -99,6 +99,7 @@ namespace p4codechurn.core
                 dailyCodeChurn.Deleted += c.Deleted;
                 dailyCodeChurn.ChangesBefore += c.ChangedBefore;
                 dailyCodeChurn.ChangesAfter += c.ChangedAfter;
+                dailyCodeChurn.NumberOfChanges += 1;
             }            
         }
     }
