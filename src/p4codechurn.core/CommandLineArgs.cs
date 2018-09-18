@@ -26,6 +26,16 @@ namespace p4codechurn.core
     [Verb("sonargenericmetrics", HelpText = "Process csv files and outputs to Sonar Generic Metrics JSON format")]
     public class SonarGenericMetricsCommandLineArgs
     {
+        public SonarGenericMetricsCommandLineArgs()
+        {
+            this.Generate1Day = "";
+            this.Generate1Year = "";
+            this.Generate30Days = "";
+            this.Generate3Months = "";
+            this.Generate6Months = "";
+            this.Generate7Days = "";
+        }
+
         [Option("fileprefixtoremove", HelpText = "Prefix to remove from file. Usually repository root", Required = true)]
         public string FilePrefixToRemove { get; set; }
 
@@ -38,23 +48,23 @@ namespace p4codechurn.core
         [Option("enddate", HelpText = "Date to limit the analysis to. ", Required = false)]
         public DateTime? EndDate { get; set; }
 
-        [Option("generate1year", HelpText = "Generates 1 year churn data. ", Default = true)]
-        public bool Generate1Year { get; set; }
+        [Option("generate1year", HelpText = "Generates 1 year churn data. ", Default = "true")]
+        public string Generate1Year { get; set; }
 
-        [Option("generate6months", HelpText = "Generates 6 months churn data. ", Default = true)]
-        public bool Generate6Months { get; set; }
+        [Option("generate6months", HelpText = "Generates 6 months churn data. ", Default = "true")]
+        public string Generate6Months { get; set; }
 
-        [Option("generate3months", HelpText = "Generates 3 months churn data. ", Default = true)]
-        public bool Generate3Months { get; set; }
+        [Option("generate3months", HelpText = "Generates 3 months churn data. ", Default = "true")]
+        public string Generate3Months { get; set; }
 
-        [Option("generate30days", HelpText = "Generates 30 days churn data. ", Default = true)]
-        public bool Generate30Days { get; set; }
+        [Option("generate30days", HelpText = "Generates 30 days churn data. ", Default = "true")]
+        public string Generate30Days { get; set; }
 
-        [Option("generate7days", HelpText = "Generates 7 days churn data. ", Default = true)]
-        public bool Generate7Days { get; set; }
+        [Option("generate7days", HelpText = "Generates 7 days churn data. ", Default = "true")]
+        public string Generate7Days { get; set; }
 
-        [Option("generate1day", HelpText = "Generates 1 day churn data. ", Default = true)]
-        public bool Generate1Day { get; set; }
+        [Option("generate1day", HelpText = "Generates 1 day churn data. ", Default = "true")]
+        public string Generate1Day { get; set; }
 
     }
 }

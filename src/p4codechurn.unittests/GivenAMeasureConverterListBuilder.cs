@@ -28,12 +28,12 @@ namespace p4codechurn.unittests
         {
             var args = new SonarGenericMetricsCommandLineArgs();
             args.EndDate = new DateTime(2018, 9, 17, 11, 00, 00);
-            args.Generate1Day = true;
-            args.Generate1Year = true;
-            args.Generate30Days = true;
-            args.Generate3Months = true;
-            args.Generate6Months = true;
-            args.Generate7Days = true;            
+            args.Generate1Day = "true";
+            args.Generate1Year = "true";
+            args.Generate30Days = "true";
+            args.Generate3Months = "true";
+            args.Generate6Months = "true";
+            args.Generate7Days = "true";            
             
             var converters = builder.Build(args);
             Assert.Equal(12, converters.Count);
@@ -44,7 +44,7 @@ namespace p4codechurn.unittests
         {
             var args = new SonarGenericMetricsCommandLineArgs();
             args.EndDate = new DateTime(2018, 9, 17, 11, 00, 00);
-            args.Generate1Day = true;            
+            args.Generate1Day = "true";            
             
             var converters = builder.Build(args);
             Assert.Equal(2, converters.Count);
@@ -61,7 +61,7 @@ namespace p4codechurn.unittests
         {
             var args = new SonarGenericMetricsCommandLineArgs();
             args.EndDate = new DateTime(2018, 9, 17, 11, 00, 00);            
-            args.Generate1Year = true;
+            args.Generate1Year = "true";
 
             var converters = builder.Build(args);
             Assert.Equal(2, converters.Count);
@@ -78,7 +78,7 @@ namespace p4codechurn.unittests
         {
             var args = new SonarGenericMetricsCommandLineArgs();
             args.EndDate = new DateTime(2018, 9, 17, 11, 00, 00);
-            args.Generate30Days = true;
+            args.Generate30Days = "true";
 
             var converters = builder.Build(args);
             Assert.Equal(2, converters.Count);
@@ -95,7 +95,7 @@ namespace p4codechurn.unittests
         {
             var args = new SonarGenericMetricsCommandLineArgs();
             args.EndDate = new DateTime(2018, 9, 17, 11, 00, 00);
-            args.Generate3Months = true;
+            args.Generate3Months = "true";
 
             var converters = builder.Build(args);
             Assert.Equal(2, converters.Count);
@@ -112,7 +112,7 @@ namespace p4codechurn.unittests
         {
             var args = new SonarGenericMetricsCommandLineArgs();
             args.EndDate = new DateTime(2018, 9, 17, 11, 00, 00);
-            args.Generate6Months = true;
+            args.Generate6Months = "true";
 
             var converters = builder.Build(args);
             Assert.Equal(2, converters.Count);
@@ -129,7 +129,7 @@ namespace p4codechurn.unittests
         {
             var args = new SonarGenericMetricsCommandLineArgs();
             args.EndDate = new DateTime(2018, 9, 17, 11, 00, 00);
-            args.Generate7Days = true;
+            args.Generate7Days = "true";
 
             var converters = builder.Build(args);
             Assert.Equal(2, converters.Count);

@@ -22,17 +22,17 @@ namespace p4codechurn.core
         public List<IMeasureConverter> Build(SonarGenericMetricsCommandLineArgs a)
         {
             List<IMeasureConverter> result = new List<IMeasureConverter>();
-            if (a.Generate1Day)
+            if (a.Generate1Day.ToLower() == "true")
                 CreateConvertersFor1Day(result, a);
-            if (a.Generate1Year)
+            if (a.Generate1Year.ToLower() == "true")
                 CreateConvertersFor1Year(result, a);
-            if (a.Generate30Days)
+            if (a.Generate30Days.ToLower() == "true")
                 CreateConvertersFor30Days(result, a);
-            if (a.Generate3Months)
+            if (a.Generate3Months.ToLower() == "true")
                 CreateConvertersFor3Months(result, a);
-            if (a.Generate6Months)
+            if (a.Generate6Months.ToLower() == "true")
                 CreateConvertersFor6Months(result, a);
-            if (a.Generate7Days)
+            if (a.Generate7Days.ToLower() == "true")
                 CreateConvertersFor7Days(result, a);
             return result;
         }

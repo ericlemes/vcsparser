@@ -16,6 +16,7 @@ namespace p4codechurn.unittests
         {
             var args = new List<string>()
             {
+                "extract",
                 "--changes",
                 "changes",
                 "--describe",
@@ -32,11 +33,13 @@ namespace p4codechurn.unittests
                     Assert.Equal("changes", a.P4ChangesCommandLine);
                     Assert.Equal("describe", a.P4DescribeCommandLine);
                     Assert.Equal("output", a.OutputFile);
-                    Assert.Equal(OutputType.MultipleFile, a.OutputType);
+                    Assert.Equal(OutputType.MultipleFile, a.OutputType);                    
                     return 0;
                 },
                 (SonarGenericMetricsCommandLineArgs a) => { return 0;  },            
-                errs => 1);
+                (IEnumerable<Error> errs) => {
+                    throw new Exception("Should not fail.");
+                } );
         }
 
         [Fact]
@@ -44,13 +47,16 @@ namespace p4codechurn.unittests
         {
             var args = new List<string>()
             {
+                "sonargenericmetrics",
+                "--fileprefixtoremove",
+                "prefix",
                 "--inputdir",
                 "inputdir",
                 "--outputfile",
                 "outputfile",
                 "--enddate",
                 "2018-09-14",
-                "--generate1year",
+                "--generate1year",        
                 "false",
                 "--generate6months",
                 "false",
@@ -72,18 +78,21 @@ namespace p4codechurn.unittests
                 },
                 (SonarGenericMetricsCommandLineArgs a) => 
                 {
+                    Assert.Equal("prefix", a.FilePrefixToRemove);
                     Assert.Equal("inputdir", a.InputDir);
                     Assert.Equal("outputfile", a.OutputFile);
                     Assert.Equal(new DateTime(2018, 09, 14), a.EndDate);
-                    Assert.False(a.Generate1Year);
-                    Assert.False(a.Generate6Months);
-                    Assert.False(a.Generate3Months);
-                    Assert.False(a.Generate30Days);
-                    Assert.False(a.Generate7Days);
-                    Assert.False(a.Generate1Day);
+                    Assert.False(a.Generate1Year.ToLower() == "true");
+                    Assert.False(a.Generate6Months.ToLower() == "true");
+                    Assert.False(a.Generate3Months.ToLower() == "true");
+                    Assert.False(a.Generate30Days.ToLower() == "true");
+                    Assert.False(a.Generate7Days.ToLower() == "true");
+                    Assert.False(a.Generate1Day.ToLower() == "true");
                     return 0;            
                 },
-                errs => 1);
+                (IEnumerable<Error> errs) => {
+                    throw new Exception("Should not fail.");
+                });
         }
 
         [Fact]
@@ -91,6 +100,9 @@ namespace p4codechurn.unittests
         {
             var args = new List<string>()
             {
+                "sonargenericmetrics",
+                "--fileprefixtoremove",
+                "prefix",
                 "--inputdir",
                 "inputdir",
                 "--outputfile",
@@ -108,7 +120,9 @@ namespace p4codechurn.unittests
                     Assert.Null(a.EndDate);                    
                     return 0;
                 },
-                errs => 1);
+                (IEnumerable<Error> errs) => {
+                    throw new Exception("Should not fail.");
+                });
         }
     }
 }
