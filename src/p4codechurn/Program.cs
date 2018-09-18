@@ -11,13 +11,14 @@ namespace p4codechurn
 {
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
-        var result = Parser.Default.ParseArguments<ExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
+            var result = Parser.Default.ParseArguments<ExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
                 .MapResult(
                     (ExtractCommandLineArgs a) => RunCodeChurnProcessor(a),
                     (SonarGenericMetricsCommandLineArgs a) => RunSonarGenericMetrics(a),
-                    err => 1);            
+                    err => 1);
+            return result;
         }
 
         private static int RunCodeChurnProcessor(ExtractCommandLineArgs a)
