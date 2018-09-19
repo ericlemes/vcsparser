@@ -48,7 +48,7 @@ namespace p4codechurn.core
 
         public void Process(DailyCodeChurn dailyCodeChurn, SonarMeasuresJson sonarMeasuresJson)
         {
-            if (dailyCodeChurn.Timestamp < startDate || dailyCodeChurn.Timestamp > endDate)
+            if (dailyCodeChurn.GetDateTimeAsDateTime() < startDate || dailyCodeChurn.GetDateTimeAsDateTime() > endDate)
                 return;
 
             ProcessMetric(sonarMeasuresJson);

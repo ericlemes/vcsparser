@@ -25,7 +25,7 @@ namespace p4codechurn.unittests
         {            
             var dailyCodeChurn = new DailyCodeChurn()
             {
-                Timestamp = new DateTime(2018, 9, 17),
+                Timestamp = "2018/09/17 00:00:00",
                 FileName = "file1",
                 Added = 10,
                 Deleted = 10
@@ -42,7 +42,7 @@ namespace p4codechurn.unittests
         {
             var dailyCodeChurn = new DailyCodeChurn()
             {
-                Timestamp = new DateTime(2018, 9, 17),
+                Timestamp = "2018/09/17 00:00:00",
                 FileName = "file1",
                 Added = 10,
                 Deleted = 10
@@ -60,7 +60,7 @@ namespace p4codechurn.unittests
         {
             var dailyCodeChurn = new DailyCodeChurn()
             {
-                Timestamp = new DateTime(2018, 9, 17),
+                Timestamp = "2018/09/17 00:00:00",
                 FileName = "//prefix/file",
                 Added = 10,
                 Deleted = 10
@@ -78,7 +78,7 @@ namespace p4codechurn.unittests
         {           
             var dailyCodeChurn = new DailyCodeChurn()
             {
-                Timestamp = new DateTime(2018, 9, 17),
+                Timestamp = "2018/09/17 00:00:00",
                 FileName = "file1",
                 Added = 10,
                 Deleted = 10
@@ -97,7 +97,7 @@ namespace p4codechurn.unittests
             this.measureConverter = new MeasureConverter(new DateTime(2018, 9, 17), new DateTime(2018, 9, 18), metric, MeasureConverterType.NumberOfChanges, "//prefix/");
             var dailyCodeChurn = new DailyCodeChurn()
             {
-                Timestamp = new DateTime(2018, 9, 17),
+                Timestamp = "2018/09/17 00:00:00",
                 FileName = "file1",
                 Added = 0,
                 Deleted = 0,
@@ -116,7 +116,7 @@ namespace p4codechurn.unittests
         {            
             var dailyCodeChurn = new DailyCodeChurn()
             {
-                Timestamp = new DateTime(2018, 9, 17),
+                Timestamp = "2018/09/17 00:00:00",
                 FileName = "file1",
                 Added = 10,
                 Deleted = 10
@@ -141,7 +141,7 @@ namespace p4codechurn.unittests
         {            
             var dailyCodeChurn = new DailyCodeChurn()
             {
-                Timestamp = new DateTime(2018, 9, 18, 12, 00, 00),
+                Timestamp = "2018/09/18 12:00:00",
                 FileName = "file1",
                 Added = 10,
                 Deleted = 10
@@ -157,7 +157,7 @@ namespace p4codechurn.unittests
         {
             var dailyCodeChurn = new DailyCodeChurn()
             {
-                Timestamp = new DateTime(2018, 9, 17, 12, 00, 00),
+                Timestamp = "2018/09/17 12:00:00",
                 FileName = "file1",
                 Added = 0,
                 Deleted = 0,
@@ -174,7 +174,7 @@ namespace p4codechurn.unittests
         {            
             var dailyCodeChurn = new DailyCodeChurn()
             {
-                Timestamp = new DateTime(2018, 9, 17),
+                Timestamp = "2018/09/17 00:00:00",
                 FileName = "file1",
                 Added = 10,
                 Deleted = 10

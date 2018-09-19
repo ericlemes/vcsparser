@@ -10,7 +10,7 @@ namespace p4codechurn.core
     {
         public void LogToConsole(string message)
         {
-            Console.WriteLine(DateTime.Now.ToString("hh:mm:ss") + ": " + message);
+            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + ": " + message);
         }
     }
 }

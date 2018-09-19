@@ -93,7 +93,7 @@ namespace p4codechurn.core
                     dict[changeset.Timestamp.Date].Add(c.FileName, new DailyCodeChurn());
 
                 var dailyCodeChurn = dict[changeset.Timestamp.Date][c.FileName];
-                dailyCodeChurn.Timestamp = changeset.Timestamp.Date;
+                dailyCodeChurn.Timestamp = changeset.Timestamp.Date.ToString(DailyCodeChurn.DATE_FORMAT);
                 dailyCodeChurn.FileName = c.FileName;
                 dailyCodeChurn.Added += c.Added;
                 dailyCodeChurn.Deleted += c.Deleted;

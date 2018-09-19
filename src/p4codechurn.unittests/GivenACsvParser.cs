@@ -30,13 +30,13 @@ namespace p4codechurn.unittests
 
             var sw = new StreamWriter(ms);
             sw.WriteLine("Timestamp,FileName,Extension,Added,Deleted,ChangesBefore,ChangesAfter,TotalLinesChanged");
-            sw.WriteLine("1/29/2018 12:00:00 AM,filename.ext,.ext,73,0,22,52,125");
+            sw.WriteLine("2018/11/29 00:00:00,filename.ext,.ext,73,0,22,52,125");
             sw.Flush();
             ms.Seek(0, SeekOrigin.Begin);
 
             var result = this.csvParser.ParseFile("filename");
             var dailyCodeChurn = result.First();
-            Assert.Equal(new DateTime(2018, 1, 29, 00, 00, 00), dailyCodeChurn.Timestamp);
+            Assert.Equal("2018/11/29 00:00:00", dailyCodeChurn.Timestamp);
             Assert.Equal("filename.ext", dailyCodeChurn.FileName);
             Assert.Equal(".ext", dailyCodeChurn.Extension);
             Assert.Equal(73, dailyCodeChurn.Added);
