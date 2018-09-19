@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,14 @@ namespace p4codechurn.core
 {
     public class DailyCodeChurn : IComparable
     {
-        public DateTime Timestamp { get; set; }
+        public static readonly string DATE_FORMAT = "yyyy/MM/dd HH:mm:ss";
+
+        private string timestamp = "";
+        public string Timestamp
+        {
+            get { return timestamp; }
+            set { this.timestamp = value; }
+        }
 
         public string FileName { get; set; }
 
@@ -48,5 +56,12 @@ namespace p4codechurn.core
             else
                 return this.FileName.CompareTo(dest.FileName);                    
         }
+
+        public DateTime GetDateTimeAsDateTime()
+        {            
+            return DateTime.ParseExact(this.Timestamp, DATE_FORMAT, CultureInfo.InvariantCulture);
+        }
+
+        
     }
 }

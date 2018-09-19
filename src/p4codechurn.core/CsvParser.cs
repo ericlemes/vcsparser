@@ -25,7 +25,7 @@ namespace p4codechurn.core
                 var streamReader = new StreamReader(stream);
                 var configuration = new CsvHelper.Configuration.Configuration();
                 configuration.HeaderValidated = null;
-                configuration.MissingFieldFound = null;
+                configuration.MissingFieldFound = null;                
                 var csvReader = new CsvReader(streamReader, configuration);
                 
                 return csvReader.GetRecords<DailyCodeChurn>().ToList();

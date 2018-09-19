@@ -191,7 +191,7 @@ namespace p4codechurn.unittests
             Assert.Single(result[new DateTime(2018, 07, 06)]);
 
             var dailyCodeChurn = result[new DateTime(2018, 07, 05)]["File1.cs"];            
-            Assert.Equal(new DateTime(2018, 07, 05), dailyCodeChurn.Timestamp);
+            Assert.Equal("2018/07/05 00:00:00", dailyCodeChurn.Timestamp);
             Assert.Equal("File1.cs", dailyCodeChurn.FileName);
             Assert.Equal(2, dailyCodeChurn.Added);
             Assert.Equal(4, dailyCodeChurn.Deleted);
@@ -200,7 +200,7 @@ namespace p4codechurn.unittests
             Assert.Equal(2, dailyCodeChurn.NumberOfChanges);
 
             dailyCodeChurn = result[new DateTime(2018, 07, 05)]["File2.cs"];
-            Assert.Equal(new DateTime(2018, 07, 05), dailyCodeChurn.Timestamp);
+            Assert.Equal("2018/07/05 00:00:00", dailyCodeChurn.Timestamp);
             Assert.Equal("File2.cs", dailyCodeChurn.FileName);
             Assert.Equal(1, dailyCodeChurn.Added);
             Assert.Equal(2, dailyCodeChurn.Deleted);
@@ -209,7 +209,7 @@ namespace p4codechurn.unittests
             Assert.Equal(1, dailyCodeChurn.NumberOfChanges);
 
             dailyCodeChurn = result[new DateTime(2018, 07, 06)]["File1.cs"];
-            Assert.Equal(new DateTime(2018, 07, 06), dailyCodeChurn.Timestamp);
+            Assert.Equal("2018/07/06 00:00:00", dailyCodeChurn.Timestamp);
             Assert.Equal("File1.cs", dailyCodeChurn.FileName);
             Assert.Equal(1, dailyCodeChurn.Added);
             Assert.Equal(2, dailyCodeChurn.Deleted);

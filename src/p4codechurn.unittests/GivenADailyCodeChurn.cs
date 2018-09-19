@@ -45,8 +45,8 @@ namespace p4codechurn.unittests
         [Fact]
         public void WhenComparingAndDatesAreDifferentShouldConsiderDate()
         {
-            var churn1 = new DailyCodeChurn { Timestamp = new DateTime(2018, 9, 5) };
-            var churn2 = new DailyCodeChurn { Timestamp = new DateTime(2018, 9, 4) };
+            var churn1 = new DailyCodeChurn { Timestamp = "2018/09/05 00:00:00" };
+            var churn2 = new DailyCodeChurn { Timestamp = "2018/09/04 00:00:00" };
             Assert.Equal(-1, churn2.CompareTo(churn1));
         }
 

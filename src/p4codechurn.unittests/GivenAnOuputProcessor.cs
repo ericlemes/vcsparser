@@ -36,7 +36,7 @@ namespace p4codechurn.unittests
             {
                 { new DateTime(2018, 08, 30), new Dictionary<string, DailyCodeChurn>()
                     {
-                        { "filename", new DailyCodeChurn() { Added = 1, ChangesBefore = 2, ChangesAfter = 3, Deleted = 4, FileName = "abc", Timestamp = new DateTime(2018, 08, 30) } }
+                        { "filename", new DailyCodeChurn() { Added = 1, ChangesBefore = 2, ChangesAfter = 3, Deleted = 4, FileName = "abc", Timestamp = "2018/08/30 00:00:00" } }
                     }
                 }
             };
@@ -54,7 +54,7 @@ namespace p4codechurn.unittests
             {
                 { new DateTime(2018, 08, 30), new Dictionary<string, DailyCodeChurn>()
                     {
-                        { "filename", new DailyCodeChurn() { FileName = "abc", Timestamp = new DateTime(2018, 08, 30) } }
+                        { "filename", new DailyCodeChurn() { FileName = "abc", Timestamp = "2018/08/30 00:00:00" } }
                     }
                 }
             };
@@ -72,7 +72,7 @@ namespace p4codechurn.unittests
             {
                 { new DateTime(2018, 08, 30), new Dictionary<string, DailyCodeChurn>()
                     {
-                        { "filename", new DailyCodeChurn() { FileName = "abc", Timestamp = new DateTime(2018, 08, 30) } }
+                        { "filename", new DailyCodeChurn() { FileName = "abc", Timestamp = "2018/08/30 00:00:00" } }
                     }
                 }
             };
@@ -93,7 +93,7 @@ namespace p4codechurn.unittests
                 ChangesAfter = 3,
                 Deleted = 4,
                 FileName = "abc",
-                Timestamp = new DateTime(2018, 08, 30)
+                Timestamp = "2018/08/30 00:00:00"
             });
             dict.Add(new DateTime(2018, 08, 31), new Dictionary<string, DailyCodeChurn>());
             dict[new DateTime(2018, 08, 31)].Add("abc", new DailyCodeChurn()
@@ -103,7 +103,7 @@ namespace p4codechurn.unittests
                 ChangesAfter = 3,
                 Deleted = 4,
                 FileName = "abc",
-                Timestamp = new DateTime(2018, 08, 31)
+                Timestamp = "2018/08/31 00:00:00"
             });            
 
             var output1 = new MemoryStream();
