@@ -41,7 +41,7 @@ namespace p4codechurn.unittests
                 }
             };
 
-            this.outputProcessor.ProcessOutputSingleFile("filename", dict);
+            this.outputProcessor.ProcessOutput(OutputType.SingleFile, "filename", dict);
             var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.GetBuffer());
             Assert.NotEmpty(resultString);
             Assert.Equal(3, resultString.Split('\n').Length);
@@ -77,7 +77,7 @@ namespace p4codechurn.unittests
                 }
             };
 
-            this.outputProcessor.ProcessOutputMultipleFile("filename", dict);
+            this.outputProcessor.ProcessOutput(OutputType.MultipleFile, "filename", dict);
             var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.GetBuffer());
             Assert.Empty(resultString);            
         }

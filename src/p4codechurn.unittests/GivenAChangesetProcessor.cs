@@ -97,6 +97,35 @@ namespace p4codechurn.unittests
 
             Assert.Equal(40, GetOutputFor("file1").Added);
         }
+
+        [Fact]
+        public void WhenProcessingSameFileRenamedTwiceShouldTrackCorrectly()
+        {
+            //Changesets should be processed in reverse order (as in Git)
+            this.changesetProcessor.ProcessChangeset(CreateCommitWithAddedLines("file3", 10)); 
+            this.changesetProcessor.ProcessChangeset(CreateCommitWithRename("file1", "file3"));
+            this.changesetProcessor.ProcessChangeset(CreateCommitWithAddedLines("file1", 10)); //New history for file1
+            this.changesetProcessor.ProcessChangeset(CreateCommitWithAddedLines("file2", 10));
+            this.changesetProcessor.ProcessChangeset(CreateCommitWithRename("file1", "file2"));
+            this.changesetProcessor.ProcessChangeset(CreateCommitWithAddedLines("file1", 10));
+
+            Assert.Equal(20, GetOutputFor("file2").Added);
+            Assert.Equal(20, GetOutputFor("file3").Added);
+        }
+
+        [Fact]
+        public void WhenSameFileNameRenamedTwiceShouldTrackCorrectly()
+        {            
+            this.changesetProcessor.ProcessChangeset(CreateCommitWithAddedLines("file2", 10));
+            this.changesetProcessor.ProcessChangeset(CreateCommitWithRename("file1", "file2"));
+            this.changesetProcessor.ProcessChangeset(CreateCommitWithAddedLines("file1", 10));
+            this.changesetProcessor.ProcessChangeset(CreateCommitWithRename("file2", "file1"));
+            this.changesetProcessor.ProcessChangeset(CreateCommitWithAddedLines("file2", 10));
+            this.changesetProcessor.ProcessChangeset(CreateCommitWithRename("file1", "file2"));
+            this.changesetProcessor.ProcessChangeset(CreateCommitWithAddedLines("file1", 10));
+
+            Assert.Equal(40, GetOutputFor("file2").Added);
+        }
     }
 
     
