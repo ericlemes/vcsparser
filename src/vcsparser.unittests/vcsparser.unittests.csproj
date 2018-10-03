@@ -121,7 +121,7 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\p4codechurn.core\p4codechurn.core.csproj">
+    <ProjectReference Include="..\vcsparser.core\vcsparser.core.csproj">
       <Project>{c2035ffb-3acd-4bed-9b67-75c824a6743a}</Project>
       <Name>p4codechurn.core</Name>
     </ProjectReference>
