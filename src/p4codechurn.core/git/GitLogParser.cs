@@ -98,7 +98,8 @@ namespace p4codechurn.core.git
         {
             if (context.CurrentState == GitLogParserContext.State.ParsingDescription)
                 context.CurrentCommit.AppendCommitMessage(line.Trim());
-            else if (context.CurrentState == GitLogParserContext.State.ParsingStats)
+            else 
+                // context.CurrentState == GitLogParserContext.State.ParsingStats
                 ParseStatsLine(context, line);                    
         }
 

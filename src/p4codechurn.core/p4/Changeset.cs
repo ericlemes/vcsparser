@@ -30,15 +30,5 @@ namespace p4codechurn.core.p4
             this.FileChanges = new List<FileChanges>();
             this.FileRenames = new Dictionary<string, string>();
         }
-
-        public DateTime GetTimestamp()
-        {
-            return Timestamp;
-        }
-
-        public List<FileChanges> GetFileChanges()
-        {
-            return FileChanges;
-        }
     }
 }
