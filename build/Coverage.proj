@@ -17,7 +17,7 @@
 		<RemoveDir Directories="$(MSBuildProjectDirectory)\coverage_tmp" />
 		<RemoveDir Directories="$(MSBuildProjectDirectory)\coverage" />
 		<MakeDir Directories="$(MSBuildProjectDirectory)\coverage_tmp" />
-		<Exec Command="$(OpenCoverPath) -target:$(XUnitConsoleRunner) -oldStyle -filter:&quot;+[*]* -[p4codechurn.unittests]* -[Moq]*&quot;  -targetdir:&quot;$(MSBuildProjectDirectory)\..\src\p4codechurn.unittests\bin\Debug&quot; -targetargs:&quot;%(Tests.FullPath)&quot; -register:user -output:$(MSBuildProjectDirectory)\coverage_tmp\%(Tests.Filename).xml " />		
+		<Exec Command="$(OpenCoverPath) -target:$(XUnitConsoleRunner) -oldStyle -filter:&quot;+[*]* -[vcsparser.unittests]* -[Moq]*&quot;  -targetdir:&quot;$(MSBuildProjectDirectory)\..\src\vcsparser.unittests\bin\Debug&quot; -targetargs:&quot;%(Tests.FullPath)&quot; -register:user -output:$(MSBuildProjectDirectory)\coverage_tmp\%(Tests.Filename).xml " />		
 		<Exec Command="$(ReportGeneratorPath) -targetdir:$(MSBuildProjectDirectory)\coverage -reports:$(MSBuildProjectDirectory)\Coverage_tmp\*.xml" />
 	</Target>		
 	

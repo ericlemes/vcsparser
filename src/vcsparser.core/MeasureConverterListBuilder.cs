@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace p4codechurn.core
+namespace vcsparser.core
 {
     public class MeasureConverterListBuilder
     {
-        public static readonly string CHANGES_METRIC_KEY = "p4codechurn_numchanges";
+        public static readonly string CHANGES_METRIC_KEY = "vcsparser_numchanges";
 
-        public static readonly string LINES_CHANGED_METRIC_KEY = "p4codechurn_lineschanged";
+        public static readonly string LINES_CHANGED_METRIC_KEY = "vcsparser_lineschanged";
 
         private IEnvironment environment;
         

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using p4codechurn.core;
+using vcsparser.core;
 
-namespace p4codechurn.core
+namespace vcsparser.core
 {
     public class SonarGenericMetricsProcessor
     {

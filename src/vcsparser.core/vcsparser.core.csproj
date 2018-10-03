@@ -7,8 +7,8 @@
     <ProjectGuid>{C2035FFB-3ACD-4BED-9B67-75C824A6743A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>p4codechurn.core</RootNamespace>
-    <AssemblyName>p4codechurn.core</AssemblyName>
+    <RootNamespace>vcsparser.core</RootNamespace>
+    <AssemblyName>vcsparser.core</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

@@ -22,7 +22,7 @@ init:
 
 # scripts that run after cloning repository
 install:
-  - nuget restore src\p4codechurn.sln
+  - nuget restore src\vcsparser.sln
 
 assembly_info:
   patch: true
@@ -37,7 +37,7 @@ configuration: Release
 
 build:
   parallel: true              
-  project: src\p4codechurn.sln  
+  project: src\vcsparser.sln  
 
 before_build:
 
@@ -48,7 +48,7 @@ after_build:
 before_package:
 
 test_script:  
-  - .\src\packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -target:".\src\packages\xunit.runner.console.2.3.1\tools\net452\xunit.console.x86.exe" -targetargs:".\src\p4codechurn.unittests\bin\Release\p4codechurn.unittests.dll -noshadow" -output:"coverage.xml" -filter:"+[p4codechurn.core*]* -[p4codechurn.unittests*]*"
+  - .\src\packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -target:".\src\packages\xunit.runner.console.2.3.1\tools\net452\xunit.console.x86.exe" -targetargs:".\src\vcsparser.unittests\bin\Release\vcsparser.unittests.dll -noshadow" -output:"coverage.xml" -filter:"+[vcsparser.core*]* -[vcsparser.unittests*]*"
 
 after_test:
   - ps: |
@@ -59,7 +59,7 @@ after_test:
 artifacts:
 
   # pushing entire folder as a zip archive
-  - path: src\p4codechurn\bin\Release
+  - path: src\vcsparser\bin\Release
 
 notifications:  
   - provider: Email

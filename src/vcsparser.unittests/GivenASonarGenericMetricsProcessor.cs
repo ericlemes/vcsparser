@@ -1,5 +1,5 @@
 ﻿using Moq;
-using p4codechurn.core;
+using vcsparser.core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace p4codechurn.unittests
+namespace vcsparser.unittests
 {
     public class GivenASonarGenericMetricsProcessor
     {

@@ -1,6 +1,6 @@
 ﻿using Moq;
-using p4codechurn.core;
-using p4codechurn.core.git;
+using vcsparser.core;
+using vcsparser.core.git;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace p4codechurn.unittests.git
+namespace vcsparser.unittests.git
 {
     public class GivenAGitCodeChurnProcessor
     {

@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{E7289043-D131-46E0-A20B-04CDC648F592}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>p4codechurn</RootNamespace>
-    <AssemblyName>p4codechurn</AssemblyName>
+    <RootNamespace>vcsparser</RootNamespace>
+    <AssemblyName>vcsparser</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -66,7 +66,7 @@
   <ItemGroup>
     <ProjectReference Include="..\vcsparser.core\vcsparser.core.csproj">
       <Project>{c2035ffb-3acd-4bed-9b67-75c824a6743a}</Project>
-      <Name>p4codechurn.core</Name>
+      <Name>vcsparser.core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

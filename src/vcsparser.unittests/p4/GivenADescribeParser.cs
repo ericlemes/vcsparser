@@ -1,5 +1,5 @@
-﻿using p4codechurn.core;
-using p4codechurn.core.p4;
+﻿using vcsparser.core;
+using vcsparser.core.p4;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace p4codechurn.unittests
+namespace vcsparser.unittests
 {
     public class GivenADescribeParser
     {

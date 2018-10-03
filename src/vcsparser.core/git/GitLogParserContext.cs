@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace p4codechurn.core.git
+namespace vcsparser.core.git
 {
 
     public class GitLogParserContext

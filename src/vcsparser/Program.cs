@@ -1,7 +1,7 @@
 ﻿using CommandLine;
-using p4codechurn.core;
-using p4codechurn.core.git;
-using p4codechurn.core.p4;
+using vcsparser.core;
+using vcsparser.core.git;
+using vcsparser.core.p4;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace p4codechurn
+namespace vcsparser
 {
     class Program
     {

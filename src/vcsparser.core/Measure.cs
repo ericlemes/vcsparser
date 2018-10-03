@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace p4codechurn.core
+namespace vcsparser.core
 {
     public class Measure
     {

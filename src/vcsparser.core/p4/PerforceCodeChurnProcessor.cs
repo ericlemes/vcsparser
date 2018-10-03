@@ -1,4 +1,4 @@
-﻿using p4codechurn.core.p4;
+﻿using vcsparser.core.p4;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace p4codechurn.core.p4
+namespace vcsparser.core.p4
 {
     public class PerforceCodeChurnProcessor
     {
