@@ -57,24 +57,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Changeset.cs" />
-    <Compile Include="ChangesParser.cs" />
-    <Compile Include="CodeChurnProcessor.cs" />
+    <Compile Include="ChangesetProcessor.cs" />
+    <Compile Include="git\GitCodeChurnProcessor.cs" />
+    <Compile Include="git\GitCommit.cs" />
+    <Compile Include="git\GitLogParser.cs" />
+    <Compile Include="git\GitLogParserContext.cs" />
+    <Compile Include="git\IGitLogParser.cs" />
+    <Compile Include="p4\Changeset.cs" />
+    <Compile Include="p4\ChangesParser.cs" />
+    <Compile Include="p4\PerforceCodeChurnProcessor.cs" />
     <Compile Include="CommandLineArgs.cs" />
     <Compile Include="CommandLineParser.cs" />
     <Compile Include="ConsoleLogger.cs" />
     <Compile Include="CsvParser.cs" />
     <Compile Include="DailyCodeChurn.cs" />
-    <Compile Include="DescribeParser.cs" />
+    <Compile Include="p4\DescribeParser.cs" />
     <Compile Include="EnvironmentImpl.cs" />
     <Compile Include="FileChanges.cs" />
     <Compile Include="FileImpl.cs" />
     <Compile Include="FileStreamFactory.cs" />
     <Compile Include="FileSystem.cs" />
-    <Compile Include="IChangesParser.cs" />
+    <Compile Include="IChangeset.cs" />
+    <Compile Include="p4\IChangesParser.cs" />
     <Compile Include="ICommandLineParser.cs" />
     <Compile Include="ICsvParser.cs" />
-    <Compile Include="IDescribeParser.cs" />
+    <Compile Include="p4\IDescribeParser.cs" />
     <Compile Include="IEnvironment.cs" />
     <Compile Include="IFile.cs" />
     <Compile Include="IFileSystem.cs" />

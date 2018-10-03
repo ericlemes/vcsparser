@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace p4codechurn.core
+namespace p4codechurn.core.git
 {
-    public interface IChangesParser
+    public interface IGitLogParser
     {
-        List<int> Parse(Stream ms);
+        List<GitCommit> Parse(Stream stream);
     }
 }

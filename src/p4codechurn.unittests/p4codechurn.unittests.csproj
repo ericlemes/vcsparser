@@ -82,14 +82,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GivenAChangesParser.cs" />
-    <Compile Include="GivenACodeChurnProcessor.cs" />
+    <Compile Include="git\GivenAGitCodeChurnProcessor.cs" />
+    <Compile Include="git\GivenAGitLogParser.cs" />
+    <Compile Include="GivenAChangesetProcessor.cs" />
+    <Compile Include="p4\GivenAChangesParser.cs" />
+    <Compile Include="p4\GivenAPerforceCodeChurnProcessor.cs" />
     <Compile Include="GivenACommandLineArgs.cs" />
     <Compile Include="GivenACommandLineParser.cs" />
     <Compile Include="GivenAConsoleLog.cs" />
     <Compile Include="GivenACsvParser.cs" />
     <Compile Include="GivenADailyCodeChurn.cs" />
-    <Compile Include="GivenADescribeParser.cs" />
+    <Compile Include="p4\GivenADescribeParser.cs" />
     <Compile Include="GivenAFileStreamFactory.cs" />
     <Compile Include="GivenAFileSystem.cs" />
     <Compile Include="GivenAJsonExporter.cs" />
@@ -143,6 +146,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\DescribeFile4.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\GitExample1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\GitExample2.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\GitExample3.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

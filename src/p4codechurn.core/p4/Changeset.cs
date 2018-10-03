@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace p4codechurn.core
+namespace p4codechurn.core.p4
 {
-    public class Changeset
+    public class PerforceChangeset : IChangeset
     {
         public int ChangesetNumber { get; set; }
 
@@ -22,10 +22,23 @@ namespace p4codechurn.core
 
         public List<FileChanges> FileChanges { get; set; }
 
+        public Dictionary<string, string> FileRenames { get; set; }
 
-        public Changeset()
+
+        public PerforceChangeset()
         {
             this.FileChanges = new List<FileChanges>();
+            this.FileRenames = new Dictionary<string, string>();
+        }
+
+        public DateTime GetTimestamp()
+        {
+            return Timestamp;
+        }
+
+        public List<FileChanges> GetFileChanges()
+        {
+            return FileChanges;
         }
     }
 }

@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace p4codechurn.core
+namespace p4codechurn.core.p4
 {
     public interface IDescribeParser
     {
-        Changeset Parse(Stream ms);
+        PerforceChangeset Parse(Stream ms);
     }
 }

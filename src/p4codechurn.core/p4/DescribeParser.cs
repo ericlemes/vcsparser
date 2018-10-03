@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace p4codechurn.core
+namespace p4codechurn.core.p4
 {
     public class DescribeParser : IDescribeParser
     {
-        public Changeset Parse(Stream ms)
+        public PerforceChangeset Parse(Stream ms)
         {
-            var result = new Changeset();
+            var result = new PerforceChangeset();
             FileChanges currentFileChanges = null;
 
             var sr = new StreamReader(ms);
@@ -24,7 +24,7 @@ namespace p4codechurn.core
             return result;
         }
 
-        private void ParseLine(ref FileChanges currentFileChanges, string line, Changeset changeset)
+        private void ParseLine(ref FileChanges currentFileChanges, string line, PerforceChangeset changeset)
         {            
             if (line.StartsWith("Change "))
                 ParseHeader(line, changeset);
@@ -40,26 +40,26 @@ namespace p4codechurn.core
                 ParseChangedLines(ref currentFileChanges, line, changeset);
         }
 
-        private void ParseChangedLines(ref FileChanges currentFileChanges, string line, Changeset changeset)
+        private void ParseChangedLines(ref FileChanges currentFileChanges, string line, PerforceChangeset changeset)
         {
             var splitted = line.Split(' ');
             currentFileChanges.ChangedBefore = Convert.ToInt32(splitted[3]);
             currentFileChanges.ChangedAfter = Convert.ToInt32(splitted[5]);
         }
 
-        private void ParseDeletedLines(ref FileChanges currentFileChanges, string line, Changeset changeset)
+        private void ParseDeletedLines(ref FileChanges currentFileChanges, string line, PerforceChangeset changeset)
         {
             var splitted = line.Split(' ');
             currentFileChanges.Deleted = Convert.ToInt32(splitted[3]);
         }
 
-        private void ParseAddedLines(ref FileChanges currentFileChanges, string line, Changeset changeset)
+        private void ParseAddedLines(ref FileChanges currentFileChanges, string line, PerforceChangeset changeset)
         {
             var splitted = line.Split(' ');
             currentFileChanges.Added = Convert.ToInt32(splitted[3]);
         }
 
-        private void ParseNewFileChanges(ref FileChanges currentFileChanges, string line, Changeset changeset)
+        private void ParseNewFileChanges(ref FileChanges currentFileChanges, string line, PerforceChangeset changeset)
         {
             currentFileChanges = new FileChanges();
             changeset.FileChanges.Add(currentFileChanges);
@@ -67,7 +67,7 @@ namespace p4codechurn.core
             currentFileChanges.FileName = line.Split('#')[0].Split(' ')[1];
         }
 
-        private void ParseHeader(string line, Changeset changeset)
+        private void ParseHeader(string line, PerforceChangeset changeset)
         {            
             var sliced = line.Split(' ');
             if (sliced.Length < 7)

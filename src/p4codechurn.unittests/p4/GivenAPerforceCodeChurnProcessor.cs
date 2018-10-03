@@ -1,5 +1,6 @@
 ﻿using Moq;
 using p4codechurn.core;
+using p4codechurn.core.p4;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,9 +11,9 @@ using Xunit;
 
 namespace p4codechurn.unittests
 {
-    public class GivenACodeChurnProcessor
+    public class GivenAPerforceCodeChurnProcessor
     {
-        private CodeChurnProcessor processor;
+        private PerforceCodeChurnProcessor processor;
         private Mock<IProcessWrapper> processWrapperMock;
         private Mock<IChangesParser> changesParserMock;
         private Mock<IDescribeParser> describeParserMock;
@@ -22,7 +23,7 @@ namespace p4codechurn.unittests
         private Mock<IOutputProcessor> outputProcessorMock;
         private Dictionary<DateTime, Dictionary<string, DailyCodeChurn>> output;
 
-        public GivenACodeChurnProcessor()
+        public GivenAPerforceCodeChurnProcessor()
         {
             var changesMemoryStream = new MemoryStream();            
 
@@ -43,13 +44,13 @@ namespace p4codechurn.unittests
             this.stopWatchMock = new Mock<IStopWatch>();
 
             this.outputProcessorMock = new Mock<IOutputProcessor>();
-            this.outputProcessorMock.Setup(m => m.ProcessOutputSingleFile(It.IsAny<string>(), It.IsAny<Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>())).Callback<string, Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>(
-                (file, output) => {
+            this.outputProcessorMock.Setup(m => m.ProcessOutput(OutputType.SingleFile, It.IsAny<string>(), It.IsAny<Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>())).Callback<OutputType, string, Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>(
+                (outputType, file, output) => {
                     this.output = output;
                 }
             );
 
-            this.processor = new CodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object);
+            this.processor = new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object);
 
         }
 
@@ -94,8 +95,8 @@ namespace p4codechurn.unittests
             var describeMemoryStream1 = new MemoryStream();
             var describeMemoryStream2 = new MemoryStream();
 
-            var changeset1 = new Changeset();
-            var changeset2 = new Changeset();
+            var changeset1 = new PerforceChangeset();
+            var changeset2 = new PerforceChangeset();
 
             this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(changesMemoryStream);
             this.processWrapperMock.Setup(m => m.Invoke("describe", "1")).Returns(describeMemoryStream1);
@@ -118,7 +119,7 @@ namespace p4codechurn.unittests
             var describeMemoryStream2 = new MemoryStream();
             var describeMemoryStream3 = new MemoryStream();
 
-            var changeset1 = new Changeset()
+            var changeset1 = new PerforceChangeset()
             {
                 Timestamp = new DateTime(2018, 07, 05),
                 FileChanges = new List<FileChanges>()
@@ -142,7 +143,7 @@ namespace p4codechurn.unittests
                 }
             };
 
-            var changeset2 = new Changeset()
+            var changeset2 = new PerforceChangeset()
             {
                 Timestamp = new DateTime(2018, 07, 05, 10, 0, 0),
                 FileChanges = new List<FileChanges>()
@@ -158,7 +159,7 @@ namespace p4codechurn.unittests
                 }
             };
 
-            var changeset3 = new Changeset()
+            var changeset3 = new PerforceChangeset()
             {
                 Timestamp = new DateTime(2018, 07, 06, 10, 0, 0),
                 FileChanges = new List<FileChanges>()
@@ -225,8 +226,8 @@ namespace p4codechurn.unittests
             var describeMemoryStream1 = new MemoryStream();
             var describeMemoryStream2 = new MemoryStream();
 
-            var changeset1 = new Changeset();
-            var changeset2 = new Changeset();
+            var changeset1 = new PerforceChangeset();
+            var changeset2 = new PerforceChangeset();
 
             this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(changesMemoryStream);
             this.processWrapperMock.Setup(m => m.Invoke("describe", "1")).Returns(describeMemoryStream1);
@@ -237,7 +238,7 @@ namespace p4codechurn.unittests
 
             this.processor.Extract(OutputType.MultipleFile, "filename", "changes commandline", "describe {0}");
 
-            this.outputProcessorMock.Verify(m => m.ProcessOutputMultipleFile(It.IsAny<string>(), It.IsAny<Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>()), Times.Once());
+            this.outputProcessorMock.Verify(m => m.ProcessOutput(OutputType.MultipleFile, It.IsAny<string>(), It.IsAny<Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>()), Times.Once());
         }
 
         [Fact]
@@ -247,8 +248,8 @@ namespace p4codechurn.unittests
             var describeMemoryStream1 = new MemoryStream();
             var describeMemoryStream2 = new MemoryStream();
 
-            var changeset1 = new Changeset();
-            var changeset2 = new Changeset();
+            var changeset1 = new PerforceChangeset();
+            var changeset2 = new PerforceChangeset();
 
             this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(changesMemoryStream);
             this.processWrapperMock.Setup(m => m.Invoke("describe", "1")).Returns(describeMemoryStream1);

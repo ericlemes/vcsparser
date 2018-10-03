@@ -1,19 +1,14 @@
-﻿using System;
+﻿using p4codechurn.core.p4;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace p4codechurn.core
+namespace p4codechurn.core.p4
 {
-    public enum OutputType
-    {
-        SingleFile,
-        MultipleFile
-    }
-
-    public class CodeChurnProcessor
+    public class PerforceCodeChurnProcessor
     {
         private IProcessWrapper processWrapper;
         private IChangesParser changesParser;
@@ -22,8 +17,9 @@ namespace p4codechurn.core
         private ILogger logger;
         private IStopWatch stopWatch;
         private IOutputProcessor outputProcessor;
+        private ChangesetProcessor changesetProcessor;
 
-        public CodeChurnProcessor(IProcessWrapper processWrapper, IChangesParser changesParser, IDescribeParser describeParser, ICommandLineParser commandLineParser, ILogger logger, IStopWatch stopWatch, IOutputProcessor outputProcessor)
+        public PerforceCodeChurnProcessor(IProcessWrapper processWrapper, IChangesParser changesParser, IDescribeParser describeParser, ICommandLineParser commandLineParser, ILogger logger, IStopWatch stopWatch, IOutputProcessor outputProcessor)
         {
             this.processWrapper = processWrapper;
             this.changesParser = changesParser;
@@ -32,6 +28,7 @@ namespace p4codechurn.core
             this.logger = logger;
             this.stopWatch = stopWatch;
             this.outputProcessor = outputProcessor;
+            this.changesetProcessor = new ChangesetProcessor();
         }
 
         private IList<int> ParseChangeSets(string changesCommandLine)
@@ -47,8 +44,7 @@ namespace p4codechurn.core
         {
             var changes = ParseChangeSets(changesCommandLine);
 
-            this.logger.LogToConsole(String.Format("Found {0} changesets to parse", changes.Count));
-            Dictionary<DateTime, Dictionary<string, DailyCodeChurn>> dict = new Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>();
+            this.logger.LogToConsole(String.Format("Found {0} changesets to parse", changes.Count));            
             
             int i = 0;
             this.stopWatch.Restart();
@@ -58,16 +54,13 @@ namespace p4codechurn.core
                 ReportProgressAfterOneMinute(i, changes);                
 
                 var cmd = commandLineParser.ParseCommandLine(String.Format(describeCommandLine, change));
-                ProcessChurn(dict, describeParser.Parse(this.processWrapper.Invoke(cmd.Item1, cmd.Item2)));
+                changesetProcessor.ProcessChangeset(describeParser.Parse(this.processWrapper.Invoke(cmd.Item1, cmd.Item2)));
 
                 i++;
             }
             this.stopWatch.Stop();
-
-            if (outputType == OutputType.SingleFile)
-                this.outputProcessor.ProcessOutputSingleFile(outputFileNameOrFilePrefix, dict);
-            else
-                this.outputProcessor.ProcessOutputMultipleFile(outputFileNameOrFilePrefix, dict);
+                        
+            this.outputProcessor.ProcessOutput(outputType, outputFileNameOrFilePrefix, this.changesetProcessor.Output);
         }
 
         private void ReportProgressAfterOneMinute(int currentChangeset, IList<int> changes)
@@ -77,30 +70,6 @@ namespace p4codechurn.core
                 this.logger.LogToConsole(String.Format("Processed {0}/{1} changesets", currentChangeset, changes.Count));
                 this.stopWatch.Restart();
             }
-        }
-
-        private void ProcessChurn(Dictionary<DateTime, Dictionary<string, DailyCodeChurn>> dict, Changeset changeset)
-        {
-            if (changeset == null)
-                return;
-
-            if (!dict.ContainsKey(changeset.Timestamp.Date))
-                dict.Add(changeset.Timestamp.Date, new Dictionary<string, DailyCodeChurn>());
-
-            foreach (var c in changeset.FileChanges)
-            {
-                if (!dict[changeset.Timestamp.Date].ContainsKey(c.FileName))
-                    dict[changeset.Timestamp.Date].Add(c.FileName, new DailyCodeChurn());
-
-                var dailyCodeChurn = dict[changeset.Timestamp.Date][c.FileName];
-                dailyCodeChurn.Timestamp = changeset.Timestamp.Date.ToString(DailyCodeChurn.DATE_FORMAT);
-                dailyCodeChurn.FileName = c.FileName;
-                dailyCodeChurn.Added += c.Added;
-                dailyCodeChurn.Deleted += c.Deleted;
-                dailyCodeChurn.ChangesBefore += c.ChangedBefore;
-                dailyCodeChurn.ChangesAfter += c.ChangedAfter;
-                dailyCodeChurn.NumberOfChanges += 1;
-            }            
         }
     }
 }

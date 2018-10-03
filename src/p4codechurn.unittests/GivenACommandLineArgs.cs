@@ -12,11 +12,11 @@ namespace p4codechurn.unittests
     public class GivenACommandLineArgs
     {
         [Fact]
-        public void WhenParsingExtractArgsShouldReturnExpectedValues()
+        public void WhenParsingp4ExtractArgsShouldReturnExpectedValues()
         {
             var args = new List<string>()
             {
-                "extract",
+                "p4extract",
                 "--changes",
                 "changes",
                 "--describe",
@@ -27,9 +27,9 @@ namespace p4codechurn.unittests
                 "MultipleFile"
             };
 
-            Parser.Default.ParseArguments<ExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
+            Parser.Default.ParseArguments<P4ExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
                 .MapResult(
-                (ExtractCommandLineArgs a) => {
+                (P4ExtractCommandLineArgs a) => {
                     Assert.Equal("changes", a.P4ChangesCommandLine);
                     Assert.Equal("describe", a.P4DescribeCommandLine);
                     Assert.Equal("output", a.OutputFile);
@@ -40,6 +40,34 @@ namespace p4codechurn.unittests
                 (IEnumerable<Error> errs) => {
                     throw new Exception("Should not fail.");
                 } );
+        }
+
+        [Fact]
+        public void WhenParsingGitExtractArgsShouldReturnExpectedValues()
+        {
+            var args = new List<string>()
+            {
+                "gitextract",
+                "--gitlogcommand",
+                "gitlogcommand",
+                "--output",
+                "output",
+                "--output-type",
+                "MultipleFile"
+            };
+
+            Parser.Default.ParseArguments<GitExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
+                .MapResult(
+                (GitExtractCommandLineArgs a) => {
+                    Assert.Equal("gitlogcommand", a.GitLogCommand);                    
+                    Assert.Equal("output", a.OutputFile);
+                    Assert.Equal(OutputType.MultipleFile, a.OutputType);
+                    return 0;
+                },
+                (SonarGenericMetricsCommandLineArgs a) => { return 0; },
+                (IEnumerable<Error> errs) => {
+                    throw new Exception("Should not fail.");
+                });
         }
 
         [Fact]
@@ -70,9 +98,9 @@ namespace p4codechurn.unittests
                 "false"
             };
 
-            Parser.Default.ParseArguments<ExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
+            Parser.Default.ParseArguments<P4ExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
                 .MapResult(
-                (ExtractCommandLineArgs a) =>
+                (P4ExtractCommandLineArgs a) =>
                 {
                     return 0;
                 },
@@ -109,9 +137,9 @@ namespace p4codechurn.unittests
                 "outputfile"
             };
 
-            Parser.Default.ParseArguments<ExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
+            Parser.Default.ParseArguments<P4ExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
                 .MapResult(
-                (ExtractCommandLineArgs a) =>
+                (P4ExtractCommandLineArgs a) =>
                 {
                     return 0;
                 },

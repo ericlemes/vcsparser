@@ -1,0 +1,9 @@
+commit 82419fcdc1fca1f8b14905366159837bfe8a1be4
+Author:     Author Name <author@email.com>
+AuthorDate: 2018-09-19T14:19:14+01:00
+Commit:     Author Name <author@email.com>
+CommitDate: 2018-09-19T14:19:14+01:00
+
+    Commit message 1
+
+-	-	src/dir1/File1.cs

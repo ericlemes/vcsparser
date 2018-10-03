@@ -42,8 +42,9 @@ namespace p4codechurn.core
         }
 
         public void ProcessOutputMultipleFile(string filePrefix, Dictionary<DateTime, Dictionary<string, DailyCodeChurn>> dict)
-        {
+        {            
             var listOfLists = ConvertDictToOrderedListPerDay(dict);
+            logger.LogToConsole(listOfLists.Count + " files to output");
             foreach (var list in listOfLists)
                 ProcessOutputSingleFile(filePrefix + "_" + list.Key.ToString("yyyy-MM-dd") + ".csv", list.Value.Values);
         }
@@ -71,6 +72,14 @@ namespace p4codechurn.core
                     if (b.Value.TotalLinesChanged > 0)
                         sortedList.Add(b.Value, b.Value);
             return sortedList.Values;
+        }
+
+        public void ProcessOutput(OutputType outputType, string outputFile, Dictionary<DateTime, Dictionary<string, DailyCodeChurn>> dict)
+        {            
+            if (outputType == OutputType.SingleFile)
+                ProcessOutputSingleFile(outputFile, dict);
+            else
+                ProcessOutputMultipleFile(outputFile, dict);
         }
     }
 }

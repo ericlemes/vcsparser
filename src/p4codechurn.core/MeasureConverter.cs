@@ -77,6 +77,9 @@ namespace p4codechurn.core
 
         private string ProcessFileName(string fileName, string filePrefixToRemove)
         {
+            if (filePrefixToRemove == null)
+                return fileName;
+
             if (fileName.StartsWith(filePrefixToRemove))
                 return fileName.Substring(filePrefixToRemove.Length);
 

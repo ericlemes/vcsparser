@@ -124,5 +124,77 @@ namespace p4codechurn.unittests {
                 return ResourceManager.GetString("DescribeFile4", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to commit 82419fcdc1fca1f8b14905366159837bfe8a1be4
+        ///Author:     Author Name &lt;author@email.com&gt;
+        ///AuthorDate: 2018-09-19T14:19:14+01:00
+        ///Commit:     Author Name &lt;author@email.com&gt;
+        ///CommitDate: 2018-09-19T14:19:14+01:00
+        ///
+        ///    Commit message 1
+        ///    
+        ///    * Long description 1 line 1
+        ///    * Long description 1 line 2
+        ///
+        ///1	1	src/dir1/File1.cs
+        ///10	1	src/dir1/File2.cs
+        ///1	10	src/dir1/File3.cs
+        ///
+        ///commit 31b45b8417418c3562d19eab8830ed786ac40f40
+        ///Author:     Author Name &lt;author@email.com&gt;
+        ///AuthorDate: 2018-09-18T16:48:22+01:00
+        ///Commit:      [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string GitExample1 {
+            get {
+                return ResourceManager.GetString("GitExample1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to commit 82419fcdc1fca1f8b14905366159837bfe8a1be4
+        ///Author:     Author Name &lt;author@email.com&gt;
+        ///AuthorDate: 2018-09-19T14:19:14+01:00
+        ///Commit:     Author Name &lt;author@email.com&gt;
+        ///CommitDate: 2018-09-19T14:19:14+01:00
+        ///
+        ///    Commit message 1
+        ///
+        ///-	-	src/dir1/File1.cs
+        ///.
+        /// </summary>
+        internal static string GitExample2 {
+            get {
+                return ResourceManager.GetString("GitExample2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to commit a6050ba9b8a09b972193832395fa51b3ca582068
+        ///Author:     Eric Lemes &lt;ericlemes@gmail.com&gt;
+        ///AuthorDate: 2018-10-02 14:24:42 +0100
+        ///Commit:     Eric Lemes &lt;ericlemes@gmail.com&gt;
+        ///CommitDate: 2018-10-02 14:24:42 +0100
+        ///
+        ///    Adds new test1 with 3 lines.
+        ///
+        ///3	0	test1.txt
+        ///
+        ///commit cdd4e75b9228de601391c216c7f02eb13006f4c1
+        ///Author:     Eric Lemes &lt;ericlemes@gmail.com&gt;
+        ///AuthorDate: 2018-10-02 14:24:17 +0100
+        ///Commit:     Eric Lemes &lt;ericlemes@gmail.com&gt;
+        ///CommitDate: 2018-10-02 14:24:17 +0100
+        ///
+        ///    Renates test1 to test2
+        ///
+        ///0	0	t [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string GitExample3 {
+            get {
+                return ResourceManager.GetString("GitExample3", resourceCulture);
+            }
+        }
     }
 }

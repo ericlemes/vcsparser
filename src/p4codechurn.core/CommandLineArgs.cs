@@ -7,8 +7,14 @@ using System.Threading.Tasks;
 
 namespace p4codechurn.core
 {
-    [Verb("extract", HelpText = "Extracts code coverage information from p4 and outputs to csv")]
-    public class ExtractCommandLineArgs
+    public enum OutputType
+    {
+        SingleFile,
+        MultipleFile
+    }
+
+    [Verb("p4extract", HelpText = "Extracts code coverage information from p4 and outputs to csv")]
+    public class P4ExtractCommandLineArgs
     {
         [Option("changes", HelpText = "p4 changes command line to get changesets. Usually \"p4 changes -s submitted //path/to/your/depot/...@YYYY/MM/DD,YYYY/MM/DD\" or something similar", Required = true )]
         public string P4ChangesCommandLine { get; set; }
@@ -17,6 +23,19 @@ namespace p4codechurn.core
         public string P4DescribeCommandLine { get; set; }
 
         [Option("output", HelpText ="File path for single file or file prefix for multiple files.", Required = true)]
+        public string OutputFile { get; set; }
+
+        [Option("output-type", HelpText = "SingleFile or MultipleFile. MultipleFile dumps one file per date.", Required = true)]
+        public OutputType OutputType { get; set; }
+    }
+
+    [Verb("gitextract", HelpText = "Extracts code coverage information from git log file and outputs to csv")]
+    public class GitExtractCommandLineArgs
+    {
+        [Option("gitlogcommand", HelpText = "Command line that will be invoked to get git log. Syntax should be similar to: git log --pretty=fuller --date=iso --after=YYYY-MM-DD --numstat ", Required = true)]
+        public string GitLogCommand { get; set; }      
+
+        [Option("output", HelpText = "File path for single file or file prefix for multiple files.", Required = true)]
         public string OutputFile { get; set; }
 
         [Option("output-type", HelpText = "SingleFile or MultipleFile. MultipleFile dumps one file per date.", Required = true)]
@@ -36,7 +55,7 @@ namespace p4codechurn.core
             this.Generate7Days = "";
         }
 
-        [Option("fileprefixtoremove", HelpText = "Prefix to remove from file. Usually repository root", Required = true)]
+        [Option("fileprefixtoremove", HelpText = "Prefix to remove from file. Usually repository root")]
         public string FilePrefixToRemove { get; set; }
 
         [Option("inputdir", HelpText = "Directory with input CSV files", Required = true)]
