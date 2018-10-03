@@ -1,0 +1,20 @@
+﻿using vcsparser.core;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Xunit;
+
+namespace vcsparser.unittests
+{
+    public class GivenAConsoleLog
+    {
+        [Fact]
+        public void WhenLoggingToConsoleShouldNotThrow()
+        {
+            var logger = new ConsoleLogger();
+            logger.LogToConsole("blah");
+        }
+    }
+}

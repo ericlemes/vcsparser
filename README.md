@@ -1,6 +1,8 @@
-# p4codechurn
+# vcsparser
 
-Command line tool to extract code churn metrics from p4 repositories. Parses the output of p4 command line and outputs a csv file with the number of changes per file.
+Command line tool to extract code churn metrics from p4 (Perforce) and Git repositories. Parses the output of p4 command line or git log command line and outputs a csv file with the number of changes per file.
+
+Also reads back the csv files and outputs a json file that can be integrated with SonarQube.
 
 
 # Status
@@ -8,38 +10,40 @@ Command line tool to extract code churn metrics from p4 repositories. Parses the
 | | |
 | --- | --- |
 | **Build** | ![Build status](https://img.shields.io/appveyor/ci/ericlemes/p4codechurn.svg)|
-| **Coverage** | [![codecov](https://codecov.io/gh/ericlemes/p4codechurn/branch/master/graph/badge.svg)](https://codecov.io/gh/ericlemes/p4codechurn) |
+| **Coverage** | [![codecov](https://codecov.io/gh/ericlemes/vcsparser/branch/master/graph/badge.svg)](https://codecov.io/gh/ericlemes/p4codechurn) |
 
 
 # Why?
 
-The idea of this tool is to extract code churn information (number of changes and number of lines changed) for Perforce repositories and either using this information (csv format) or publishing to SonarQube repositories.
+The idea of this tool is to extract code churn information (number of changes and number of lines changed) for Perforce and Git repositories and either using this information (csv format) or publishing to SonarQube repositories.
 
-It seems to be a pretty straightforward task, but since P4 is really slow to extract this information, some workarounds are necessary.
+It seems to be a pretty straightforward task, but since P4 is really slow to extract this information, some workarounds are necessary. Also for Git there are some complexities like file renames which makes the task slightly more difficult (renames are handled).
  
 The main use case is:
 
-- Extract from p4 repositories and keeping the daily csv files on disk
+- Extract from p4 or git repositories and keeping the daily csv files on disk
 - Reading files from disk (appending this information every day) and exporting to a .json file (Sonar Generic Metrics format. https://github.com/ericlemes/sonar-generic-metrics).
 - Publishing to SonarQube using Sonar Generic Metrics.
 
 
 # Some important information
 
-When exporting to SonarQube, it requires that the files referenced inside your .json file is found during the SonarQube analysis. That's what the --fileprefixtoremove is for. 
+When exporting to SonarQube, it requires that the files referenced inside your .json file is found during the SonarQube analysis. That's what the --fileprefixtoremove is for. The same option --fileprefixtoremove is useless for git, since it considers the root by default.
 
 
 # Usage
 
-There are 2 commands for p4codechurn:
+There are 3 commands for p4codechurn:
 
 ```
-  extract                Extracts code coverage information from p4 and outputs to csv
+  p4extract              Extracts code coverage information from p4 and outputs to csv
+
+  gitextract             Extracts code coverage information from git log file and outputs to csv
 
   sonargenericmetrics    Process csv files and outputs to Sonar Generic Metrics JSON format
 ```
 
-The extract command is used to read data from perforce and save to a .csv file. 
+The p4extract command is used to read data from perforce and save to a .csv file. 
 
 ```
   --changes     Required. p4 changes command line to get changesets. Usually "p4 changes -s submitted
@@ -54,6 +58,23 @@ The extract command is used to read data from perforce and save to a .csv file.
   
   --version     Display version information.
 ```
+
+The gitextract command is used to read data from Git repositores and save to a .csv file 
+
+```
+  --gitlogcommand    Required. Command line that will be invoked to get git log. Syntax should be similar to: git log
+                     --pretty=fuller --date=iso --after=YYYY-MM-DD --numstat
+
+  --output           Required. File path for single file or file prefix for multiple files.
+
+  --output-type      Required. SingleFile or MultipleFile. MultipleFile dumps one file per date.
+
+  --help             Display this help screen.
+
+  --version          Display version information.
+```
+
+***It is very important to use the order provided by git by default (newer commits in the beginning). This is necessary to handle renames properly.***
 
 The sonargenericmetrics reads csv files and exports to a .json file in the expected structure of Sonar Generic Metrics (https://github.com/ericlemes/sonar-generic-metrics). 
 

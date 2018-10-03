@@ -1,0 +1,25 @@
+commit 82419fcdc1fca1f8b14905366159837bfe8a1be4
+Author:     Author Name <author@email.com>
+AuthorDate: 2018-09-19T14:19:14+01:00
+Commit:     Author Name <author@email.com>
+CommitDate: 2018-09-19T14:19:14+01:00
+
+    Commit message 1
+    
+    * Long description 1 line 1
+    * Long description 1 line 2
+
+1	1	src/dir1/File1.cs
+10	1	src/dir1/File2.cs
+1	10	src/dir1/File3.cs
+
+commit 31b45b8417418c3562d19eab8830ed786ac40f40
+Author:     Author Name <author@email.com>
+AuthorDate: 2018-09-18T16:48:22+01:00
+Commit:     Author Name <author@email.com>
+CommitDate: 2018-09-18T16:48:22+01:00
+
+    This one only has the commit message. No long description
+
+1	1	src/dir1/File1.cs
+4	3	src/dir2/SomeOtherFile.cs
