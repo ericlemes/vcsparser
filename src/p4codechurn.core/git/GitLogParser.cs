@@ -88,7 +88,7 @@ namespace p4codechurn.core.git
                 case GitLogParserContext.State.ParsingDescription:
                     context.CurrentState = GitLogParserContext.State.ParsingStats;
                     break;
-                case GitLogParserContext.State.ParsingStats:
+                default: //GitLogParserContext.State.ParsingStats
                     context.CurrentState = GitLogParserContext.State.NewCommit;
                     break;
             }
@@ -103,6 +103,8 @@ namespace p4codechurn.core.git
                     break;
                 case GitLogParserContext.State.ParsingStats:
                     ParseStatsLine(context, line);
+                    break;
+                default:
                     break;
             }
         }
