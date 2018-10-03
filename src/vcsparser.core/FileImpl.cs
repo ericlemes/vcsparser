@@ -1,4 +1,4 @@
-﻿namespace p4codechurn.core
+﻿namespace vcsparser.core
 {
     internal class FileImpl : IFile
     {

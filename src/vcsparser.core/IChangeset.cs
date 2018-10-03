@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace p4codechurn.core
+namespace vcsparser.core
 {
     public interface IChangeset
     {
