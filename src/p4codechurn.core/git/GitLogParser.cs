@@ -96,17 +96,10 @@ namespace p4codechurn.core.git
 
         private void ParseStateDependentLine(GitLogParserContext context, String line)
         {
-            switch (context.CurrentState)
-            {
-                case GitLogParserContext.State.ParsingDescription:
-                    context.CurrentCommit.AppendCommitMessage(line.Trim());
-                    break;
-                case GitLogParserContext.State.ParsingStats:
-                    ParseStatsLine(context, line);
-                    break;
-                default:
-                    break;
-            }
+            if (context.CurrentState == GitLogParserContext.State.ParsingDescription)
+                context.CurrentCommit.AppendCommitMessage(line.Trim());
+            else if (context.CurrentState == GitLogParserContext.State.ParsingStats)
+                ParseStatsLine(context, line);                    
         }
 
         private void ParseStatsLine(GitLogParserContext context, String line)
