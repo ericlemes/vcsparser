@@ -15,6 +15,7 @@ namespace vcsparser.core.git
         public readonly String AUTHOR_DATE_PREFIX = "AuthorDate: ";
         public readonly String COMMITER_PREFIX = "Commit: ";
         public readonly String COMMIT_DATE_PREFIX = "CommitDate: ";
+        public readonly String MERGE_PREFIX = "Merge: ";
 
         public List<GitCommit> Parse(Stream stream)
         {
@@ -61,10 +62,15 @@ namespace vcsparser.core.git
             {
                 UpdateState(context);
             }
-            else
+            else if (!IsIgnoredLine(line))
             {
                 ParseStateDependentLine(context, line);
             }
+        }
+
+        private bool IsIgnoredLine(string line)
+        {
+            return line.StartsWith(MERGE_PREFIX);                            
         }
 
         public DateTime Iso8601StringToDateTime(string isoDateTime)

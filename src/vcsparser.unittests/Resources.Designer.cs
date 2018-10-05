@@ -196,5 +196,14 @@ namespace vcsparser.unittests {
                 return ResourceManager.GetString("GitExample3", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string GitExample4 {
+            get {
+                return ResourceManager.GetString("GitExample4", resourceCulture);
+            }
+        }
     }
 }
