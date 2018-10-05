@@ -1,0 +1,30 @@
+commit a6050ba9b8a09b972193832395fa51b3ca582068
+Author:     Eric Lemes <ericlemes@gmail.com>
+AuthorDate: 2018-10-02 14:24:42 +0100
+Commit:     Eric Lemes <ericlemes@gmail.com>
+CommitDate: 2018-10-02 14:24:42 +0100
+
+    Adds new test1 with 3 lines.
+
+3	0	test1.txt
+
+commit cdd4e75b9228de601391c216c7f02eb13006f4c1
+Merge: a10ab01 ccfda51
+Author:     Eric Lemes <ericlemes@gmail.com>
+AuthorDate: 2018-10-02 14:24:17 +0100
+Commit:     Eric Lemes <ericlemes@gmail.com>
+CommitDate: 2018-10-02 14:24:17 +0100
+
+    Renates test1 to test2
+
+0	0	test1.txt => test2.txt
+
+commit 8ee09678bd85d4c0ebb1c39132f4fd3d4c759f62
+Author:     Eric Lemes <ericlemes@gmail.com>
+AuthorDate: 2018-10-02 14:23:43 +0100
+Commit:     Eric Lemes <ericlemes@gmail.com>
+CommitDate: 2018-10-02 14:23:43 +0100
+
+    Adds test1.txt with 1 line
+
+1	0	test1.txt

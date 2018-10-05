@@ -157,6 +157,14 @@ namespace vcsparser.unittests.git
             Assert.Equal("some/root/SomeFile.cpp", context.CurrentCommit.FileRenames["some/root/another/added/dir/SomeFile.cpp"]);
         }
 
+        [Fact]
+        public void WhenParsingMergeShouldNotThrow()
+        {
+            var stream = GetStreamWithContent(Resources.GitExample4);
+
+            this.parser.Parse(stream);
+        }
+
         
 }
 }
