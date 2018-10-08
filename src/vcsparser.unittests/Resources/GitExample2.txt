@@ -6,4 +6,4 @@ CommitDate: 2018-09-19T14:19:14+01:00
 
     Commit message 1
 
--	-	src/dir1/File1.cs
+-	-	src/dir-with-dashes/File1.cs

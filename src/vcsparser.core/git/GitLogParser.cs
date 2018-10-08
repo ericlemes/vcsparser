@@ -111,10 +111,10 @@ namespace vcsparser.core.git
 
         private void ParseStatsLine(GitLogParserContext context, String line)
         {
-            String[] stats = line.Replace('-', '0').Split('\t');
+            String[] stats = line.Split('\t');
             FileChanges file = new FileChanges();
-            file.Added = Convert.ToInt32(stats[0]);
-            file.Deleted = Convert.ToInt32(stats[1]);
+            file.Added = Convert.ToInt32(stats[0].Replace('-', '0'));
+            file.Deleted = Convert.ToInt32(stats[1].Replace('-', '0'));
             file.FileName = ProcessRenames(context, stats[2]);
             context.CurrentCommit.FileChanges.Add(file);
         }
