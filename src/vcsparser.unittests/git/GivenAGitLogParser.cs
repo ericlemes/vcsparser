@@ -108,6 +108,7 @@ namespace vcsparser.unittests.git
 
             GitCommit commit = this.parser.Parse(stream)[0];
             Assert.Single(commit.FileChanges);
+            Assert.Equal("src/dir-with-dashes/File1.cs", commit.FileChanges[0].FileName);
             Assert.Equal(0, commit.FileChanges[0].Added);
             Assert.Equal(0, commit.FileChanges[0].Deleted);
         }
