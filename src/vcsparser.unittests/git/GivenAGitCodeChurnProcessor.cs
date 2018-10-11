@@ -120,5 +120,23 @@ namespace vcsparser.unittests.git
             processor.Extract();
             Assert.Equal(2, processedOutput.Count);
         }
+
+        [Fact]
+        public void WhenExtractingAndHasBugRegexesShouldLogChangesetsWithBugs()
+        {
+            args = new GitExtractCommandLineArgs()
+            {
+                BugRegexes = "bug+",
+                GitLogCommand = "git log blah",
+                OutputType = OutputType.SingleFile,
+                OutputFile = "outputfile"
+            };
+            processor = new GitCodeChurnProcessor(this.commandLineParserMock.Object, this.processWrapperMock.Object, 
+                this.gitLogParserMock.Object, this.outputProcessorMock.Object, this.logger.Object, args);
+
+            processor.Extract();
+
+            this.logger.Verify(m => m.LogToConsole("Changesets with bugs: 0/0"));
+        }
     }
 }

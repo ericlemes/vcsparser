@@ -42,6 +42,8 @@ namespace vcsparser.core
                 measureIndex.Add(measure.MetricKey, new Dictionary<string, Measure>());
             if (!measureIndex[measure.MetricKey].ContainsKey(measure.File))
                 measureIndex[measure.MetricKey].Add(measure.File, measure);
+            else
+                throw new Exception("Measure already exists.");
         }
     }
 }
