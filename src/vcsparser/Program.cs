@@ -41,8 +41,8 @@ namespace vcsparser
 
         private static int RunGitCodeChurnProcessor(GitExtractCommandLineArgs a)
         {            
-            var processor = new GitCodeChurnProcessor(new CommandLineParser(), new ProcessWrapper(), new GitLogParser(), new OutputProcessor(new FileStreamFactory(), new ConsoleLogger()), new ConsoleLogger());
-            processor.Extract(a);
+            var processor = new GitCodeChurnProcessor(new CommandLineParser(), new ProcessWrapper(), new GitLogParser(), new OutputProcessor(new FileStreamFactory(), new ConsoleLogger()), new ConsoleLogger(), a);
+            processor.Extract();
             return 0;
         }
 

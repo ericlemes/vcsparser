@@ -131,6 +131,47 @@ namespace vcsparser.unittests
         }
 
         [Fact]
+        public void WhenConvertingWithinRangeAndLinesChangedWithFixesShouldAppendLinesChangedWithFixes()
+        {
+            this.measureConverter = new MeasureConverter(new DateTime(2018, 9, 17), new DateTime(2018, 9, 18), metric, MeasureConverterType.LinesChangedWithFixes, "//prefix/");
+            var dailyCodeChurn = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "file1",
+                AddedWithFixes = 5,
+                DeletedWithFixes = 10,
+                NumberOfChanges = 1
+            };
+            var measures = new SonarMeasuresJson();
+
+            this.measureConverter.Process(dailyCodeChurn, measures);
+
+            Assert.Equal(dailyCodeChurn.TotalLinesChangedWithFixes,
+                measures.Measures.Where(m => m.MetricKey == "key" && m.File == dailyCodeChurn.FileName).Single().Value);
+        }
+
+        [Fact]
+        public void WhenConvertingWithinRangeAndNumberOfChangesWithFixesShouldAppendNumberOfChangesWithFixes()
+        {
+            this.measureConverter = new MeasureConverter(new DateTime(2018, 9, 17), new DateTime(2018, 9, 18), metric, MeasureConverterType.NumberOfChangesWithFixes, "//prefix/");
+            var dailyCodeChurn = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "file1",
+                AddedWithFixes = 5,
+                DeletedWithFixes = 10,
+                NumberOfChanges = 0,
+                NumberOfChangesWithFixes = 1
+            };
+            var measures = new SonarMeasuresJson();
+
+            this.measureConverter.Process(dailyCodeChurn, measures);
+
+            Assert.Equal(dailyCodeChurn.NumberOfChangesWithFixes,
+                measures.Measures.Where(m => m.MetricKey == "key" && m.File == dailyCodeChurn.FileName).Single().Value);
+        }
+
+        [Fact]
         public void WhenConvertingAndThereIsExistingDataSouldKeepExistingData()
         {            
             var dailyCodeChurn = new DailyCodeChurn()
@@ -156,11 +197,27 @@ namespace vcsparser.unittests
         }
 
         [Fact]
-        public void WhenConvertingAndOutOfRangeShouldDoNothing()
+        public void WhenConvertingAndAfterRangeShouldDoNothing()
         {            
             var dailyCodeChurn = new DailyCodeChurn()
             {
                 Timestamp = "2018/09/18 12:00:00",
+                FileName = "file1",
+                Added = 10,
+                Deleted = 10
+            };
+            var measures = new SonarMeasuresJson();
+            this.measureConverter.Process(dailyCodeChurn, measures);
+
+            Assert.Empty(measures.Measures);
+        }
+
+        [Fact]
+        public void WhenConvertingAndBeforeRangeShouldDoNothing()
+        {
+            var dailyCodeChurn = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/16 12:00:00",
                 FileName = "file1",
                 Added = 10,
                 Deleted = 10
@@ -199,7 +256,7 @@ namespace vcsparser.unittests
                 Deleted = 10
             };
             var measures = new SonarMeasuresJson();
-            measures.Measures.Add(new Measure()
+            measures.AddMeasure(new Measure()
             {
                 MetricKey = "key",
                 File = "file1",

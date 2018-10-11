@@ -31,20 +31,38 @@ namespace vcsparser.core
 
         public int Added { get; set; }
 
+        public int AddedWithFixes { get; set; }
+
         public int Deleted { get; set; }
+
+        public int DeletedWithFixes { get; set; }
 
         public int ChangesBefore { get; set; }
 
+        public int ChangesBeforeWithFixes { get; set; }
+
         public int ChangesAfter { get; set; }
+
+        public int ChangesAfterWithFixes { get; set; }
+
         public int TotalLinesChanged
         {
             get
             {
                 return Added + Deleted + ChangesAfter + ChangesBefore;
             }
+        }        
+        public int TotalLinesChangedWithFixes
+        {
+            get
+            {
+                return AddedWithFixes + DeletedWithFixes + ChangesAfterWithFixes + ChangesBeforeWithFixes;
+            }
         }
 
         public int NumberOfChanges { get; set; }
+
+        public int NumberOfChangesWithFixes { get; set; }
 
         public int CompareTo(object obj)
         {

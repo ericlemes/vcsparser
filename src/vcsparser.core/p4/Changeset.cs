@@ -18,12 +18,16 @@ namespace vcsparser.core.p4
 
         public DateTime Timestamp { get; set; }
 
-        public string ChangeDescrition { get; set; }
+        public string Message { get; set; }
 
         public List<FileChanges> FileChanges { get; set; }
 
         public Dictionary<string, string> FileRenames { get; set; }
 
+        public object CommitIdentifier
+        {
+            get { return ChangesetNumber; }
+        }
 
         public PerforceChangeset()
         {

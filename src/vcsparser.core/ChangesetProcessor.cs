@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace vcsparser.core
@@ -16,6 +17,26 @@ namespace vcsparser.core
 
         private Dictionary<string, string> renameCache = new Dictionary<string, string>();
 
+        private List<Regex> bugRegexes;        
+
+        private ILogger logger;
+
+        public int ChangesetsWithBugs
+        {
+            get; private set;
+        }
+
+        public ChangesetProcessor(string bugRegexes, ILogger logger)
+        {
+            this.bugRegexes = new List<Regex>();
+            if (bugRegexes != null)
+            {
+                foreach (var r in bugRegexes.Split(';'))
+                    this.bugRegexes.Add(new Regex(r));
+            }            
+            this.logger = logger;
+        }
+
         public void ProcessChangeset(IChangeset changeset)
         {
             if (changeset == null)
@@ -25,6 +46,8 @@ namespace vcsparser.core
 
             if (!dict.ContainsKey(changeset.Timestamp.Date))
                 dict.Add(changeset.Timestamp.Date, new Dictionary<string, DailyCodeChurn>());
+
+            bool containsBugs = CheckAndIncrementIfChangesetContainsBug(changeset);            
 
             foreach (var c in changeset.FileChanges)
             {
@@ -41,7 +64,29 @@ namespace vcsparser.core
                 dailyCodeChurn.ChangesBefore += c.ChangedBefore;
                 dailyCodeChurn.ChangesAfter += c.ChangedAfter;
                 dailyCodeChurn.NumberOfChanges += 1;
-            }
+                if (containsBugs)
+                {
+                    dailyCodeChurn.NumberOfChangesWithFixes++;
+                    dailyCodeChurn.AddedWithFixes += c.Added;
+                    dailyCodeChurn.DeletedWithFixes += c.Deleted;
+                    dailyCodeChurn.ChangesBeforeWithFixes += c.ChangedBefore;
+                    dailyCodeChurn.ChangesAfterWithFixes += c.ChangedAfter;
+                }
+            }            
+        }
+
+        private bool CheckAndIncrementIfChangesetContainsBug(IChangeset changeset)
+        {
+            if (String.IsNullOrEmpty(changeset.Message)) 
+                return false;
+
+            foreach (var regex in this.bugRegexes)
+                if (regex.IsMatch(changeset.Message))
+                {
+                    ChangesetsWithBugs++;
+                    return true;
+                }
+            return false;
         }
 
         private void UpdateRenameCache(IChangeset changeset)

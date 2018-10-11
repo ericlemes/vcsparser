@@ -29,7 +29,7 @@ namespace vcsparser.core.p4
             if (line.StartsWith("Change "))
                 ParseHeader(line, changeset);
             else if (line.StartsWith("\t"))
-                changeset.ChangeDescrition = line.Substring(1);
+                changeset.Message = line.Substring(1);
             else if (line.StartsWith("===="))
                 ParseNewFileChanges(ref currentFileChanges, line, changeset);
             else if (line.StartsWith("add "))

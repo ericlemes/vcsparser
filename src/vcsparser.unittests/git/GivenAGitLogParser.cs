@@ -54,7 +54,7 @@ namespace vcsparser.unittests.git
             Assert.Equal(new DateTime(2018, 09, 19, 14, 19, 14), commit.AuthorDate);
             Assert.Equal("Author Name <author@email.com>", commit.Commiter);
             Assert.Equal(new DateTime(2018, 09, 19, 14, 19, 14), commit.CommiterDate);
-            Assert.Equal("Commit message 1\r\n\r\n* Long description 1 line 1\r\n* Long description 1 line 2\r\n", commit.CommitMessage);
+            Assert.Equal("Commit message 1\r\n\r\n* Long description 1 line 1\r\n* Long description 1 line 2\r\n", commit.Message);
         }
 
         [Fact]
@@ -67,7 +67,7 @@ namespace vcsparser.unittests.git
             Assert.Equal(new DateTime(2018, 09, 18, 16, 48, 22), commit.AuthorDate);
             Assert.Equal("Author Name <author@email.com>", commit.Commiter);
             Assert.Equal(new DateTime(2018, 09, 18, 16, 48, 22), commit.CommiterDate);
-            Assert.Equal("This one only has the commit message. No long description\r\n", commit.CommitMessage);
+            Assert.Equal("This one only has the commit message. No long description\r\n", commit.Message);
         }
         
         [Fact]

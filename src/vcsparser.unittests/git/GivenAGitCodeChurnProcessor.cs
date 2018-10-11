@@ -59,13 +59,13 @@ namespace vcsparser.unittests.git
 
             this.logger = new Mock<ILogger>();
 
-            processor = new GitCodeChurnProcessor(this.commandLineParserMock.Object, this.processWrapperMock.Object, gitLogParserMock.Object, outputProcessorMock.Object, logger.Object);            
+            processor = new GitCodeChurnProcessor(this.commandLineParserMock.Object, this.processWrapperMock.Object, gitLogParserMock.Object, outputProcessorMock.Object, logger.Object, args);            
         }
 
         [Fact]
         public void WhenExtractingShouldInvokeCommandLine()
         {
-            processor.Extract(args);
+            processor.Extract();
             
             processWrapperMock.Verify(m => m.Invoke("git", "log blah"), Times.Once());            
         }
@@ -73,7 +73,7 @@ namespace vcsparser.unittests.git
         [Fact]
         public void WhenExtractingShouldParseFile()
         {
-            processor.Extract(args);
+            processor.Extract();
             gitLogParserMock.Verify(m => m.Parse(this.memoryStream), Times.Once());
         }
 
@@ -117,8 +117,26 @@ namespace vcsparser.unittests.git
 
             gitLogParserMock.Setup(m => m.Parse(this.memoryStream)).Returns(changesets);
             
-            processor.Extract(args);
+            processor.Extract();
             Assert.Equal(2, processedOutput.Count);
+        }
+
+        [Fact]
+        public void WhenExtractingAndHasBugRegexesShouldLogChangesetsWithBugs()
+        {
+            args = new GitExtractCommandLineArgs()
+            {
+                BugRegexes = "bug+",
+                GitLogCommand = "git log blah",
+                OutputType = OutputType.SingleFile,
+                OutputFile = "outputfile"
+            };
+            processor = new GitCodeChurnProcessor(this.commandLineParserMock.Object, this.processWrapperMock.Object, 
+                this.gitLogParserMock.Object, this.outputProcessorMock.Object, this.logger.Object, args);
+
+            processor.Extract();
+
+            this.logger.Verify(m => m.LogToConsole("Changesets with bugs: 0/0"));
         }
     }
 }

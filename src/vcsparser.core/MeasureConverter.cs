@@ -9,7 +9,9 @@ namespace vcsparser.core
     public enum MeasureConverterType
     {
         LinesChanged,
-        NumberOfChanges
+        NumberOfChanges,
+        LinesChangedWithFixes,
+        NumberOfChangesWithFixes
     }
 
     public class MeasureConverter : IMeasureConverter
@@ -53,16 +55,16 @@ namespace vcsparser.core
 
             ProcessMetric(sonarMeasuresJson);
 
-            var value = this.type == MeasureConverterType.LinesChanged ? dailyCodeChurn.TotalLinesChanged : dailyCodeChurn.NumberOfChanges;
+            var value = GetValue(dailyCodeChurn);
             if (value <= 0)
                 return;
 
             var fileName = ProcessFileName(dailyCodeChurn.FileName, filePrefixToRemove);
 
-            var existingMeasure = sonarMeasuresJson.Measures.Where(m => m.MetricKey == metric.MetricKey && m.File == fileName);
-            if (existingMeasure.Count() == 0)
+            var existingMeasure = sonarMeasuresJson.FindMeasure(metric.MetricKey, fileName);
+            if (existingMeasure == null)
             {
-                sonarMeasuresJson.Measures.Add(new Measure()
+                sonarMeasuresJson.AddMeasure(new Measure()
                 {
                     MetricKey = this.metric.MetricKey,
                     File = fileName,
@@ -71,7 +73,21 @@ namespace vcsparser.core
             }
             else
             {
-                existingMeasure.First().Value += value;
+                existingMeasure.Value += value;
+            }
+        }
+
+        private int GetValue(DailyCodeChurn dailyCodeChurn)
+        {
+            switch (this.type) {
+                case MeasureConverterType.LinesChanged:
+                    return dailyCodeChurn.TotalLinesChanged;                    
+                case MeasureConverterType.NumberOfChanges:
+                    return dailyCodeChurn.NumberOfChanges;
+                case MeasureConverterType.LinesChangedWithFixes:
+                    return dailyCodeChurn.TotalLinesChangedWithFixes;
+                default:
+                    return dailyCodeChurn.NumberOfChangesWithFixes;
             }
         }
 

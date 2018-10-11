@@ -85,6 +85,10 @@
     <Compile Include="git\GivenAGitCodeChurnProcessor.cs" />
     <Compile Include="git\GivenAGitLogParser.cs" />
     <Compile Include="GivenAChangesetProcessor.cs" />
+    <Compile Include="git\GivenAGitCommit.cs" />
+    <Compile Include="GivenARegex.cs" />
+    <Compile Include="GivenASonarMeasuresJson.cs" />
+    <Compile Include="p4\GivenAPerforceChangeset.cs" />
     <Compile Include="p4\GivenAChangesParser.cs" />
     <Compile Include="p4\GivenAPerforceCodeChurnProcessor.cs" />
     <Compile Include="GivenACommandLineArgs.cs" />

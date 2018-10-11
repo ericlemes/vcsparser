@@ -28,7 +28,7 @@ namespace vcsparser.core.p4
             this.logger = logger;
             this.stopWatch = stopWatch;
             this.outputProcessor = outputProcessor;
-            this.changesetProcessor = new ChangesetProcessor();
+            this.changesetProcessor = new ChangesetProcessor("", this.logger);
         }
 
         private IList<int> ParseChangeSets(string changesCommandLine)
