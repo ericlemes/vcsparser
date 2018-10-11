@@ -197,11 +197,27 @@ namespace vcsparser.unittests
         }
 
         [Fact]
-        public void WhenConvertingAndOutOfRangeShouldDoNothing()
+        public void WhenConvertingAndAfterRangeShouldDoNothing()
         {            
             var dailyCodeChurn = new DailyCodeChurn()
             {
                 Timestamp = "2018/09/18 12:00:00",
+                FileName = "file1",
+                Added = 10,
+                Deleted = 10
+            };
+            var measures = new SonarMeasuresJson();
+            this.measureConverter.Process(dailyCodeChurn, measures);
+
+            Assert.Empty(measures.Measures);
+        }
+
+        [Fact]
+        public void WhenConvertingAndBeforeRangeShouldDoNothing()
+        {
+            var dailyCodeChurn = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/16 12:00:00",
                 FileName = "file1",
                 Added = 10,
                 Deleted = 10
