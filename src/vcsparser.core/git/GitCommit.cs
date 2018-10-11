@@ -26,6 +26,7 @@ namespace vcsparser.core.git
         {
             this.FileChanges = new List<FileChanges>();
             this.FileRenames = new Dictionary<string, string>();
+            this.Message = "";
         }
 
         public string Author { get; set; }
@@ -33,11 +34,13 @@ namespace vcsparser.core.git
         public DateTime CommiterDate { get; set; }
         public Dictionary<string, string> FileRenames { get; set; }
 
-        public string CommitMessage = "";
+        public string Message { get; set; }
+
+        public object CommitIdentifier { get { return CommitHash; } }
 
         public void AppendCommitMessage(string line)
         {
-            CommitMessage += line + Environment.NewLine;            
+            Message += line + Environment.NewLine;            
         }
     }
 }

@@ -71,6 +71,35 @@ namespace vcsparser.unittests
         }
 
         [Fact]
+        public void WhenParsingGitExtractArgsWithBugOptionsShouldReturnExpectedValues()
+        {
+            var args = new List<string>()
+            {
+                "gitextract",
+                "--gitlogcommand",
+                "gitlogcommand",
+                "--output",
+                "output",
+                "--output-type",
+                "MultipleFile",
+                "--bugregexes",
+                "regex1; regex2; regex3"
+            };
+
+            Parser.Default.ParseArguments<GitExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
+                .MapResult(
+                (GitExtractCommandLineArgs a) => {
+                    Assert.Equal("regex1; regex2; regex3", a.BugRegexes);                    
+                    Assert.Equal(OutputType.MultipleFile, a.OutputType);
+                    return 0;
+                },
+                (SonarGenericMetricsCommandLineArgs a) => { return 0; },
+                (IEnumerable<Error> errs) => {
+                    throw new Exception("Should not fail.");
+                });
+        }
+
+        [Fact]
         public void WhenParsingSonarGenericMetricsArgsShouldReturnExpectedValues()
         {
             var args = new List<string>()

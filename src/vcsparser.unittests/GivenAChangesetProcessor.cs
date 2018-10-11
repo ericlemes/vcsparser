@@ -7,16 +7,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using System.Text.RegularExpressions;
 
 namespace vcsparser.unittests
 {
     public class GivenAChangesetProcessor
     {
-        private ChangesetProcessor changesetProcessor;        
+        private ChangesetProcessor changesetProcessor;
+
+        private Mock<ILogger> loggerMock;
 
         public GivenAChangesetProcessor()
         {
-            this.changesetProcessor = new ChangesetProcessor();
+            this.loggerMock = new Mock<ILogger>();
+            this.changesetProcessor = new ChangesetProcessor("", this.loggerMock.Object);            
         }
 
         private GitCommit CreateCommitWithAddedLines(string fileName, int addedLines)
@@ -126,6 +130,19 @@ namespace vcsparser.unittests
 
             Assert.Equal(40, GetOutputFor("file2").Added);
         }
+
+        [Fact]
+        public void WhenProcessingChangesetAndHasBugRegexesShouldEvaluateBugRegexes()
+        {            
+            this.changesetProcessor = new ChangesetProcessor(@"gramolias+;bug+", this.loggerMock.Object);
+            var c = CreateCommitWithAddedLines("file2", 10);
+            c.FileChanges[0].Deleted = 5;
+            c.Message= "This is a comment a newline \n\r and a bug";
+            this.changesetProcessor.ProcessChangeset(c);
+            Assert.Equal(1, GetOutputFor("file2").NumberOfChangesWithFixes);
+            Assert.Equal(15, GetOutputFor("file2").TotalLinesChangedWithFixes);
+        }
+        
     }
 
     

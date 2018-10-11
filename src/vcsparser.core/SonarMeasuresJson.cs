@@ -21,7 +21,27 @@ namespace vcsparser.core
             get; set;
         }
 
+        private Dictionary<string, Dictionary<string, Measure>> measureIndex = new Dictionary<string, Dictionary<string, Measure>>();
+
         [JsonProperty("metrics")]
         public List<Metric> Metrics { get; set; }
+
+        public Measure FindMeasure(string metricKey, string fileName)
+        {
+            if (!measureIndex.ContainsKey(metricKey))
+                return null;
+            if (!measureIndex[metricKey].ContainsKey(fileName))
+                return null;
+            return measureIndex[metricKey][fileName];            
+        }
+
+        public void AddMeasure(Measure measure)
+        {
+            this.Measures.Add(measure);
+            if (!measureIndex.ContainsKey(measure.MetricKey))
+                measureIndex.Add(measure.MetricKey, new Dictionary<string, Measure>());
+            if (!measureIndex[measure.MetricKey].ContainsKey(measure.File))
+                measureIndex[measure.MetricKey].Add(measure.File, measure);
+        }
     }
 }
