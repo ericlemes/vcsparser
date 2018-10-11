@@ -142,7 +142,19 @@ namespace vcsparser.unittests
             Assert.Equal(1, GetOutputFor("file2").NumberOfChangesWithFixes);
             Assert.Equal(15, GetOutputFor("file2").TotalLinesChangedWithFixes);
         }
-        
+
+        [Fact]
+        public void WhenProcessingChangesetAndHasBugRegexesThatDoesnotMatchShouldNotCountAsBug()
+        {
+            this.changesetProcessor = new ChangesetProcessor(@"gramolias+;bug+", this.loggerMock.Object);
+            var c = CreateCommitWithAddedLines("file2", 10);
+            c.FileChanges[0].Deleted = 5;
+            c.Message = "This is a comment a newline new feature";
+            this.changesetProcessor.ProcessChangeset(c);
+            Assert.Equal(0, GetOutputFor("file2").NumberOfChangesWithFixes);
+            Assert.Equal(0, GetOutputFor("file2").TotalLinesChangedWithFixes);
+        }
+
     }
 
     
