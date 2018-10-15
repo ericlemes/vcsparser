@@ -27,7 +27,7 @@ namespace vcsparser.unittests
         {
             return new GitCommit()
             {
-                AuthorDate = new DateTime(2018, 10, 2),
+                CommiterDate = new DateTime(2018, 10, 2),
                 FileChanges = new List<FileChanges>()
                 {
                     new FileChanges()
@@ -43,7 +43,7 @@ namespace vcsparser.unittests
         {
             return new GitCommit()
             {
-                AuthorDate = new DateTime(2018, 10, 2),
+                CommiterDate = new DateTime(2018, 10, 2),
                 FileChanges = new List<FileChanges>()
                 {
                     new FileChanges()
