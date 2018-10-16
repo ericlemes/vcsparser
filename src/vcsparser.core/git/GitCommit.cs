@@ -17,7 +17,7 @@ namespace vcsparser.core.git
 
         public DateTime Timestamp
         {
-            get { return this.AuthorDate; }
+            get { return this.CommiterDate; }
         }
 
         public string CommitHash { get; set; }
