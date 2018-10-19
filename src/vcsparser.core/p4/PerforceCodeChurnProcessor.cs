@@ -19,7 +19,7 @@ namespace vcsparser.core.p4
         private IOutputProcessor outputProcessor;
         private ChangesetProcessor changesetProcessor;
 
-        public PerforceCodeChurnProcessor(IProcessWrapper processWrapper, IChangesParser changesParser, IDescribeParser describeParser, ICommandLineParser commandLineParser, ILogger logger, IStopWatch stopWatch, IOutputProcessor outputProcessor)
+        public PerforceCodeChurnProcessor(IProcessWrapper processWrapper, IChangesParser changesParser, IDescribeParser describeParser, ICommandLineParser commandLineParser, ILogger logger, IStopWatch stopWatch, IOutputProcessor outputProcessor, string bugRegexes)
         {
             this.processWrapper = processWrapper;
             this.changesParser = changesParser;
@@ -28,7 +28,7 @@ namespace vcsparser.core.p4
             this.logger = logger;
             this.stopWatch = stopWatch;
             this.outputProcessor = outputProcessor;
-            this.changesetProcessor = new ChangesetProcessor("", this.logger);
+            this.changesetProcessor = new ChangesetProcessor(bugRegexes, this.logger);
         }
 
         private IList<int> ParseChangeSets(string changesCommandLine)

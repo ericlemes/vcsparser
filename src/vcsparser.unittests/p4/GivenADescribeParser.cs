@@ -39,7 +39,7 @@ namespace vcsparser.unittests
             Assert.Equal(141284, result.ChangesetNumber);
             Assert.Equal("author.name@author.name_workspace-machine", result.Author);
             Assert.Equal(new DateTime(2018, 06, 29, 18, 57, 47), result.Timestamp);
-            Assert.Equal("Long description of the change set", result.Message);
+            Assert.Equal("Long description of the change set" + Environment.NewLine + "with multiple lines" + Environment.NewLine, result.Message);
 
             Assert.Equal("//depot/Dir1/Dir2/EntityModel/AuctionNotification.cpp", result.FileChanges[0].FileName);
             Assert.Equal(1, result.FileChanges[0].Added);

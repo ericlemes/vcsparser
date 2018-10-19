@@ -1,6 +1,7 @@
 Change 141284 by author.name@author.name_workspace-machine on 2018/06/29 18:57:47
 
 	Long description of the change set
+	with multiple lines
 
 Affected files ...
 

@@ -43,6 +43,40 @@ namespace vcsparser.unittests
         }
 
         [Fact]
+        public void WhenParsingp4ExtractWithBugRegexesArgsShouldReturnExpectedValues()
+        {
+            var args = new List<string>()
+            {
+                "p4extract",
+                "--changes",
+                "changes",
+                "--describe",
+                "describe",
+                "--output",
+                "output",
+                "--output-type",
+                "MultipleFile",
+                "--bugregexes",
+                "regex1; regex2; regex3"
+            };
+
+            Parser.Default.ParseArguments<P4ExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
+                .MapResult(
+                (P4ExtractCommandLineArgs a) => {
+                    Assert.Equal("changes", a.P4ChangesCommandLine);
+                    Assert.Equal("describe", a.P4DescribeCommandLine);
+                    Assert.Equal("output", a.OutputFile);
+                    Assert.Equal(OutputType.MultipleFile, a.OutputType);
+                    Assert.Equal("regex1; regex2; regex3", a.BugRegexes);
+                    return 0;
+                },
+                (SonarGenericMetricsCommandLineArgs a) => { return 0; },
+                (IEnumerable<Error> errs) => {
+                    throw new Exception("Should not fail.");
+                });
+        }
+
+        [Fact]
         public void WhenParsingGitExtractArgsShouldReturnExpectedValues()
         {
             var args = new List<string>()
