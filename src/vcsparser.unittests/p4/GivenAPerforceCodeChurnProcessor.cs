@@ -50,7 +50,7 @@ namespace vcsparser.unittests
                 }
             );
 
-            this.processor = new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object);
+            this.processor = new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object, null);
 
         }
 

@@ -25,6 +25,9 @@ namespace vcsparser.core
         [Option("output", HelpText ="File path for single file or file prefix for multiple files.", Required = true)]
         public string OutputFile { get; set; }
 
+        [Option("bugregexes", HelpText = "Regexes, separated by semi colon (;) to identify if this changeset is a bug fix")]
+        public string BugRegexes { get; set; }
+
         [Option("output-type", HelpText = "SingleFile or MultipleFile. MultipleFile dumps one file per date.", Required = true)]
         public OutputType OutputType { get; set; }
     }

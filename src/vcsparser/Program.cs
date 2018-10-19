@@ -33,7 +33,7 @@ namespace vcsparser
             var logger = new ConsoleLogger();
             var stopWatch = new StopWatchWrapper();
             var outputProcessor = new OutputProcessor(new FileStreamFactory(), logger);
-            var processor = new PerforceCodeChurnProcessor(processWrapper, changesParser, describeParser, commandLineParser, logger, stopWatch, outputProcessor);
+            var processor = new PerforceCodeChurnProcessor(processWrapper, changesParser, describeParser, commandLineParser, logger, stopWatch, outputProcessor, a.BugRegexes);
 
             processor.Extract(a.OutputType, a.OutputFile, a.P4ChangesCommandLine, a.P4DescribeCommandLine);
                 return 0;

@@ -34,5 +34,10 @@ namespace vcsparser.core.p4
             this.FileChanges = new List<FileChanges>();
             this.FileRenames = new Dictionary<string, string>();
         }
+
+        internal void AppendMessage(string msg)
+        {
+            Message += msg + Environment.NewLine;
+        }
     }
 }
