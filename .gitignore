@@ -10,3 +10,7 @@
 /src/vcsparser.unittests/bin
 /src/vcsparser.core/*.user
 /src/vcsparser/*.user
+/src/vcsparser.PowerShell.unittests/bin
+/src/vcsparser.PowerShell.unittests/obj
+/src/vcsparser.PowerShell/bin
+/src/vcsparser.PowerShell/obj
