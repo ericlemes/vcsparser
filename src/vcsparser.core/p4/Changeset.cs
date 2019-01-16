@@ -16,28 +16,33 @@ namespace vcsparser.core.p4
 
         public string AuthorWorkspace { get; set; }
 
-        public DateTime Timestamp { get; set; }
+        public DateTime ChangesetTimestamp { get; set; }
 
-        public string Message { get; set; }
+        public string ChangesetMessage { get; set; }
 
-        public List<FileChanges> FileChanges { get; set; }
+        public List<FileChanges> ChangesetFileChanges { get; set; }
 
-        public Dictionary<string, string> FileRenames { get; set; }
+        public Dictionary<string, string> ChangesetFileRenames { get; set; }
 
-        public object CommitIdentifier
+        public object ChangesetIdentifier
         {
             get { return ChangesetNumber; }
         }
 
+        public string ChangesetAuthor
+        {
+            get { return this.AuthorName; }
+        }
+
         public PerforceChangeset()
         {
-            this.FileChanges = new List<FileChanges>();
-            this.FileRenames = new Dictionary<string, string>();
+            this.ChangesetFileChanges = new List<FileChanges>();
+            this.ChangesetFileRenames = new Dictionary<string, string>();
         }
 
         internal void AppendMessage(string msg)
         {
-            Message += msg + Environment.NewLine;
+            ChangesetMessage += msg + Environment.NewLine;
         }
     }
 }

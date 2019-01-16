@@ -15,7 +15,7 @@ namespace vcsparser.unittests
         {
             var c = new GitCommit();
             c.CommitHash = "a";
-            Assert.Equal("a", c.CommitIdentifier);
+            Assert.Equal("a", c.ChangesetIdentifier);
         }
     }
 }

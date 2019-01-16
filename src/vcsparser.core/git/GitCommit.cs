@@ -9,38 +9,43 @@ namespace vcsparser.core.git
 {
     public class GitCommit : IChangeset
     {
-        public List<FileChanges> FileChanges { get; set; }
+        public List<FileChanges> ChangesetFileChanges { get; set; }
 
         public DateTime AuthorDate {
             get; set;
         }
 
-        public DateTime Timestamp
+        public DateTime ChangesetTimestamp
         {
             get { return this.CommiterDate; }
+        }
+
+        public string ChangesetAuthor
+        {
+            get { return this.Commiter; }
         }
 
         public string CommitHash { get; set; }
 
         public GitCommit()
         {
-            this.FileChanges = new List<FileChanges>();
-            this.FileRenames = new Dictionary<string, string>();
-            this.Message = "";
+            this.ChangesetFileChanges = new List<FileChanges>();
+            this.ChangesetFileRenames = new Dictionary<string, string>();
+            this.ChangesetMessage = "";
         }
 
         public string Author { get; set; }
         public string Commiter { get; set; }
         public DateTime CommiterDate { get; set; }
-        public Dictionary<string, string> FileRenames { get; set; }
+        public Dictionary<string, string> ChangesetFileRenames { get; set; }
 
-        public string Message { get; set; }
+        public string ChangesetMessage { get; set; }
 
-        public object CommitIdentifier { get { return CommitHash; } }
+        public object ChangesetIdentifier { get { return CommitHash; } }
 
         public void AppendCommitMessage(string line)
         {
-            Message += line + Environment.NewLine;            
+            ChangesetMessage += line + Environment.NewLine;            
         }
     }
 }

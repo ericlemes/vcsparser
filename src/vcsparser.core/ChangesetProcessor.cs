@@ -44,20 +44,20 @@ namespace vcsparser.core
 
             UpdateRenameCache(changeset);
 
-            if (!dict.ContainsKey(changeset.Timestamp.Date))
-                dict.Add(changeset.Timestamp.Date, new Dictionary<string, DailyCodeChurn>());
+            if (!dict.ContainsKey(changeset.ChangesetTimestamp.Date))
+                dict.Add(changeset.ChangesetTimestamp.Date, new Dictionary<string, DailyCodeChurn>());
 
             bool containsBugs = CheckAndIncrementIfChangesetContainsBug(changeset);            
 
-            foreach (var c in changeset.FileChanges)
+            foreach (var c in changeset.ChangesetFileChanges)
             {
                 var fileName = GetFileNameConsideringRenames(c.FileName);
 
-                if (!dict[changeset.Timestamp.Date].ContainsKey(fileName))
-                    dict[changeset.Timestamp.Date].Add(fileName, new DailyCodeChurn());
+                if (!dict[changeset.ChangesetTimestamp.Date].ContainsKey(fileName))
+                    dict[changeset.ChangesetTimestamp.Date].Add(fileName, new DailyCodeChurn());
 
-                var dailyCodeChurn = dict[changeset.Timestamp.Date][fileName];
-                dailyCodeChurn.Timestamp = changeset.Timestamp.Date.ToString(DailyCodeChurn.DATE_FORMAT);
+                var dailyCodeChurn = dict[changeset.ChangesetTimestamp.Date][fileName];
+                dailyCodeChurn.Timestamp = changeset.ChangesetTimestamp.Date.ToString(DailyCodeChurn.DATE_FORMAT);
                 dailyCodeChurn.FileName = fileName;
                 dailyCodeChurn.Added += c.Added;
                 dailyCodeChurn.Deleted += c.Deleted;
@@ -77,11 +77,11 @@ namespace vcsparser.core
 
         private bool CheckAndIncrementIfChangesetContainsBug(IChangeset changeset)
         {
-            if (String.IsNullOrEmpty(changeset.Message)) 
+            if (String.IsNullOrEmpty(changeset.ChangesetMessage)) 
                 return false;
 
             foreach (var regex in this.bugRegexes)
-                if (regex.IsMatch(changeset.Message))
+                if (regex.IsMatch(changeset.ChangesetMessage))
                 {
                     ChangesetsWithBugs++;
                     return true;
@@ -91,7 +91,7 @@ namespace vcsparser.core
 
         private void UpdateRenameCache(IChangeset changeset)
         {            
-            foreach (var pair in changeset.FileRenames) {
+            foreach (var pair in changeset.ChangesetFileRenames) {
                 string value = GetDestinationFileFollowingRenames(pair.Value);
 
                 if (!renameCache.ContainsKey(pair.Key)) 

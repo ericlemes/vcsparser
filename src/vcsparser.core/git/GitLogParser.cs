@@ -116,7 +116,7 @@ namespace vcsparser.core.git
             file.Added = Convert.ToInt32(stats[0].Replace('-', '0'));
             file.Deleted = Convert.ToInt32(stats[1].Replace('-', '0'));
             file.FileName = ProcessRenames(context, stats[2]);
-            context.CurrentCommit.FileChanges.Add(file);
+            context.CurrentCommit.ChangesetFileChanges.Add(file);
         }
 
         public string ProcessRenames(GitLogParserContext context, string fileName)
@@ -137,7 +137,7 @@ namespace vcsparser.core.git
             oldFileName = fileName.Replace(stringToReplace, oldFileName).Replace("//", "/");
             newFileName = fileName.Replace(stringToReplace, newFileName).Replace("//", "/");
 
-            context.CurrentCommit.FileRenames.Add(newFileName, oldFileName);
+            context.CurrentCommit.ChangesetFileRenames.Add(newFileName, oldFileName);
 
             return newFileName;
         }

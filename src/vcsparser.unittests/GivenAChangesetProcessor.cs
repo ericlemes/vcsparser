@@ -28,7 +28,7 @@ namespace vcsparser.unittests
             return new GitCommit()
             {
                 CommiterDate = new DateTime(2018, 10, 2),
-                FileChanges = new List<FileChanges>()
+                ChangesetFileChanges = new List<FileChanges>()
                 {
                     new FileChanges()
                     {
@@ -44,14 +44,14 @@ namespace vcsparser.unittests
             return new GitCommit()
             {
                 CommiterDate = new DateTime(2018, 10, 2),
-                FileChanges = new List<FileChanges>()
+                ChangesetFileChanges = new List<FileChanges>()
                 {
                     new FileChanges()
                     {
                         FileName = newFileName
                     }
                 },
-                FileRenames = new Dictionary<string, string>()
+                ChangesetFileRenames = new Dictionary<string, string>()
                 {
                     {oldFileName, newFileName }
                 }
@@ -136,8 +136,8 @@ namespace vcsparser.unittests
         {            
             this.changesetProcessor = new ChangesetProcessor(@"gramolias+;bug+", this.loggerMock.Object);
             var c = CreateCommitWithAddedLines("file2", 10);
-            c.FileChanges[0].Deleted = 5;
-            c.Message= "This is a comment a newline \n\r and a bug";
+            c.ChangesetFileChanges[0].Deleted = 5;
+            c.ChangesetMessage= "This is a comment a newline \n\r and a bug";
             this.changesetProcessor.ProcessChangeset(c);
             Assert.Equal(1, GetOutputFor("file2").NumberOfChangesWithFixes);
             Assert.Equal(15, GetOutputFor("file2").TotalLinesChangedWithFixes);
@@ -148,13 +148,12 @@ namespace vcsparser.unittests
         {
             this.changesetProcessor = new ChangesetProcessor(@"gramolias+;bug+", this.loggerMock.Object);
             var c = CreateCommitWithAddedLines("file2", 10);
-            c.FileChanges[0].Deleted = 5;
-            c.Message = "This is a comment a newline new feature";
+            c.ChangesetFileChanges[0].Deleted = 5;
+            c.ChangesetMessage = "This is a comment a newline new feature";
             this.changesetProcessor.ProcessChangeset(c);
             Assert.Equal(0, GetOutputFor("file2").NumberOfChangesWithFixes);
             Assert.Equal(0, GetOutputFor("file2").TotalLinesChangedWithFixes);
         }
-
     }
 
     
