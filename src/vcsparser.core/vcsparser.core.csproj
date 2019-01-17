@@ -33,9 +33,6 @@
     <Reference Include="CommandLine, Version=2.2.1.0, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
       <HintPath>..\packages\CommandLineParser.2.2.1\lib\net45\CommandLine.dll</HintPath>
     </Reference>
-    <Reference Include="CsvHelper, Version=7.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
-      <HintPath>..\packages\CsvHelper.7.1.1\lib\net45\CsvHelper.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -69,7 +66,7 @@
     <Compile Include="CommandLineArgs.cs" />
     <Compile Include="CommandLineParser.cs" />
     <Compile Include="ConsoleLogger.cs" />
-    <Compile Include="CsvParser.cs" />
+    <Compile Include="JsonDailyCodeChurnParser.cs" />
     <Compile Include="DailyCodeChurn.cs" />
     <Compile Include="p4\DescribeParser.cs" />
     <Compile Include="EnvironmentImpl.cs" />
@@ -80,7 +77,7 @@
     <Compile Include="IChangeset.cs" />
     <Compile Include="p4\IChangesParser.cs" />
     <Compile Include="ICommandLineParser.cs" />
-    <Compile Include="ICsvParser.cs" />
+    <Compile Include="IDailyCodeChurnParser.cs" />
     <Compile Include="p4\IDescribeParser.cs" />
     <Compile Include="IEnvironment.cs" />
     <Compile Include="IFile.cs" />

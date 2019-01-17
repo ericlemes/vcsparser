@@ -94,7 +94,7 @@
     <Compile Include="GivenACommandLineArgs.cs" />
     <Compile Include="GivenACommandLineParser.cs" />
     <Compile Include="GivenAConsoleLog.cs" />
-    <Compile Include="GivenACsvParser.cs" />
+    <Compile Include="GivenAJsonDailyCodeChurnParser.cs" />
     <Compile Include="GivenADailyCodeChurn.cs" />
     <Compile Include="p4\GivenADescribeParser.cs" />
     <Compile Include="GivenAFileStreamFactory.cs" />

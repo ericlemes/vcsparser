@@ -84,6 +84,7 @@ namespace vcsparser.unittests.git
             {
                 new GitCommit()
                 {
+                    Commiter = "author1",
                     CommiterDate = new DateTime(2018, 10, 2, 15, 30, 00),
                     ChangesetFileChanges = new List<FileChanges>()
                     {
@@ -102,6 +103,7 @@ namespace vcsparser.unittests.git
                 },
                 new GitCommit()
                 {
+                    Commiter = "author1",
                     CommiterDate = new DateTime(2018, 10, 1, 12, 00, 00),
                     ChangesetFileChanges = new List<FileChanges>()
                     {

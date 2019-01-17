@@ -64,6 +64,8 @@ namespace vcsparser.core
                 dailyCodeChurn.ChangesBefore += c.ChangedBefore;
                 dailyCodeChurn.ChangesAfter += c.ChangedAfter;
                 dailyCodeChurn.NumberOfChanges += 1;
+                if (!dailyCodeChurn.Authors.Where(a => a.ToUpper() == changeset.ChangesetAuthor.ToUpper()).Any())
+                    dailyCodeChurn.Authors.Add(changeset.ChangesetAuthor);
                 if (containsBugs)
                 {
                     dailyCodeChurn.NumberOfChangesWithFixes++;

@@ -10,6 +10,11 @@ namespace vcsparser.core
 {
     public class DailyCodeChurn : IComparable
     {
+        public DailyCodeChurn()
+        {
+            this.Authors = new List<string>();
+        }
+
         public static readonly string DATE_FORMAT = "yyyy/MM/dd HH:mm:ss";
 
         private string timestamp = "";
@@ -64,6 +69,10 @@ namespace vcsparser.core
 
         public int NumberOfChangesWithFixes { get; set; }
 
+        private Dictionary<string, bool> AuthorsDict = new Dictionary<string, bool>();
+
+        public List<string> Authors { get; set; }
+
         public int CompareTo(object obj)
         {
             DailyCodeChurn dest = (DailyCodeChurn)obj;
@@ -80,6 +89,5 @@ namespace vcsparser.core
             return DateTime.ParseExact(this.Timestamp, DATE_FORMAT, CultureInfo.InvariantCulture);
         }
 
-        
     }
 }

@@ -27,6 +27,7 @@ namespace vcsparser.unittests
         {
             return new GitCommit()
             {
+                Commiter = "defaultcommiter",
                 CommiterDate = new DateTime(2018, 10, 2),
                 ChangesetFileChanges = new List<FileChanges>()
                 {
@@ -43,6 +44,7 @@ namespace vcsparser.unittests
         {
             return new GitCommit()
             {
+                Commiter = "defaultcommiter",
                 CommiterDate = new DateTime(2018, 10, 2),
                 ChangesetFileChanges = new List<FileChanges>()
                 {
@@ -153,6 +155,49 @@ namespace vcsparser.unittests
             this.changesetProcessor.ProcessChangeset(c);
             Assert.Equal(0, GetOutputFor("file2").NumberOfChangesWithFixes);
             Assert.Equal(0, GetOutputFor("file2").TotalLinesChangedWithFixes);
+        }
+
+        [Fact]
+        public void WhenProcessingChangesetShouldAppendAuthor()
+        {
+            var c = CreateCommitWithAddedLines("file1", 10);
+            c.Commiter = "author1";
+            this.changesetProcessor.ProcessChangeset(c);
+            Assert.Equal("author1", GetOutputFor("file1").Authors[0]);
+            Assert.Single(GetOutputFor("file1").Authors);
+        }
+
+        [Fact]
+        public void WhenProcessingMultipleChangesetsShouldAppendAuthors()
+        {
+            var c = CreateCommitWithAddedLines("file1", 10);
+            c.Commiter = "author1";
+            this.changesetProcessor.ProcessChangeset(c);
+
+            c = CreateCommitWithAddedLines("file1", 10);
+            c.Commiter = "author2";
+            this.changesetProcessor.ProcessChangeset(c);
+
+            //It will return in ascending order, ignoring added order.
+            Assert.Equal("author1", GetOutputFor("file1").Authors[0]);
+            Assert.Equal("author2", GetOutputFor("file1").Authors[1]);
+            Assert.Equal(2, GetOutputFor("file1").Authors.Count);
+        }
+
+        [Fact]
+        public void WhenProcessingMultipleChangesetsShouldHaveDistinctAuthors()
+        {
+            var c = CreateCommitWithAddedLines("file1", 10);
+            c.Commiter = "author1";
+            this.changesetProcessor.ProcessChangeset(c);
+
+            c = CreateCommitWithAddedLines("file1", 10);
+            c.Commiter = "AUTHOR1"; //case-insensitive
+            this.changesetProcessor.ProcessChangeset(c);
+
+            //It will return in ascending order, ignoring added order.
+            Assert.Equal("author1", GetOutputFor("file1").Authors[0]);            
+            Assert.Single(GetOutputFor("file1").Authors);
         }
     }
 
