@@ -163,7 +163,8 @@ namespace vcsparser.unittests
             var c = CreateCommitWithAddedLines("file1", 10);
             c.Commiter = "author1";
             this.changesetProcessor.ProcessChangeset(c);
-            Assert.Equal("author1", GetOutputFor("file1").Authors[0]);
+            Assert.Equal("author1", GetOutputFor("file1").Authors[0].Author);
+            Assert.Equal(1, GetOutputFor("file1").Authors[0].NumberOfChanges);
             Assert.Single(GetOutputFor("file1").Authors);
         }
 
@@ -179,8 +180,10 @@ namespace vcsparser.unittests
             this.changesetProcessor.ProcessChangeset(c);
 
             //It will return in ascending order, ignoring added order.
-            Assert.Equal("author1", GetOutputFor("file1").Authors[0]);
-            Assert.Equal("author2", GetOutputFor("file1").Authors[1]);
+            Assert.Equal("author1", GetOutputFor("file1").Authors[0].Author);
+            Assert.Equal(1, GetOutputFor("file1").Authors[0].NumberOfChanges);
+            Assert.Equal("author2", GetOutputFor("file1").Authors[1].Author);
+            Assert.Equal(1, GetOutputFor("file1").Authors[1].NumberOfChanges);
             Assert.Equal(2, GetOutputFor("file1").Authors.Count);
         }
 
@@ -196,7 +199,8 @@ namespace vcsparser.unittests
             this.changesetProcessor.ProcessChangeset(c);
 
             //It will return in ascending order, ignoring added order.
-            Assert.Equal("author1", GetOutputFor("file1").Authors[0]);            
+            Assert.Equal("author1", GetOutputFor("file1").Authors[0].Author);
+            Assert.Equal(2, GetOutputFor("file1").Authors[0].NumberOfChanges);
             Assert.Single(GetOutputFor("file1").Authors);
         }
     }

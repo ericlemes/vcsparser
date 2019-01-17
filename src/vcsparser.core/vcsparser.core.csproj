@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChangesetProcessor.cs" />
+    <Compile Include="DailyCodeChurnAuthor.cs" />
     <Compile Include="git\GitCodeChurnProcessor.cs" />
     <Compile Include="git\GitCommit.cs" />
     <Compile Include="git\GitLogParser.cs" />

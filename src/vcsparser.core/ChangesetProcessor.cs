@@ -51,30 +51,64 @@ namespace vcsparser.core
 
             foreach (var c in changeset.ChangesetFileChanges)
             {
-                var fileName = GetFileNameConsideringRenames(c.FileName);
+                ProcessFileChange(changeset, containsBugs, c);
+            }
+        }
 
-                if (!dict[changeset.ChangesetTimestamp.Date].ContainsKey(fileName))
-                    dict[changeset.ChangesetTimestamp.Date].Add(fileName, new DailyCodeChurn());
+        private void ProcessFileChange(IChangeset changeset, bool containsBugs, FileChanges c)
+        {
+            var fileName = GetFileNameConsideringRenames(c.FileName);
 
-                var dailyCodeChurn = dict[changeset.ChangesetTimestamp.Date][fileName];
-                dailyCodeChurn.Timestamp = changeset.ChangesetTimestamp.Date.ToString(DailyCodeChurn.DATE_FORMAT);
-                dailyCodeChurn.FileName = fileName;
-                dailyCodeChurn.Added += c.Added;
-                dailyCodeChurn.Deleted += c.Deleted;
-                dailyCodeChurn.ChangesBefore += c.ChangedBefore;
-                dailyCodeChurn.ChangesAfter += c.ChangedAfter;
-                dailyCodeChurn.NumberOfChanges += 1;
-                if (!dailyCodeChurn.Authors.Where(a => a.ToUpper() == changeset.ChangesetAuthor.ToUpper()).Any())
-                    dailyCodeChurn.Authors.Add(changeset.ChangesetAuthor);
-                if (containsBugs)
+            DailyCodeChurn dailyCodeChurn = FindOrCreateDailyCodeChurnForFileAndDate(changeset, fileName);
+
+            ProcessChanges(c, dailyCodeChurn);
+            ProcessAuthor(changeset, dailyCodeChurn);
+            if (containsBugs)
+            {
+                ProcessChangesInFixes(c, dailyCodeChurn);
+            }
+        }
+
+        private DailyCodeChurn FindOrCreateDailyCodeChurnForFileAndDate(IChangeset changeset, string fileName)
+        {
+            if (!dict[changeset.ChangesetTimestamp.Date].ContainsKey(fileName))
+                dict[changeset.ChangesetTimestamp.Date].Add(fileName, new DailyCodeChurn());
+
+            var dailyCodeChurn = dict[changeset.ChangesetTimestamp.Date][fileName];
+            dailyCodeChurn.Timestamp = changeset.ChangesetTimestamp.Date.ToString(DailyCodeChurn.DATE_FORMAT);
+            dailyCodeChurn.FileName = fileName;
+            return dailyCodeChurn;
+        }
+
+        private static void ProcessChanges(FileChanges c, DailyCodeChurn dailyCodeChurn)
+        {
+            dailyCodeChurn.Added += c.Added;
+            dailyCodeChurn.Deleted += c.Deleted;
+            dailyCodeChurn.ChangesBefore += c.ChangedBefore;
+            dailyCodeChurn.ChangesAfter += c.ChangedAfter;
+            dailyCodeChurn.NumberOfChanges += 1;
+        }
+
+        private static void ProcessChangesInFixes(FileChanges c, DailyCodeChurn dailyCodeChurn)
+        {
+            dailyCodeChurn.NumberOfChangesWithFixes++;
+            dailyCodeChurn.AddedWithFixes += c.Added;
+            dailyCodeChurn.DeletedWithFixes += c.Deleted;
+            dailyCodeChurn.ChangesBeforeWithFixes += c.ChangedBefore;
+            dailyCodeChurn.ChangesAfterWithFixes += c.ChangedAfter;
+        }
+
+        private static void ProcessAuthor(IChangeset changeset, DailyCodeChurn dailyCodeChurn)
+        {
+            var author = dailyCodeChurn.Authors.Where(a => a.Author.ToUpper() == changeset.ChangesetAuthor.ToUpper()).FirstOrDefault();
+            if (author != null)
+                author.NumberOfChanges++;
+            else            
+                dailyCodeChurn.Authors.Add(new DailyCodeChurnAuthor()
                 {
-                    dailyCodeChurn.NumberOfChangesWithFixes++;
-                    dailyCodeChurn.AddedWithFixes += c.Added;
-                    dailyCodeChurn.DeletedWithFixes += c.Deleted;
-                    dailyCodeChurn.ChangesBeforeWithFixes += c.ChangedBefore;
-                    dailyCodeChurn.ChangesAfterWithFixes += c.ChangedAfter;
-                }
-            }            
+                    Author = changeset.ChangesetAuthor,
+                    NumberOfChanges = 1
+                });
         }
 
         private bool CheckAndIncrementIfChangesetContainsBug(IChangeset changeset)

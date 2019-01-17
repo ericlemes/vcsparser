@@ -12,7 +12,7 @@ namespace vcsparser.core
     {
         public DailyCodeChurn()
         {
-            this.Authors = new List<string>();
+            this.Authors = new List<DailyCodeChurnAuthor>();
         }
 
         public static readonly string DATE_FORMAT = "yyyy/MM/dd HH:mm:ss";
@@ -71,7 +71,7 @@ namespace vcsparser.core
 
         private Dictionary<string, bool> AuthorsDict = new Dictionary<string, bool>();
 
-        public List<string> Authors { get; set; }
+        public List<DailyCodeChurnAuthor> Authors { get; set; }
 
         public int CompareTo(object obj)
         {

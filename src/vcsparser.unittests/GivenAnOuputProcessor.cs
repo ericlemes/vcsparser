@@ -46,7 +46,18 @@ namespace vcsparser.unittests
                                 Deleted = 4,
                                 FileName = "abc",
                                 Timestamp = "2018/08/30 00:00:00",
-                                Authors = new List<string>() { "author1", "author2" }
+                                Authors = new List<DailyCodeChurnAuthor>() {
+                                    new DailyCodeChurnAuthor()
+                                    {
+                                        Author = "author1",
+                                        NumberOfChanges = 1
+                                    },
+                                    new DailyCodeChurnAuthor()
+                                    {
+                                        Author = "author2",
+                                        NumberOfChanges = 2
+                                    }                                    
+                                }
                             }
                         }
                     }
@@ -73,7 +84,7 @@ namespace vcsparser.unittests
                 "\"TotalLinesChangedWithFixes\":0," +
                 "\"NumberOfChanges\":0," +
                 "\"NumberOfChangesWithFixes\":0," +
-                "\"Authors\":[\"author1\",\"author2\"]}]", resultString);
+                "\"Authors\":[{\"Author\":\"author1\",\"NumberOfChanges\":1},{\"Author\":\"author2\",\"NumberOfChanges\":2}]}]", resultString);
         }
 
         [Fact]
