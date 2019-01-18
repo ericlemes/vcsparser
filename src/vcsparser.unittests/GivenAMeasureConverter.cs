@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using Moq;
 
 namespace vcsparser.unittests
 {
@@ -12,12 +13,22 @@ namespace vcsparser.unittests
     {
         private MeasureConverter measureConverter;
         private Metric metric;
+        private Mock<IMeasureAggregator> mockMeasureAggregator;
 
         public GivenAMeasureConverter()
         {
             metric = new Metric();
             metric.MetricKey = "key";
-            this.measureConverter = new MeasureConverter(new DateTime(2018, 9, 17), new DateTime(2018, 9, 18), metric, MeasureConverterType.LinesChanged, "//prefix/");
+
+            this.mockMeasureAggregator = new Mock<IMeasureAggregator>();
+            this.mockMeasureAggregator.Setup(m => m.HasValue(It.IsAny<DailyCodeChurn>())).
+                Returns((DailyCodeChurn d) => d.TotalLinesChanged > 0);
+            this.mockMeasureAggregator.Setup(m => m.GetValueForNewMeasure(It.IsAny<DailyCodeChurn>())).
+                Returns((DailyCodeChurn d) => d.TotalLinesChanged);
+            this.mockMeasureAggregator.Setup(m => m.GetValueForExistingMeasure(It.IsAny<DailyCodeChurn>(), It.IsAny<Measure>())).
+                Returns((DailyCodeChurn d, Measure existingMeasure) => d.TotalLinesChanged + existingMeasure.Value);
+
+            this.measureConverter = new MeasureConverter(new DateTime(2018, 9, 17), new DateTime(2018, 9, 18), metric, mockMeasureAggregator.Object, "//prefix/");
         }
 
         [Fact]
@@ -76,7 +87,7 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenConvertingWithinRangeAndNoFilePrefixShouldConvert()
         {
-            this.measureConverter = new MeasureConverter(new DateTime(2018, 9, 17), new DateTime(2018, 9, 18), metric, MeasureConverterType.LinesChanged, null);
+            this.measureConverter = new MeasureConverter(new DateTime(2018, 9, 17), new DateTime(2018, 9, 18), metric, mockMeasureAggregator.Object, null);
             var dailyCodeChurn = new DailyCodeChurn()
             {
                 Timestamp = "2018/09/17 00:00:00",
@@ -108,67 +119,6 @@ namespace vcsparser.unittests
 
             Assert.Equal(dailyCodeChurn.TotalLinesChanged, 
                 measures.Measures.Where(m => m.MetricKey == "key" && m.File == dailyCodeChurn.FileName).Single().Value);            
-        }
-
-        [Fact]
-        public void WhenConvertingWithinRangeAndNumChangesShouldAppendNumChanges()
-        {
-            this.measureConverter = new MeasureConverter(new DateTime(2018, 9, 17), new DateTime(2018, 9, 18), metric, MeasureConverterType.NumberOfChanges, "//prefix/");
-            var dailyCodeChurn = new DailyCodeChurn()
-            {
-                Timestamp = "2018/09/17 00:00:00",
-                FileName = "file1",
-                Added = 0,
-                Deleted = 0,
-                NumberOfChanges = 1
-            };
-            var measures = new SonarMeasuresJson();
-
-            this.measureConverter.Process(dailyCodeChurn, measures);
-
-            Assert.Equal(dailyCodeChurn.NumberOfChanges,
-                measures.Measures.Where(m => m.MetricKey == "key" && m.File == dailyCodeChurn.FileName).Single().Value);
-        }
-
-        [Fact]
-        public void WhenConvertingWithinRangeAndLinesChangedWithFixesShouldAppendLinesChangedWithFixes()
-        {
-            this.measureConverter = new MeasureConverter(new DateTime(2018, 9, 17), new DateTime(2018, 9, 18), metric, MeasureConverterType.LinesChangedWithFixes, "//prefix/");
-            var dailyCodeChurn = new DailyCodeChurn()
-            {
-                Timestamp = "2018/09/17 00:00:00",
-                FileName = "file1",
-                AddedWithFixes = 5,
-                DeletedWithFixes = 10,
-                NumberOfChanges = 1
-            };
-            var measures = new SonarMeasuresJson();
-
-            this.measureConverter.Process(dailyCodeChurn, measures);
-
-            Assert.Equal(dailyCodeChurn.TotalLinesChangedWithFixes,
-                measures.Measures.Where(m => m.MetricKey == "key" && m.File == dailyCodeChurn.FileName).Single().Value);
-        }
-
-        [Fact]
-        public void WhenConvertingWithinRangeAndNumberOfChangesWithFixesShouldAppendNumberOfChangesWithFixes()
-        {
-            this.measureConverter = new MeasureConverter(new DateTime(2018, 9, 17), new DateTime(2018, 9, 18), metric, MeasureConverterType.NumberOfChangesWithFixes, "//prefix/");
-            var dailyCodeChurn = new DailyCodeChurn()
-            {
-                Timestamp = "2018/09/17 00:00:00",
-                FileName = "file1",
-                AddedWithFixes = 5,
-                DeletedWithFixes = 10,
-                NumberOfChanges = 0,
-                NumberOfChangesWithFixes = 1
-            };
-            var measures = new SonarMeasuresJson();
-
-            this.measureConverter.Process(dailyCodeChurn, measures);
-
-            Assert.Equal(dailyCodeChurn.NumberOfChangesWithFixes,
-                measures.Measures.Where(m => m.MetricKey == "key" && m.File == dailyCodeChurn.FileName).Single().Value);
         }
 
         [Fact]

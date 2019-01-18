@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using vcsparser.core.MeasureAggregators;
 
 namespace vcsparser.unittests
 {
@@ -75,12 +76,16 @@ namespace vcsparser.unittests
             var linesChangedMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_METRIC_KEY+ "_1d").First();
             var changesWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.CHANGES_FIXES_METRIC_KEY + "_1d").First();
             var linesChangedWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_FIXES_METRIC_KEY + "_1d").First();
+            Assert.IsType<NumberOfChangesMeasureAggregator>(changesMeasure.MeasureAggregator);
             Assert.Equal(new DateTime(2018, 9, 16, 00, 00, 00), changesMeasure.StartDate);
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesMeasure.EndDate);
+            Assert.IsType<LinesChangedMeasureAggregator>(linesChangedMeasure.MeasureAggregator);
             Assert.Equal(new DateTime(2018, 9, 16, 00, 00, 00), linesChangedMeasure.StartDate);
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedMeasure.EndDate);
+            Assert.IsType<NumberOfChangesWithFixesMeasureAggregator>(changesWithFixesMeasure.MeasureAggregator);
             Assert.Equal(new DateTime(2018, 9, 16, 00, 00, 00), changesWithFixesMeasure.StartDate);
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesWithFixesMeasure.EndDate);
+            Assert.IsType<LinesChangedWithFixesMeasureAggregator>(linesChangedWithFixesMeasure.MeasureAggregator);
             Assert.Equal(new DateTime(2018, 9, 16, 00, 00, 00), linesChangedWithFixesMeasure.StartDate);
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedWithFixesMeasure.EndDate);
         }
@@ -98,12 +103,16 @@ namespace vcsparser.unittests
             var linesChangedMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_METRIC_KEY + "_1y").First();
             var changesWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.CHANGES_FIXES_METRIC_KEY + "_1y").First();
             var linesChangedWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_FIXES_METRIC_KEY + "_1y").First();
+            Assert.IsType<NumberOfChangesMeasureAggregator>(changesMeasure.MeasureAggregator);
             Assert.Equal(new DateTime(2017, 9, 16, 00, 00, 00), changesMeasure.StartDate);
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesMeasure.EndDate);
+            Assert.IsType<LinesChangedMeasureAggregator>(linesChangedMeasure.MeasureAggregator);
             Assert.Equal(new DateTime(2017, 9, 16, 00, 00, 00), linesChangedMeasure.StartDate);
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedMeasure.EndDate);
+            Assert.IsType<NumberOfChangesWithFixesMeasureAggregator>(changesWithFixesMeasure.MeasureAggregator);
             Assert.Equal(new DateTime(2017, 9, 16, 00, 00, 00), changesWithFixesMeasure.StartDate);
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesWithFixesMeasure.EndDate);
+            Assert.IsType<LinesChangedWithFixesMeasureAggregator>(linesChangedWithFixesMeasure.MeasureAggregator);
             Assert.Equal(new DateTime(2017, 9, 16, 00, 00, 00), linesChangedWithFixesMeasure.StartDate);
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedWithFixesMeasure.EndDate);
         }
@@ -121,12 +130,16 @@ namespace vcsparser.unittests
             var linesChangedMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_METRIC_KEY + "_30d").First();
             var changesWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.CHANGES_FIXES_METRIC_KEY + "_30d").First();
             var linesChangedWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_FIXES_METRIC_KEY + "_30d").First();
+            Assert.IsType<NumberOfChangesMeasureAggregator>(changesMeasure.MeasureAggregator);
             Assert.Equal(new DateTime(2018, 8, 17, 00, 00, 00), changesMeasure.StartDate);
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesMeasure.EndDate);
+            Assert.IsType<LinesChangedMeasureAggregator>(linesChangedMeasure.MeasureAggregator);
             Assert.Equal(new DateTime(2018, 8, 17, 00, 00, 00), linesChangedMeasure.StartDate);
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedMeasure.EndDate);
+            Assert.IsType<NumberOfChangesWithFixesMeasureAggregator>(changesWithFixesMeasure.MeasureAggregator);
             Assert.Equal(new DateTime(2018, 8, 17, 00, 00, 00), changesWithFixesMeasure.StartDate);
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesWithFixesMeasure.EndDate);
+            Assert.IsType<LinesChangedWithFixesMeasureAggregator>(linesChangedWithFixesMeasure.MeasureAggregator);
             Assert.Equal(new DateTime(2018, 8, 17, 00, 00, 00), linesChangedWithFixesMeasure.StartDate);
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedWithFixesMeasure.EndDate);
         }
@@ -144,12 +157,16 @@ namespace vcsparser.unittests
             var linesChangedMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_METRIC_KEY + "_3m").First();
             var changesWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.CHANGES_FIXES_METRIC_KEY + "_3m").First();
             var linesChangedWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_FIXES_METRIC_KEY + "_3m").First();
+            Assert.IsType<NumberOfChangesMeasureAggregator>(changesMeasure.MeasureAggregator);
             Assert.Equal(new DateTime(2018, 6, 16, 00, 00, 00), changesMeasure.StartDate);
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesMeasure.EndDate);
+            Assert.IsType<LinesChangedMeasureAggregator>(linesChangedMeasure.MeasureAggregator);
             Assert.Equal(new DateTime(2018, 6, 16, 00, 00, 00), linesChangedMeasure.StartDate);
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedMeasure.EndDate);
+            Assert.IsType<NumberOfChangesWithFixesMeasureAggregator>(changesWithFixesMeasure.MeasureAggregator);
             Assert.Equal(new DateTime(2018, 6, 16, 00, 00, 00), changesWithFixesMeasure.StartDate);
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesWithFixesMeasure.EndDate);
+            Assert.IsType<LinesChangedWithFixesMeasureAggregator>(linesChangedWithFixesMeasure.MeasureAggregator);
             Assert.Equal(new DateTime(2018, 6, 16, 00, 00, 00), linesChangedWithFixesMeasure.StartDate);
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedWithFixesMeasure.EndDate);
         }
@@ -167,12 +184,16 @@ namespace vcsparser.unittests
             var linesChangedMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_METRIC_KEY + "_6m").First();
             var changesWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.CHANGES_FIXES_METRIC_KEY + "_6m").First();
             var linesChangedWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_FIXES_METRIC_KEY + "_6m").First();
+            Assert.IsType<NumberOfChangesMeasureAggregator>(changesMeasure.MeasureAggregator);
             Assert.Equal(new DateTime(2018, 3, 16, 00, 00, 00), changesMeasure.StartDate);
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesMeasure.EndDate);
+            Assert.IsType<LinesChangedMeasureAggregator>(linesChangedMeasure.MeasureAggregator);
             Assert.Equal(new DateTime(2018, 3, 16, 00, 00, 00), linesChangedMeasure.StartDate);
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedMeasure.EndDate);
+            Assert.IsType<NumberOfChangesWithFixesMeasureAggregator>(changesWithFixesMeasure.MeasureAggregator);
             Assert.Equal(new DateTime(2018, 3, 16, 00, 00, 00), changesWithFixesMeasure.StartDate);
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesWithFixesMeasure.EndDate);
+            Assert.IsType<LinesChangedWithFixesMeasureAggregator>(linesChangedWithFixesMeasure.MeasureAggregator);
             Assert.Equal(new DateTime(2018, 3, 16, 00, 00, 00), linesChangedWithFixesMeasure.StartDate);
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedWithFixesMeasure.EndDate);
         }
@@ -190,12 +211,16 @@ namespace vcsparser.unittests
             var linesChangedMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_METRIC_KEY + "_7d").First();
             var changesWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.CHANGES_FIXES_METRIC_KEY + "_7d").First();
             var linesChangedWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_FIXES_METRIC_KEY + "_7d").First();
+            Assert.IsType<NumberOfChangesMeasureAggregator>(changesMeasure.MeasureAggregator);
             Assert.Equal(new DateTime(2018, 9, 9, 00, 00, 00), changesMeasure.StartDate);
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesMeasure.EndDate);
+            Assert.IsType<LinesChangedMeasureAggregator>(linesChangedMeasure.MeasureAggregator);
             Assert.Equal(new DateTime(2018, 9, 9, 00, 00, 00), linesChangedMeasure.StartDate);
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedMeasure.EndDate);
-            Assert.Equal(new DateTime(2018, 9, 9, 00, 00, 00), changesWithFixesMeasure.StartDate);
+            Assert.IsType<NumberOfChangesWithFixesMeasureAggregator>(changesWithFixesMeasure.MeasureAggregator);
+            Assert.Equal(new DateTime(2018, 9, 9, 00, 00, 00), changesWithFixesMeasure.StartDate);            
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesWithFixesMeasure.EndDate);
+            Assert.IsType<LinesChangedWithFixesMeasureAggregator>(linesChangedWithFixesMeasure.MeasureAggregator);
             Assert.Equal(new DateTime(2018, 9, 9, 00, 00, 00), linesChangedWithFixesMeasure.StartDate);
             Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedWithFixesMeasure.EndDate);
         }

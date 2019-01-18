@@ -88,6 +88,10 @@
     <Compile Include="git\GivenAGitCommit.cs" />
     <Compile Include="GivenARegex.cs" />
     <Compile Include="GivenASonarMeasuresJson.cs" />
+    <Compile Include="MeasureAggregators\GivenALinesChangedInFixesMeasureAggregator.cs" />
+    <Compile Include="MeasureAggregators\GivenALinesChangedMeasureAggregator.cs" />
+    <Compile Include="MeasureAggregators\GivenANumberOfChangesMeasureAggregator.cs" />
+    <Compile Include="MeasureAggregators\GivenANumberOfChangesWithFixesMeasureAggregator.cs" />
     <Compile Include="p4\GivenAPerforceChangeset.cs" />
     <Compile Include="p4\GivenAChangesParser.cs" />
     <Compile Include="p4\GivenAPerforceCodeChurnProcessor.cs" />

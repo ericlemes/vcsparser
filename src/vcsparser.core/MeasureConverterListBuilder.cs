@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using vcsparser.core.MeasureAggregators;
 
 namespace vcsparser.core
 {
@@ -85,10 +86,10 @@ namespace vcsparser.core
                 Description = "Lines changed in fixes (1 day)"
             };
 
-            result.Add(new MeasureConverter(startDate, endDate, metricChanges, MeasureConverterType.NumberOfChanges, a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChanged, MeasureConverterType.LinesChanged, a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricChangesWithFixes, MeasureConverterType.NumberOfChangesWithFixes, a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChangedWithFixes, MeasureConverterType.LinesChangedWithFixes, a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricChanges, new NumberOfChangesMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricLinesChanged, new LinesChangedMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricChangesWithFixes, new NumberOfChangesWithFixesMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricLinesChangedWithFixes, new LinesChangedWithFixesMeasureAggregator(), a.FilePrefixToRemove));
         }
 
         private void CreateConvertersFor1Year(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)
@@ -124,10 +125,10 @@ namespace vcsparser.core
                 Description = "Lines changed in fixes (1 year)"
             };
 
-            result.Add(new MeasureConverter(startDate, endDate, metricChanges, MeasureConverterType.NumberOfChanges, a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChanged, MeasureConverterType.LinesChanged, a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricChangesWithFixes, MeasureConverterType.NumberOfChangesWithFixes, a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChangedWithFixes, MeasureConverterType.LinesChangedWithFixes, a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricChanges, new NumberOfChangesMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricLinesChanged, new LinesChangedMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricChangesWithFixes, new NumberOfChangesWithFixesMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricLinesChangedWithFixes, new LinesChangedWithFixesMeasureAggregator(), a.FilePrefixToRemove));
         }
 
         private void CreateConvertersFor30Days(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)
@@ -163,10 +164,10 @@ namespace vcsparser.core
                 Description = "Lines changed in fixes (30 days)"
             };
 
-            result.Add(new MeasureConverter(startDate, endDate, metricChanges, MeasureConverterType.NumberOfChanges, a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChanged, MeasureConverterType.LinesChanged, a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricChangesWithFixes, MeasureConverterType.NumberOfChangesWithFixes, a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChangedWithFixes, MeasureConverterType.LinesChangedWithFixes, a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricChanges, new NumberOfChangesMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricLinesChanged, new LinesChangedMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricChangesWithFixes, new NumberOfChangesWithFixesMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricLinesChangedWithFixes, new LinesChangedWithFixesMeasureAggregator(), a.FilePrefixToRemove));
         }
 
         private void CreateConvertersFor3Months(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)
@@ -202,10 +203,10 @@ namespace vcsparser.core
                 Description = "Lines changed in fixes (3 months)"
             };
 
-            result.Add(new MeasureConverter(startDate, endDate, metricChanges, MeasureConverterType.NumberOfChanges, a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChanged, MeasureConverterType.LinesChanged, a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricChangesWithFixes, MeasureConverterType.NumberOfChangesWithFixes, a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChangedWithFixes, MeasureConverterType.LinesChangedWithFixes, a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricChanges, new NumberOfChangesMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricLinesChanged, new LinesChangedMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricChangesWithFixes, new NumberOfChangesWithFixesMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricLinesChangedWithFixes, new LinesChangedWithFixesMeasureAggregator(), a.FilePrefixToRemove));
         }
 
         private void CreateConvertersFor6Months(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)
@@ -241,10 +242,10 @@ namespace vcsparser.core
                 Description = "Lines changed in fixes (6 months)"
             };
 
-            result.Add(new MeasureConverter(startDate, endDate, metricChanges, MeasureConverterType.NumberOfChanges, a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChanged, MeasureConverterType.LinesChanged, a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricChangesWithFixes, MeasureConverterType.NumberOfChangesWithFixes, a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChangedWithFixes, MeasureConverterType.LinesChangedWithFixes, a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricChanges, new NumberOfChangesMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricLinesChanged, new LinesChangedMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricChangesWithFixes, new NumberOfChangesWithFixesMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricLinesChangedWithFixes, new LinesChangedWithFixesMeasureAggregator(), a.FilePrefixToRemove));
         }
 
         private void CreateConvertersFor7Days(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)
@@ -280,10 +281,10 @@ namespace vcsparser.core
                 Description = "Lines changed in fixes (7 days)"
             };
 
-            result.Add(new MeasureConverter(startDate, endDate, metricChanges, MeasureConverterType.NumberOfChanges, a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChanged, MeasureConverterType.LinesChanged, a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricChangesWithFixes, MeasureConverterType.NumberOfChangesWithFixes, a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChangedWithFixes, MeasureConverterType.LinesChangedWithFixes, a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricChanges, new NumberOfChangesMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricLinesChanged, new LinesChangedMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricChangesWithFixes, new NumberOfChangesWithFixesMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricLinesChangedWithFixes, new LinesChangedWithFixesMeasureAggregator(), a.FilePrefixToRemove));
         }
     }
 }
