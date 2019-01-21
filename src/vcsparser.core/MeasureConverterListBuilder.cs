@@ -17,6 +17,10 @@ namespace vcsparser.core
 
         public static readonly string LINES_CHANGED_FIXES_METRIC_KEY = "vcsparser_lineschanged_fixes";
 
+        public static readonly string NUM_AUTHORS = "vcsparser_numauthors";
+
+        public static readonly string NUM_AUTHORS_10_PERC = "vcsparser_numauthors10perc";
+
         private IEnvironment environment;
         
         public MeasureConverterListBuilder(IEnvironment environment)
@@ -53,43 +57,45 @@ namespace vcsparser.core
             return new DateTime(endDate.Year, endDate.Month, endDate.Day);
         }
 
-        private void CreateConvertersFor1Day(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)
+        private Metric CreateMetric(string key, string name, string description)
         {
-            var endDate = getEndDate(a);
-            var startDate = endDate.AddDays(-1);
-
-            var metricChanges = new Metric()
+            return new Metric()
             {
-                MetricKey = CHANGES_METRIC_KEY + "_1d",
-                Name = "Number of changes (1 day)",
-                Description = "Number of changes (1 day)"
+                MetricKey = key,
+                Name = name,
+                Description = description
             };
+        }
 
-            var metricLinesChanged = new Metric()
-            {
-                MetricKey = LINES_CHANGED_METRIC_KEY + "_1d",
-                Name = "Lines changed (1 day)",
-                Description = "Lines changed (1 day)"
-            };
-
-            var metricChangesWithFixes = new Metric()
-            {
-                MetricKey = CHANGES_FIXES_METRIC_KEY + "_1d",
-                Name = "Number of changes in fixes (1 day)",
-                Description = "Number of changes in fixes (1 day)"
-            };
-
-            var metricLinesChangedWithFixes = new Metric()
-            {
-                MetricKey = LINES_CHANGED_FIXES_METRIC_KEY + "_1d",
-                Name = "Lines changed in fixes (1 day)",
-                Description = "Lines changed in fixes (1 day)"
-            };
+        private void CreateMeasureConvertersForPeriod(List<IMeasureConverter> result, DateTime startDate, DateTime endDate, string metricKeySuffix, string suffixLongDescription, SonarGenericMetricsCommandLineArgs a)
+        {
+            var metricChanges = CreateMetric(CHANGES_METRIC_KEY + metricKeySuffix,
+                "Number of changes (" + suffixLongDescription + ")", "Number of changes (" + suffixLongDescription + ")");
+            var metricLinesChanged = CreateMetric(LINES_CHANGED_METRIC_KEY + metricKeySuffix,
+                "Lines changed (" + suffixLongDescription + ")", "Lines changed (" + suffixLongDescription + ")");
+            var metricChangesWithFixes = CreateMetric(CHANGES_FIXES_METRIC_KEY + metricKeySuffix,
+                "Number of changes in fixes (" + suffixLongDescription + ")", "Number of changes in fixes (" + suffixLongDescription + ")");
+            var metricLinesChangedWithFixes = CreateMetric(LINES_CHANGED_FIXES_METRIC_KEY + metricKeySuffix,
+                "Lines changed in fixes (" + suffixLongDescription + ")", "Lines changed in fixes (" + suffixLongDescription + ")");
+            var metricNumAuthors = CreateMetric(NUM_AUTHORS + metricKeySuffix,
+                "Number of authors (" + suffixLongDescription + ")", "Number of authors (" + suffixLongDescription + ")");
+            var metricNumAuthors10Perc = CreateMetric(NUM_AUTHORS_10_PERC + metricKeySuffix,
+                "Number of authors over 10% contrib (" + suffixLongDescription + ")", "Number of authors with over 10% of changes (" + suffixLongDescription + ")");
 
             result.Add(new MeasureConverter(startDate, endDate, metricChanges, new NumberOfChangesMeasureAggregator(), a.FilePrefixToRemove));
             result.Add(new MeasureConverter(startDate, endDate, metricLinesChanged, new LinesChangedMeasureAggregator(), a.FilePrefixToRemove));
             result.Add(new MeasureConverter(startDate, endDate, metricChangesWithFixes, new NumberOfChangesWithFixesMeasureAggregator(), a.FilePrefixToRemove));
             result.Add(new MeasureConverter(startDate, endDate, metricLinesChangedWithFixes, new LinesChangedWithFixesMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricNumAuthors, new NumberOfAuthorsMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter(startDate, endDate, metricNumAuthors10Perc, new NumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator(), a.FilePrefixToRemove));
+        }
+
+        private void CreateConvertersFor1Day(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)
+        {
+            var endDate = getEndDate(a);
+            var startDate = endDate.AddDays(-1);
+
+            CreateMeasureConvertersForPeriod(result, startDate, endDate, "_1d", "1 day", a);
         }
 
         private void CreateConvertersFor1Year(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)
@@ -97,38 +103,7 @@ namespace vcsparser.core
             var endDate = getEndDate(a);
             var startDate = endDate.AddDays(-1).AddYears(-1);
 
-            var metricChanges = new Metric()
-            {
-                MetricKey = CHANGES_METRIC_KEY + "_1y",
-                Name = "Number of changes (1 year)",
-                Description = "Number of changes (1 year)"
-            };
-
-            var metricLinesChanged = new Metric()
-            {
-                MetricKey = LINES_CHANGED_METRIC_KEY + "_1y",
-                Name = "Lines changed (1 year)",
-                Description = "Lines changed (1 year)"
-            };
-
-            var metricChangesWithFixes = new Metric()
-            {
-                MetricKey = CHANGES_FIXES_METRIC_KEY + "_1y",
-                Name = "Number of changes in fixes (1 year)",
-                Description = "Number of changes in fixes (1 year)"
-            };
-
-            var metricLinesChangedWithFixes = new Metric()
-            {
-                MetricKey = LINES_CHANGED_FIXES_METRIC_KEY + "_1y",
-                Name = "Lines changed in fixes (1 year)",
-                Description = "Lines changed in fixes (1 year)"
-            };
-
-            result.Add(new MeasureConverter(startDate, endDate, metricChanges, new NumberOfChangesMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChanged, new LinesChangedMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricChangesWithFixes, new NumberOfChangesWithFixesMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChangedWithFixes, new LinesChangedWithFixesMeasureAggregator(), a.FilePrefixToRemove));
+            CreateMeasureConvertersForPeriod(result, startDate, endDate, "_1y", "1 year", a);
         }
 
         private void CreateConvertersFor30Days(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)
@@ -136,38 +111,7 @@ namespace vcsparser.core
             var endDate = getEndDate(a);
             var startDate = endDate.AddDays(-31);
 
-            var metricChanges = new Metric()
-            {
-                MetricKey = CHANGES_METRIC_KEY + "_30d",
-                Name = "Number of changes (30 days)",
-                Description = "Number of changes (30 days)"
-            };
-
-            var metricLinesChanged = new Metric()
-            {
-                MetricKey = LINES_CHANGED_METRIC_KEY + "_30d",
-                Name = "Lines changed (30 days)",
-                Description = "Lines changed (30 days)"
-            };
-
-            var metricChangesWithFixes = new Metric()
-            {
-                MetricKey = CHANGES_FIXES_METRIC_KEY + "_30d",
-                Name = "Number of changes in fixes (30 days)",
-                Description = "Number of changes in fixes (30 days)"
-            };
-
-            var metricLinesChangedWithFixes = new Metric()
-            {
-                MetricKey = LINES_CHANGED_FIXES_METRIC_KEY + "_30d",
-                Name = "Lines changed in fixes (30 days)",
-                Description = "Lines changed in fixes (30 days)"
-            };
-
-            result.Add(new MeasureConverter(startDate, endDate, metricChanges, new NumberOfChangesMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChanged, new LinesChangedMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricChangesWithFixes, new NumberOfChangesWithFixesMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChangedWithFixes, new LinesChangedWithFixesMeasureAggregator(), a.FilePrefixToRemove));
+            CreateMeasureConvertersForPeriod(result, startDate, endDate, "_30d", "30 days", a);
         }
 
         private void CreateConvertersFor3Months(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)
@@ -175,38 +119,7 @@ namespace vcsparser.core
             var endDate = getEndDate(a);
             var startDate = endDate.AddDays(-1).AddMonths(-3);
 
-            var metricChanges = new Metric()
-            {
-                MetricKey = CHANGES_METRIC_KEY + "_3m",
-                Name = "Number of changes (3 months)",
-                Description = "Number of changes (3 months)"
-            };
-
-            var metricLinesChanged = new Metric()
-            {
-                MetricKey = LINES_CHANGED_METRIC_KEY + "_3m",
-                Name = "Lines changed (3 months)",
-                Description = "Lines changed (3 months)"
-            };
-
-            var metricChangesWithFixes = new Metric()
-            {
-                MetricKey = CHANGES_FIXES_METRIC_KEY + "_3m",
-                Name = "Number of changes in fixes (3 months)",
-                Description = "Number of changes in fixes (3 months)"
-            };
-
-            var metricLinesChangedWithFixes = new Metric()
-            {
-                MetricKey = LINES_CHANGED_FIXES_METRIC_KEY + "_3m",
-                Name = "Lines changed in fixes (3 months)",
-                Description = "Lines changed in fixes (3 months)"
-            };
-
-            result.Add(new MeasureConverter(startDate, endDate, metricChanges, new NumberOfChangesMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChanged, new LinesChangedMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricChangesWithFixes, new NumberOfChangesWithFixesMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChangedWithFixes, new LinesChangedWithFixesMeasureAggregator(), a.FilePrefixToRemove));
+            CreateMeasureConvertersForPeriod(result, startDate, endDate, "_3m", "3 months", a);
         }
 
         private void CreateConvertersFor6Months(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)
@@ -214,38 +127,7 @@ namespace vcsparser.core
             var endDate = getEndDate(a);
             var startDate = endDate.AddDays(-1).AddMonths(-6);
 
-            var metricChanges = new Metric()
-            {
-                MetricKey = CHANGES_METRIC_KEY + "_6m",
-                Name = "Number of changes (6 months)",
-                Description = "Number of changes (6 months)"
-            };
-
-            var metricLinesChanged = new Metric()
-            {
-                MetricKey = LINES_CHANGED_METRIC_KEY + "_6m",
-                Name = "Lines changed (6 months)",
-                Description = "Lines changed (6 months)"
-            };
-
-            var metricChangesWithFixes = new Metric()
-            {
-                MetricKey = CHANGES_FIXES_METRIC_KEY + "_6m",
-                Name = "Number of changes in fixes (6 months)",
-                Description = "Number of changes in fixes (6 months)"
-            };
-
-            var metricLinesChangedWithFixes = new Metric()
-            {
-                MetricKey = LINES_CHANGED_FIXES_METRIC_KEY + "_6m",
-                Name = "Lines changed in fixes (6 months)",
-                Description = "Lines changed in fixes (6 months)"
-            };
-
-            result.Add(new MeasureConverter(startDate, endDate, metricChanges, new NumberOfChangesMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChanged, new LinesChangedMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricChangesWithFixes, new NumberOfChangesWithFixesMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChangedWithFixes, new LinesChangedWithFixesMeasureAggregator(), a.FilePrefixToRemove));
+            CreateMeasureConvertersForPeriod(result, startDate, endDate, "_6m", "6 months", a);
         }
 
         private void CreateConvertersFor7Days(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)
@@ -253,38 +135,7 @@ namespace vcsparser.core
             var endDate = getEndDate(a);
             var startDate = endDate.AddDays(-8);
 
-            var metricChanges = new Metric()
-            {
-                MetricKey = CHANGES_METRIC_KEY + "_7d",
-                Name = "Number of changes (7 days)",
-                Description = "Number of changes (7 days)"
-            };
-
-            var metricLinesChanged = new Metric()
-            {
-                MetricKey = LINES_CHANGED_METRIC_KEY + "_7d",
-                Name = "Lines changed (7 days)",
-                Description = "Lines changed (7 days)"
-            };
-
-            var metricChangesWithFixes = new Metric()
-            {
-                MetricKey = CHANGES_FIXES_METRIC_KEY + "_7d",
-                Name = "Number of changes in fixes (7 days)",
-                Description = "Number of changes in fixes (7 days)"
-            };
-
-            var metricLinesChangedWithFixes = new Metric()
-            {
-                MetricKey = LINES_CHANGED_FIXES_METRIC_KEY + "_7d",
-                Name = "Lines changed in fixes (7 days)",
-                Description = "Lines changed in fixes (7 days)"
-            };
-
-            result.Add(new MeasureConverter(startDate, endDate, metricChanges, new NumberOfChangesMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChanged, new LinesChangedMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricChangesWithFixes, new NumberOfChangesWithFixesMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChangedWithFixes, new LinesChangedWithFixesMeasureAggregator(), a.FilePrefixToRemove));
+            CreateMeasureConvertersForPeriod(result, startDate, endDate, "_7d", "7 days", a);
         }
     }
 }

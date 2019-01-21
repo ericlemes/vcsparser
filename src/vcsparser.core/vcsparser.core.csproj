@@ -64,6 +64,8 @@
     <Compile Include="IMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\LinesChangedMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\LinesChangedWithFixesMeasureAggregator.cs" />
+    <Compile Include="MeasureAggregators\NumberOfAuthorsMeasureAggregator.cs" />
+    <Compile Include="MeasureAggregators\NumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\NumberOfChangesMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\NumberOfChangesWithFixesMeasureAggregator.cs" />
     <Compile Include="p4\Changeset.cs" />
