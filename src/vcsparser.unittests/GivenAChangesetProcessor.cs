@@ -27,7 +27,7 @@ namespace vcsparser.unittests
         {
             return new GitCommit()
             {
-                Commiter = "defaultcommiter",
+                Author = "defaultcommiter",
                 CommiterDate = new DateTime(2018, 10, 2),
                 ChangesetFileChanges = new List<FileChanges>()
                 {
@@ -44,7 +44,7 @@ namespace vcsparser.unittests
         {
             return new GitCommit()
             {
-                Commiter = "defaultcommiter",
+                Author = "defaultcommiter",
                 CommiterDate = new DateTime(2018, 10, 2),
                 ChangesetFileChanges = new List<FileChanges>()
                 {
@@ -161,7 +161,7 @@ namespace vcsparser.unittests
         public void WhenProcessingChangesetShouldAppendAuthor()
         {
             var c = CreateCommitWithAddedLines("file1", 10);
-            c.Commiter = "author1";
+            c.Author = "author1";
             this.changesetProcessor.ProcessChangeset(c);
             Assert.Equal("author1", GetOutputFor("file1").Authors[0].Author);
             Assert.Equal(1, GetOutputFor("file1").Authors[0].NumberOfChanges);
@@ -172,11 +172,11 @@ namespace vcsparser.unittests
         public void WhenProcessingMultipleChangesetsShouldAppendAuthors()
         {
             var c = CreateCommitWithAddedLines("file1", 10);
-            c.Commiter = "author1";
+            c.Author = "author1";
             this.changesetProcessor.ProcessChangeset(c);
 
             c = CreateCommitWithAddedLines("file1", 10);
-            c.Commiter = "author2";
+            c.Author = "author2";
             this.changesetProcessor.ProcessChangeset(c);
 
             //It will return in ascending order, ignoring added order.
@@ -191,11 +191,11 @@ namespace vcsparser.unittests
         public void WhenProcessingMultipleChangesetsShouldHaveDistinctAuthors()
         {
             var c = CreateCommitWithAddedLines("file1", 10);
-            c.Commiter = "author1";
+            c.Author = "author1";
             this.changesetProcessor.ProcessChangeset(c);
 
             c = CreateCommitWithAddedLines("file1", 10);
-            c.Commiter = "AUTHOR1"; //case-insensitive
+            c.Author = "AUTHOR1"; //case-insensitive
             this.changesetProcessor.ProcessChangeset(c);
 
             //It will return in ascending order, ignoring added order.

@@ -8,26 +8,30 @@ namespace vcsparser.core.MeasureAggregators
 {
     public class NumberOfAuthorsMeasureAggregator : IMeasureAggregator
     {        
-        private Dictionary<string, bool> currentUniqueAuthors = new Dictionary<string, bool>();
+        private Dictionary<string, Dictionary<string, bool>> currentUniqueAuthorsPerFile = new Dictionary<string, Dictionary<string, bool>>();
 
         public int GetValueForExistingMeasure(DailyCodeChurn dailyCodeChurn, Measure existingMeasure)
         {
             UpdateCurrentUniqueAuthors(dailyCodeChurn);
 
-            return currentUniqueAuthors.Count();
+            return currentUniqueAuthorsPerFile[dailyCodeChurn.FileName].Count();
         }
 
         public int GetValueForNewMeasure(DailyCodeChurn dailyCodeChurn)
         {
             UpdateCurrentUniqueAuthors(dailyCodeChurn);
 
-            return currentUniqueAuthors.Count;
+            return currentUniqueAuthorsPerFile[dailyCodeChurn.FileName].Count();
         }
 
         private void UpdateCurrentUniqueAuthors(DailyCodeChurn dailyCodeChurn)
         {
+            if (!currentUniqueAuthorsPerFile.ContainsKey(dailyCodeChurn.FileName))
+                currentUniqueAuthorsPerFile.Add(dailyCodeChurn.FileName, new Dictionary<string, bool>());
+
             foreach (var a in dailyCodeChurn.Authors)
             {
+                var currentUniqueAuthors = currentUniqueAuthorsPerFile[dailyCodeChurn.FileName];
                 if (!currentUniqueAuthors.ContainsKey(a.Author.ToLower()))
                     currentUniqueAuthors.Add(a.Author.ToLower(), true);
             }

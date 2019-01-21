@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CmdletAdapter.cs" />
+    <Compile Include="GetGitLog.cs" />
     <Compile Include="GetPerforceChanges.cs" />
     <Compile Include="GetPerforceChangeset.cs" />
     <Compile Include="ICmdlet.cs" />

@@ -56,7 +56,95 @@ namespace vcsparser.unittests.MeasureAggregators
         }
 
         [Fact]
-        public void WhenGettingValueForExistingMeasureShouldSumWithExistingValue()
+        public void WhenGettingValueForNewMeasureDifferentDatesSameFileShouldReturnSumOfNumberOfChanges()
+        {
+            var dailyCodeChurn1 = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "file1",
+                Authors = new List<DailyCodeChurnAuthor>()
+                {
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author1",
+                        NumberOfChanges = 1
+                    },
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author2",
+                        NumberOfChanges = 2
+                    }
+                }
+            };
+            var dailyCodeChurn2 = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/18 00:00:00",
+                FileName = "file1",
+                Authors = new List<DailyCodeChurnAuthor>()
+                {
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author1",
+                        NumberOfChanges = 1
+                    },
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author3",
+                        NumberOfChanges = 2
+                    }
+                }
+            };
+
+            this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn1);
+            Assert.Equal(3, this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn2));
+        }
+
+        [Fact]
+        public void WhenGettingValueForNewMeasureDifferentDatesDifferentFilesShouldNotSumOfNumberOfChanges()
+        {
+            var dailyCodeChurn1 = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "file1",
+                Authors = new List<DailyCodeChurnAuthor>()
+                {
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author1",
+                        NumberOfChanges = 1
+                    },
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author2",
+                        NumberOfChanges = 2
+                    }
+                }
+            };
+            var dailyCodeChurn2 = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "file2",
+                Authors = new List<DailyCodeChurnAuthor>()
+                {
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author1",
+                        NumberOfChanges = 1
+                    },
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author3",
+                        NumberOfChanges = 2
+                    }
+                }
+            };
+
+            this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn1);
+            Assert.Equal(2, this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn2));
+        }
+
+        [Fact]
+        public void WhenGettingValueForExistingMeasureAndSameFileShouldSumWithExistingValue()
         {
             var dailyCodeChurn = new DailyCodeChurn()
             {
@@ -82,7 +170,7 @@ namespace vcsparser.unittests.MeasureAggregators
             measure.Value = 3;
             dailyCodeChurn = new DailyCodeChurn()
             {
-                Timestamp = "2018/09/17 00:00:00",
+                Timestamp = "2018/09/18 00:00:00",
                 FileName = "file1",
                 Authors = new List<DailyCodeChurnAuthor>()
                 {
@@ -100,6 +188,53 @@ namespace vcsparser.unittests.MeasureAggregators
             };
 
             Assert.Equal(3, this.measureAggregator.GetValueForExistingMeasure(dailyCodeChurn, measure));
+        }
+
+        [Fact]
+        public void WhenGettingValueForExistingMeasureAndDifferentFileShouldNotSumWithExistingValue()
+        {
+            var dailyCodeChurn = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "file1",
+                Authors = new List<DailyCodeChurnAuthor>()
+                {
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author1",
+                        NumberOfChanges = 1
+                    },
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author2",
+                        NumberOfChanges = 2
+                    }
+                }
+            };
+            this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn);
+
+            var measure = new Measure();
+            measure.Value = 1;
+            dailyCodeChurn = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/18 00:00:00",
+                FileName = "file2",
+                Authors = new List<DailyCodeChurnAuthor>()
+                {
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author1",
+                        NumberOfChanges = 5
+                    },
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author3",
+                        NumberOfChanges = 3
+                    }
+                }
+            };
+
+            Assert.Equal(2, this.measureAggregator.GetValueForExistingMeasure(dailyCodeChurn, measure));
         }
 
     }

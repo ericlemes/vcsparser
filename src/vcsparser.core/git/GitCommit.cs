@@ -22,7 +22,7 @@ namespace vcsparser.core.git
 
         public string ChangesetAuthor
         {
-            get { return this.Commiter; }
+            get { return this.Author; }
         }
 
         public string CommitHash { get; set; }

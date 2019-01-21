@@ -59,7 +59,62 @@ namespace vcsparser.unittests.MeasureAggregators
 
             Assert.Equal(2, this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn));
         }
-        
+
+        [Fact]
+        public void WhenGettingValueForNewMeasureDifferentFileShouldNotSumNumberOfChanges()
+        {
+            var dailyCodeChurn1 = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "file1",
+                Authors = new List<DailyCodeChurnAuthor>()
+                {
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author1",
+                        NumberOfChanges = 50
+                    },
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author2",
+                        NumberOfChanges = 49
+                    },
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author3",
+                        NumberOfChanges = 1
+                    }
+                }
+            };
+
+            var dailyCodeChurn2 = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "file2",
+                Authors = new List<DailyCodeChurnAuthor>()
+                {
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author4",
+                        NumberOfChanges = 50
+                    },
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author5",
+                        NumberOfChanges = 49
+                    },
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author3",
+                        NumberOfChanges = 1
+                    }
+                }
+            };
+
+            this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn1);
+            Assert.Equal(2, this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn2));
+        }
+
         [Fact]
         public void WhenGettingValueForExistingMeasureShouldSumWithExistingValue()
         {

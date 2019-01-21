@@ -10,25 +10,29 @@ namespace vcsparser.core.MeasureAggregators
     {
         private readonly int THRESHOLD = 10;
 
-        private Dictionary<string, int> currentUniqueAuthors = new Dictionary<string, int>();
+        private Dictionary<string, Dictionary<string, int>> currentUniqueAuthorsPerFile = new Dictionary<string, Dictionary<string, int>>();
 
         public int GetValueForExistingMeasure(DailyCodeChurn dailyCodeChurn, Measure existingMeasure)
         {
             UpdateCurrentUniqueAuthors(dailyCodeChurn);
-            return CalculateNumberOfAuthorsOverThreshold(THRESHOLD);
+            return CalculateNumberOfAuthorsOverThreshold(dailyCodeChurn, THRESHOLD);
         }
 
         public int GetValueForNewMeasure(DailyCodeChurn dailyCodeChurn)
         {
             UpdateCurrentUniqueAuthors(dailyCodeChurn);
 
-            return CalculateNumberOfAuthorsOverThreshold(THRESHOLD);
+            return CalculateNumberOfAuthorsOverThreshold(dailyCodeChurn, THRESHOLD);
         }
 
         private void UpdateCurrentUniqueAuthors(DailyCodeChurn dailyCodeChurn)
         {
+            if (!currentUniqueAuthorsPerFile.ContainsKey(dailyCodeChurn.FileName))
+                currentUniqueAuthorsPerFile.Add(dailyCodeChurn.FileName, new Dictionary<string, int>());
+
             foreach (var a in dailyCodeChurn.Authors)
             {
+                var currentUniqueAuthors = currentUniqueAuthorsPerFile[dailyCodeChurn.FileName];
                 if (!currentUniqueAuthors.ContainsKey(a.Author.ToLower()))
                     currentUniqueAuthors.Add(a.Author.ToLower(), a.NumberOfChanges);
                 else
@@ -36,8 +40,10 @@ namespace vcsparser.core.MeasureAggregators
             }
         }
 
-        private int CalculateNumberOfAuthorsOverThreshold(int threshold)
+        private int CalculateNumberOfAuthorsOverThreshold(DailyCodeChurn dailyCodeChurn, int threshold)
         {
+            var currentUniqueAuthors = currentUniqueAuthorsPerFile[dailyCodeChurn.FileName];
+
             var total = currentUniqueAuthors.Sum(p => p.Value);
             var countOverThreshold = 0;
             foreach (var p in currentUniqueAuthors)
