@@ -1,4 +1,4 @@
-﻿using CsvHelper;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,14 +30,12 @@ namespace vcsparser.core
             var fs = streamFactory.createFileStream(fileName, FileMode.Create, FileAccess.Write);
             var sw = new StreamWriter(fs);
 
-            var csvWriter = new CsvWriter(sw);
-            csvWriter.Configuration.HasHeaderRecord = true;                        
+            var jsonSerializer = JsonSerializer.Create();
             using (sw)
             {
-                logger.LogToConsole("Writing csv to " + fileName);
-                csvWriter.WriteRecords(result);
-                csvWriter.Flush();                    
-                sw.Flush();                    
+                logger.LogToConsole("Writing json to " + fileName);
+                jsonSerializer.Serialize(sw, result);                
+                sw.Flush();
             }            
         }
 
@@ -46,7 +44,7 @@ namespace vcsparser.core
             var listOfLists = ConvertDictToOrderedListPerDay(dict);
             logger.LogToConsole(listOfLists.Count + " files to output");
             foreach (var list in listOfLists)
-                ProcessOutputSingleFile(filePrefix + "_" + list.Key.ToString("yyyy-MM-dd") + ".csv", list.Value.Values);
+                ProcessOutputSingleFile(filePrefix + "_" + list.Key.ToString("yyyy-MM-dd") + ".json", list.Value.Values);
         }
 
         private SortedList<DateTime, SortedList<DailyCodeChurn, DailyCodeChurn>> ConvertDictToOrderedListPerDay(Dictionary<DateTime, Dictionary<string, DailyCodeChurn>> dict)

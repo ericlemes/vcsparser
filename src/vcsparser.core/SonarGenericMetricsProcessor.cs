@@ -8,7 +8,7 @@ namespace vcsparser.core
     {
         private IFileSystem fileSystem;
 
-        private ICsvParser csvParser;
+        private IDailyCodeChurnParser dailyCodeChurnParser;
 
         private List<IMeasureConverter> measureConverters;
 
@@ -16,11 +16,11 @@ namespace vcsparser.core
 
         private ILogger logger;
 
-        public SonarGenericMetricsProcessor(IFileSystem fileSystem, ICsvParser csvParser, List<IMeasureConverter> measureConverters,
+        public SonarGenericMetricsProcessor(IFileSystem fileSystem, IDailyCodeChurnParser dailyCodeChurnParser, List<IMeasureConverter> measureConverters,
             IJsonExporter jsonExporter, ILogger logger)
         {
             this.fileSystem = fileSystem;
-            this.csvParser = csvParser;
+            this.dailyCodeChurnParser = dailyCodeChurnParser;
             this.measureConverters = measureConverters;
             this.jsonExporter = jsonExporter;
             this.logger = logger;
@@ -28,13 +28,13 @@ namespace vcsparser.core
 
         public void Process(SonarGenericMetricsCommandLineArgs a)
         {
-            var files = fileSystem.GetFiles(a.InputDir, "*.csv");
+            var files = fileSystem.GetFiles(a.InputDir, "*.json");
             SonarMeasuresJson outputJson = new SonarMeasuresJson();            
 
             foreach(var file in files)
             {
                 this.logger.LogToConsole(String.Format("Processing {0}", file.FileName));
-                var codeChurnList = this.csvParser.ParseFile(file.FileName);
+                var codeChurnList = this.dailyCodeChurnParser.ParseFile(file.FileName);
                 foreach(var converter in measureConverters)
                 {
                     foreach (var codeChurn in codeChurnList)

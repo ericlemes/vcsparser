@@ -121,8 +121,9 @@ namespace vcsparser.unittests
 
             var changeset1 = new PerforceChangeset()
             {
-                Timestamp = new DateTime(2018, 07, 05),
-                FileChanges = new List<FileChanges>()
+                AuthorName = "author1",
+                ChangesetTimestamp = new DateTime(2018, 07, 05),
+                ChangesetFileChanges = new List<FileChanges>()
                 {
                     new FileChanges()
                     {
@@ -145,8 +146,9 @@ namespace vcsparser.unittests
 
             var changeset2 = new PerforceChangeset()
             {
-                Timestamp = new DateTime(2018, 07, 05, 10, 0, 0),
-                FileChanges = new List<FileChanges>()
+                AuthorName = "author1",
+                ChangesetTimestamp = new DateTime(2018, 07, 05, 10, 0, 0),
+                ChangesetFileChanges = new List<FileChanges>()
                 {
                     new FileChanges()
                     {
@@ -161,8 +163,9 @@ namespace vcsparser.unittests
 
             var changeset3 = new PerforceChangeset()
             {
-                Timestamp = new DateTime(2018, 07, 06, 10, 0, 0),
-                FileChanges = new List<FileChanges>()
+                AuthorName = "author1",
+                ChangesetTimestamp = new DateTime(2018, 07, 06, 10, 0, 0),
+                ChangesetFileChanges = new List<FileChanges>()
                 {
                     new FileChanges()
                     {

@@ -10,7 +10,7 @@ namespace vcsparser.core
 {
     public class ProcessWrapper : IProcessWrapper
     {
-        public Stream Invoke(string executable, string args)
+        private Process CreateProcessWithBaseParams(string executable, string args)
         {
             var process = new Process();
 
@@ -19,9 +19,23 @@ namespace vcsparser.core
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardOutput = true;
 
+            return process;
+        }
+
+        public Stream Invoke(string executable, string args)
+        {
+            var process = CreateProcessWithBaseParams(executable, args);
+
+            process.Start();                        
+            return process.StandardOutput.BaseStream;
+        }        
+
+        public Stream Invoke(string executable, string args, string workingDir)
+        {
+            var process = CreateProcessWithBaseParams(executable, args);
+            process.StartInfo.WorkingDirectory = workingDir;
+
             process.Start();
-            //process.WaitForExit();
-            
             return process.StandardOutput.BaseStream;
         }
     }

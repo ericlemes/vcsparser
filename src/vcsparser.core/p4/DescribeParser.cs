@@ -62,7 +62,7 @@ namespace vcsparser.core.p4
         private void ParseNewFileChanges(ref FileChanges currentFileChanges, string line, PerforceChangeset changeset)
         {
             currentFileChanges = new FileChanges();
-            changeset.FileChanges.Add(currentFileChanges);
+            changeset.ChangesetFileChanges.Add(currentFileChanges);
 
             currentFileChanges.FileName = line.Split('#')[0].Split(' ')[1];
         }
@@ -83,7 +83,7 @@ namespace vcsparser.core.p4
 
             try
             {
-                changeset.Timestamp = ParseTimestamp(sliced[5], sliced[6]);
+                changeset.ChangesetTimestamp = ParseTimestamp(sliced[5], sliced[6]);
             }
             catch
             {

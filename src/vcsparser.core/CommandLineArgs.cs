@@ -13,7 +13,7 @@ namespace vcsparser.core
         MultipleFile
     }
 
-    [Verb("p4extract", HelpText = "Extracts code coverage information from p4 and outputs to csv")]
+    [Verb("p4extract", HelpText = "Extracts code coverage information from p4 and outputs to json")]
     public class P4ExtractCommandLineArgs
     {
         [Option("changes", HelpText = "p4 changes command line to get changesets. Usually \"p4 changes -s submitted //path/to/your/depot/...@YYYY/MM/DD,YYYY/MM/DD\" or something similar", Required = true )]
@@ -32,7 +32,7 @@ namespace vcsparser.core
         public OutputType OutputType { get; set; }
     }
 
-    [Verb("gitextract", HelpText = "Extracts code coverage information from git log file and outputs to csv")]
+    [Verb("gitextract", HelpText = "Extracts code coverage information from git log file and outputs to json")]
     public class GitExtractCommandLineArgs
     {
         [Option("gitlogcommand", HelpText = "Command line that will be invoked to get git log. Syntax should be similar to: git log --pretty=fuller --date=iso --after=YYYY-MM-DD --numstat ", Required = true)]
@@ -48,7 +48,7 @@ namespace vcsparser.core
         public OutputType OutputType { get; set; }
     }
 
-    [Verb("sonargenericmetrics", HelpText = "Process csv files and outputs to Sonar Generic Metrics JSON format")]
+    [Verb("sonargenericmetrics", HelpText = "Process json files in intermediate code churn format and outputs to Sonar Generic Metrics JSON format")]
     public class SonarGenericMetricsCommandLineArgs
     {
         public SonarGenericMetricsCommandLineArgs()
@@ -64,7 +64,7 @@ namespace vcsparser.core
         [Option("fileprefixtoremove", HelpText = "Prefix to remove from file. Usually repository root")]
         public string FilePrefixToRemove { get; set; }
 
-        [Option("inputdir", HelpText = "Directory with input CSV files", Required = true)]
+        [Option("inputdir", HelpText = "Directory with input json files", Required = true)]
         public string InputDir { get; set; }
 
         [Option("outputfile", HelpText = "File to generate json output", Required = true)]

@@ -57,8 +57,6 @@ namespace vcsparser.PowerShell.unittests
         {
             var memoryStream = new MemoryStream();
             mockProcessWrapper.Setup(m => m.Invoke("p4", "describe -ds 42")).Returns(memoryStream);
-            //var changeset = new PerforceChangeset();
-            //mockDescribeParser.Setup(m => m.Parse(memoryStream)).Returns(changeset);
 
             cmdLet.Changeset = 42;
             cmdLet.DoProcessRecord();

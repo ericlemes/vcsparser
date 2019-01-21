@@ -27,8 +27,9 @@ namespace vcsparser.unittests
         {
             return new GitCommit()
             {
+                Author = "defaultcommiter",
                 CommiterDate = new DateTime(2018, 10, 2),
-                FileChanges = new List<FileChanges>()
+                ChangesetFileChanges = new List<FileChanges>()
                 {
                     new FileChanges()
                     {
@@ -43,15 +44,16 @@ namespace vcsparser.unittests
         {
             return new GitCommit()
             {
+                Author = "defaultcommiter",
                 CommiterDate = new DateTime(2018, 10, 2),
-                FileChanges = new List<FileChanges>()
+                ChangesetFileChanges = new List<FileChanges>()
                 {
                     new FileChanges()
                     {
                         FileName = newFileName
                     }
                 },
-                FileRenames = new Dictionary<string, string>()
+                ChangesetFileRenames = new Dictionary<string, string>()
                 {
                     {oldFileName, newFileName }
                 }
@@ -136,8 +138,8 @@ namespace vcsparser.unittests
         {            
             this.changesetProcessor = new ChangesetProcessor(@"gramolias+;bug+", this.loggerMock.Object);
             var c = CreateCommitWithAddedLines("file2", 10);
-            c.FileChanges[0].Deleted = 5;
-            c.Message= "This is a comment a newline \n\r and a bug";
+            c.ChangesetFileChanges[0].Deleted = 5;
+            c.ChangesetMessage= "This is a comment a newline \n\r and a bug";
             this.changesetProcessor.ProcessChangeset(c);
             Assert.Equal(1, GetOutputFor("file2").NumberOfChangesWithFixes);
             Assert.Equal(15, GetOutputFor("file2").TotalLinesChangedWithFixes);
@@ -148,13 +150,59 @@ namespace vcsparser.unittests
         {
             this.changesetProcessor = new ChangesetProcessor(@"gramolias+;bug+", this.loggerMock.Object);
             var c = CreateCommitWithAddedLines("file2", 10);
-            c.FileChanges[0].Deleted = 5;
-            c.Message = "This is a comment a newline new feature";
+            c.ChangesetFileChanges[0].Deleted = 5;
+            c.ChangesetMessage = "This is a comment a newline new feature";
             this.changesetProcessor.ProcessChangeset(c);
             Assert.Equal(0, GetOutputFor("file2").NumberOfChangesWithFixes);
             Assert.Equal(0, GetOutputFor("file2").TotalLinesChangedWithFixes);
         }
 
+        [Fact]
+        public void WhenProcessingChangesetShouldAppendAuthor()
+        {
+            var c = CreateCommitWithAddedLines("file1", 10);
+            c.Author = "author1";
+            this.changesetProcessor.ProcessChangeset(c);
+            Assert.Equal("author1", GetOutputFor("file1").Authors[0].Author);
+            Assert.Equal(1, GetOutputFor("file1").Authors[0].NumberOfChanges);
+            Assert.Single(GetOutputFor("file1").Authors);
+        }
+
+        [Fact]
+        public void WhenProcessingMultipleChangesetsShouldAppendAuthors()
+        {
+            var c = CreateCommitWithAddedLines("file1", 10);
+            c.Author = "author1";
+            this.changesetProcessor.ProcessChangeset(c);
+
+            c = CreateCommitWithAddedLines("file1", 10);
+            c.Author = "author2";
+            this.changesetProcessor.ProcessChangeset(c);
+
+            //It will return in ascending order, ignoring added order.
+            Assert.Equal("author1", GetOutputFor("file1").Authors[0].Author);
+            Assert.Equal(1, GetOutputFor("file1").Authors[0].NumberOfChanges);
+            Assert.Equal("author2", GetOutputFor("file1").Authors[1].Author);
+            Assert.Equal(1, GetOutputFor("file1").Authors[1].NumberOfChanges);
+            Assert.Equal(2, GetOutputFor("file1").Authors.Count);
+        }
+
+        [Fact]
+        public void WhenProcessingMultipleChangesetsShouldHaveDistinctAuthors()
+        {
+            var c = CreateCommitWithAddedLines("file1", 10);
+            c.Author = "author1";
+            this.changesetProcessor.ProcessChangeset(c);
+
+            c = CreateCommitWithAddedLines("file1", 10);
+            c.Author = "AUTHOR1"; //case-insensitive
+            this.changesetProcessor.ProcessChangeset(c);
+
+            //It will return in ascending order, ignoring added order.
+            Assert.Equal("author1", GetOutputFor("file1").Authors[0].Author);
+            Assert.Equal(2, GetOutputFor("file1").Authors[0].NumberOfChanges);
+            Assert.Single(GetOutputFor("file1").Authors);
+        }
     }
 
     

@@ -15,7 +15,7 @@ namespace vcsparser.unittests.p4
         {
             var changeset = new PerforceChangeset();
             changeset.ChangesetNumber = 10;
-            Assert.Equal(10, changeset.CommitIdentifier);
+            Assert.Equal(10, changeset.ChangesetIdentifier);
         }
     }
 }

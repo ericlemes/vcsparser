@@ -17,7 +17,7 @@ namespace vcsparser.unittests
 
         private SonarGenericMetricsCommandLineArgs commandLineArgs;
 
-        private Mock<ICsvParser> csvParserMock;
+        private Mock<IDailyCodeChurnParser> parserMock;
 
         private List<IMeasureConverter> measureConverters;
 
@@ -35,7 +35,7 @@ namespace vcsparser.unittests
             this.commandLineArgs.InputDir = "inputDir";
 
             this.fileSystemMock = new Mock<IFileSystem>();
-            this.csvParserMock = new Mock<ICsvParser>();            
+            this.parserMock = new Mock<IDailyCodeChurnParser>();            
 
             var file1Mock = new Mock<IFile>();
             file1Mock.Setup(m => m.FileName).Returns("file1");
@@ -46,7 +46,7 @@ namespace vcsparser.unittests
                 file1Mock.Object,
                 file2Mock.Object
             };
-            this.fileSystemMock.Setup(m => m.GetFiles(this.commandLineArgs.InputDir, "*.csv")).Returns(filesMock);
+            this.fileSystemMock.Setup(m => m.GetFiles(this.commandLineArgs.InputDir, "*.json")).Returns(filesMock);
 
             measureConverter1Mock = new Mock<IMeasureConverter>();
             measureConverter2Mock = new Mock<IMeasureConverter>();
@@ -67,28 +67,28 @@ namespace vcsparser.unittests
                 new DailyCodeChurn()
             };
 
-            this.csvParserMock.Setup(m => m.ParseFile("file1")).Returns(dailyCodeChurn1);
-            this.csvParserMock.Setup(m => m.ParseFile("file2")).Returns(dailyCodeChurn2);
+            this.parserMock.Setup(m => m.ParseFile("file1")).Returns(dailyCodeChurn1);
+            this.parserMock.Setup(m => m.ParseFile("file2")).Returns(dailyCodeChurn2);
 
             this.jsonExporterMock = new Mock<IJsonExporter>();
 
-            this.processor = new SonarGenericMetricsProcessor(this.fileSystemMock.Object, this.csvParserMock.Object, this.measureConverters, this.jsonExporterMock.Object, new Mock<ILogger>().Object);
+            this.processor = new SonarGenericMetricsProcessor(this.fileSystemMock.Object, this.parserMock.Object, this.measureConverters, this.jsonExporterMock.Object, new Mock<ILogger>().Object);
         }
 
         [Fact]
-        public void WhenProcessingShouldReadCsvFilesFromInputDirectory()
+        public void WhenProcessingShouldReadJsonFilesFromInputDirectory()
         {
             processor.Process(this.commandLineArgs);
-            fileSystemMock.Verify(m => m.GetFiles("inputDir", "*.csv"), Times.Once());
+            fileSystemMock.Verify(m => m.GetFiles("inputDir", "*.json"), Times.Once());
         }
 
         [Fact]
-        public void WhenProcessingShouldParseCsvFiles()
+        public void WhenProcessingShouldParseJsonFiles()
         {
             processor.Process(this.commandLineArgs);
 
-            this.csvParserMock.Verify(m => m.ParseFile("file1"), Times.Once());
-            this.csvParserMock.Verify(m => m.ParseFile("file2"), Times.Once());
+            this.parserMock.Verify(m => m.ParseFile("file1"), Times.Once());
+            this.parserMock.Verify(m => m.ParseFile("file2"), Times.Once());
         }
 
         [Fact]

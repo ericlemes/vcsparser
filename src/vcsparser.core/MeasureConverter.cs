@@ -6,22 +6,12 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core
 {
-    public enum MeasureConverterType
-    {
-        LinesChanged,
-        NumberOfChanges,
-        LinesChangedWithFixes,
-        NumberOfChangesWithFixes
-    }
-
     public class MeasureConverter : IMeasureConverter
     {
         private DateTime startDate;
         private DateTime endDate;
         private Metric metric;
-        private MeasureConverterType type;
         private bool processedMetric = false;
-
         public Metric Metric
         {
             get { return metric; }
@@ -37,15 +27,21 @@ namespace vcsparser.core
             get { return endDate; }
         }
 
+        private IMeasureAggregator measureAggregator;
+
+        public IMeasureAggregator MeasureAggregator {
+            get { return this.measureAggregator; }
+        }
+
         private string filePrefixToRemove;
 
-        public MeasureConverter(DateTime startDate, DateTime endDate, Metric metric, MeasureConverterType type, string filePrefixToRemove)
+        public MeasureConverter(DateTime startDate, DateTime endDate, Metric metric, IMeasureAggregator measureAggregator, string filePrefixToRemove)
         {
             this.startDate = startDate;
             this.endDate = endDate;
             this.metric = metric;
-            this.type = type;
-            this.filePrefixToRemove = filePrefixToRemove;
+            this.measureAggregator = measureAggregator;
+            this.filePrefixToRemove = filePrefixToRemove;           
         }
 
         public void Process(DailyCodeChurn dailyCodeChurn, SonarMeasuresJson sonarMeasuresJson)
@@ -55,8 +51,7 @@ namespace vcsparser.core
 
             ProcessMetric(sonarMeasuresJson);
 
-            var value = GetValue(dailyCodeChurn);
-            if (value <= 0)
+            if (!measureAggregator.HasValue(dailyCodeChurn))
                 return;
 
             var fileName = ProcessFileName(dailyCodeChurn.FileName, filePrefixToRemove);
@@ -68,26 +63,12 @@ namespace vcsparser.core
                 {
                     MetricKey = this.metric.MetricKey,
                     File = fileName,
-                    Value = value
+                    Value = measureAggregator.GetValueForNewMeasure(dailyCodeChurn)
                 });
             }
             else
-            {
-                existingMeasure.Value += value;
-            }
-        }
-
-        private int GetValue(DailyCodeChurn dailyCodeChurn)
-        {
-            switch (this.type) {
-                case MeasureConverterType.LinesChanged:
-                    return dailyCodeChurn.TotalLinesChanged;                    
-                case MeasureConverterType.NumberOfChanges:
-                    return dailyCodeChurn.NumberOfChanges;
-                case MeasureConverterType.LinesChangedWithFixes:
-                    return dailyCodeChurn.TotalLinesChangedWithFixes;
-                default:
-                    return dailyCodeChurn.NumberOfChangesWithFixes;
+            {                
+                existingMeasure.Value = measureAggregator.GetValueForExistingMeasure(dailyCodeChurn, existingMeasure); 
             }
         }
 

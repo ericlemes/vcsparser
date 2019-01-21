@@ -19,5 +19,14 @@ namespace vcsparser.unittests
             string output = rd.ReadToEnd();
             Assert.NotEmpty(output);            
         }
+
+        [Fact]
+        public void WhenInvokingWithWorkingDirShouldCallProcessAndRedirectStdOut()
+        {
+            var processWrapper = new ProcessWrapper();
+            var rd = new StreamReader(processWrapper.Invoke("cmd", "/c dir", "C:\\"));
+            string output = rd.ReadToEnd();
+            Assert.NotEmpty(output);
+        }
     }
 }

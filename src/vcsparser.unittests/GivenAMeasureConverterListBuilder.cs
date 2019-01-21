@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using vcsparser.core.MeasureAggregators;
 
 namespace vcsparser.unittests
 {
@@ -36,7 +37,7 @@ namespace vcsparser.unittests
             args.Generate7Days = "true";            
             
             var converters = builder.Build(args);
-            Assert.Equal(24, converters.Count);
+            Assert.Equal(36, converters.Count);
         }
 
         [Fact]
@@ -47,19 +48,33 @@ namespace vcsparser.unittests
             args.Generate1Day = "true";
 
             var converters = builder.Build(args);
-            Assert.Equal(4, converters.Count);
-            var changesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.CHANGES_METRIC_KEY + "_1d").First();
-            var linesChangedMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_METRIC_KEY + "_1d").First();
-            var changesWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.CHANGES_FIXES_METRIC_KEY + "_1d").First();
-            var linesChangedWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_FIXES_METRIC_KEY + "_1d").First();
-            Assert.Equal(new DateTime(2018, 9, 16, 00, 00, 00), changesMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesMeasure.EndDate);
-            Assert.Equal(new DateTime(2018, 9, 16, 00, 00, 00), linesChangedMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedMeasure.EndDate);
-            Assert.Equal(new DateTime(2018, 9, 16, 00, 00, 00), changesWithFixesMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesWithFixesMeasure.EndDate);
-            Assert.Equal(new DateTime(2018, 9, 16, 00, 00, 00), linesChangedWithFixesMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedWithFixesMeasure.EndDate);
+
+            AssertAllMeasureConverters(converters, "_1d", new DateTime(2018, 9, 16, 00, 00, 00), new DateTime(2018, 9, 17, 00, 00, 00));            
+        }
+
+        private void AssertMeasureConverter<MeasureAggregatorType>(List<IMeasureConverter> converters, string metricKey, DateTime startDate, DateTime endDate)
+        {
+            var measureConverter = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == metricKey).First();
+            Assert.IsType<MeasureAggregatorType>(measureConverter.MeasureAggregator);
+            Assert.Equal(startDate, measureConverter.StartDate);
+            Assert.Equal(endDate, measureConverter.EndDate);
+        }
+
+        private void AssertAllMeasureConverters(List<IMeasureConverter> converters, string metricKeySuffix, DateTime startDate, DateTime endDate)
+        {
+            Assert.Equal(6, converters.Count);
+            AssertMeasureConverter<NumberOfChangesMeasureAggregator>(converters, MeasureConverterListBuilder.CHANGES_METRIC_KEY + metricKeySuffix,
+                startDate, endDate);
+            AssertMeasureConverter<LinesChangedMeasureAggregator>(converters, MeasureConverterListBuilder.LINES_CHANGED_METRIC_KEY + metricKeySuffix,
+                startDate, endDate);
+            AssertMeasureConverter<NumberOfChangesWithFixesMeasureAggregator>(converters, MeasureConverterListBuilder.CHANGES_FIXES_METRIC_KEY + metricKeySuffix,
+                startDate, endDate);
+            AssertMeasureConverter<LinesChangedWithFixesMeasureAggregator>(converters, MeasureConverterListBuilder.LINES_CHANGED_FIXES_METRIC_KEY + metricKeySuffix,
+                startDate, endDate);
+            AssertMeasureConverter<NumberOfAuthorsMeasureAggregator>(converters, MeasureConverterListBuilder.NUM_AUTHORS + metricKeySuffix,
+                startDate, endDate);
+            AssertMeasureConverter<NumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator>(converters, MeasureConverterListBuilder.NUM_AUTHORS_10_PERC + metricKeySuffix,
+                startDate, endDate);
         }
 
         [Fact]
@@ -69,20 +84,9 @@ namespace vcsparser.unittests
             args.EndDate = new DateTime(2018, 9, 17, 11, 00, 00);
             args.Generate1Day = "true";            
             
-            var converters = builder.Build(args);
-            Assert.Equal(4, converters.Count);
-            var changesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.CHANGES_METRIC_KEY + "_1d").First();
-            var linesChangedMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_METRIC_KEY+ "_1d").First();
-            var changesWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.CHANGES_FIXES_METRIC_KEY + "_1d").First();
-            var linesChangedWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_FIXES_METRIC_KEY + "_1d").First();
-            Assert.Equal(new DateTime(2018, 9, 16, 00, 00, 00), changesMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesMeasure.EndDate);
-            Assert.Equal(new DateTime(2018, 9, 16, 00, 00, 00), linesChangedMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedMeasure.EndDate);
-            Assert.Equal(new DateTime(2018, 9, 16, 00, 00, 00), changesWithFixesMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesWithFixesMeasure.EndDate);
-            Assert.Equal(new DateTime(2018, 9, 16, 00, 00, 00), linesChangedWithFixesMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedWithFixesMeasure.EndDate);
+            var converters = builder.Build(args);                                               
+
+            AssertAllMeasureConverters(converters, "_1d", new DateTime(2018, 9, 16, 00, 00, 00), new DateTime(2018, 9, 17, 00, 00, 00));
         }
 
         [Fact]
@@ -93,19 +97,8 @@ namespace vcsparser.unittests
             args.Generate1Year = "true";
 
             var converters = builder.Build(args);
-            Assert.Equal(4, converters.Count);
-            var changesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.CHANGES_METRIC_KEY + "_1y").First();
-            var linesChangedMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_METRIC_KEY + "_1y").First();
-            var changesWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.CHANGES_FIXES_METRIC_KEY + "_1y").First();
-            var linesChangedWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_FIXES_METRIC_KEY + "_1y").First();
-            Assert.Equal(new DateTime(2017, 9, 16, 00, 00, 00), changesMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesMeasure.EndDate);
-            Assert.Equal(new DateTime(2017, 9, 16, 00, 00, 00), linesChangedMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedMeasure.EndDate);
-            Assert.Equal(new DateTime(2017, 9, 16, 00, 00, 00), changesWithFixesMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesWithFixesMeasure.EndDate);
-            Assert.Equal(new DateTime(2017, 9, 16, 00, 00, 00), linesChangedWithFixesMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedWithFixesMeasure.EndDate);
+
+            AssertAllMeasureConverters(converters, "_1y", new DateTime(2017, 9, 16, 00, 00, 00), new DateTime(2018, 9, 17, 00, 00, 00));
         }
 
         [Fact]
@@ -116,19 +109,7 @@ namespace vcsparser.unittests
             args.Generate30Days = "true";
 
             var converters = builder.Build(args);
-            Assert.Equal(4, converters.Count);
-            var changesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.CHANGES_METRIC_KEY + "_30d").First();
-            var linesChangedMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_METRIC_KEY + "_30d").First();
-            var changesWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.CHANGES_FIXES_METRIC_KEY + "_30d").First();
-            var linesChangedWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_FIXES_METRIC_KEY + "_30d").First();
-            Assert.Equal(new DateTime(2018, 8, 17, 00, 00, 00), changesMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesMeasure.EndDate);
-            Assert.Equal(new DateTime(2018, 8, 17, 00, 00, 00), linesChangedMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedMeasure.EndDate);
-            Assert.Equal(new DateTime(2018, 8, 17, 00, 00, 00), changesWithFixesMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesWithFixesMeasure.EndDate);
-            Assert.Equal(new DateTime(2018, 8, 17, 00, 00, 00), linesChangedWithFixesMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedWithFixesMeasure.EndDate);
+            AssertAllMeasureConverters(converters, "_30d", new DateTime(2018, 8, 17, 00, 00, 00), new DateTime(2018, 9, 17, 00, 00, 00));
         }
 
         [Fact]
@@ -139,19 +120,7 @@ namespace vcsparser.unittests
             args.Generate3Months = "true";
 
             var converters = builder.Build(args);
-            Assert.Equal(4, converters.Count);
-            var changesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.CHANGES_METRIC_KEY + "_3m").First();
-            var linesChangedMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_METRIC_KEY + "_3m").First();
-            var changesWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.CHANGES_FIXES_METRIC_KEY + "_3m").First();
-            var linesChangedWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_FIXES_METRIC_KEY + "_3m").First();
-            Assert.Equal(new DateTime(2018, 6, 16, 00, 00, 00), changesMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesMeasure.EndDate);
-            Assert.Equal(new DateTime(2018, 6, 16, 00, 00, 00), linesChangedMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedMeasure.EndDate);
-            Assert.Equal(new DateTime(2018, 6, 16, 00, 00, 00), changesWithFixesMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesWithFixesMeasure.EndDate);
-            Assert.Equal(new DateTime(2018, 6, 16, 00, 00, 00), linesChangedWithFixesMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedWithFixesMeasure.EndDate);
+            AssertAllMeasureConverters(converters, "_3m", new DateTime(2018, 6, 16, 00, 00, 00), new DateTime(2018, 9, 17, 00, 00, 00));
         }
 
         [Fact]
@@ -162,19 +131,7 @@ namespace vcsparser.unittests
             args.Generate6Months = "true";
 
             var converters = builder.Build(args);
-            Assert.Equal(4, converters.Count);
-            var changesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.CHANGES_METRIC_KEY + "_6m").First();
-            var linesChangedMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_METRIC_KEY + "_6m").First();
-            var changesWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.CHANGES_FIXES_METRIC_KEY + "_6m").First();
-            var linesChangedWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_FIXES_METRIC_KEY + "_6m").First();
-            Assert.Equal(new DateTime(2018, 3, 16, 00, 00, 00), changesMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesMeasure.EndDate);
-            Assert.Equal(new DateTime(2018, 3, 16, 00, 00, 00), linesChangedMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedMeasure.EndDate);
-            Assert.Equal(new DateTime(2018, 3, 16, 00, 00, 00), changesWithFixesMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesWithFixesMeasure.EndDate);
-            Assert.Equal(new DateTime(2018, 3, 16, 00, 00, 00), linesChangedWithFixesMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedWithFixesMeasure.EndDate);
+            AssertAllMeasureConverters(converters, "_6m", new DateTime(2018, 3, 16, 00, 00, 00), new DateTime(2018, 9, 17, 00, 00, 00));
         }
 
         [Fact]
@@ -185,19 +142,7 @@ namespace vcsparser.unittests
             args.Generate7Days = "true";
 
             var converters = builder.Build(args);
-            Assert.Equal(4, converters.Count);
-            var changesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.CHANGES_METRIC_KEY + "_7d").First();
-            var linesChangedMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_METRIC_KEY + "_7d").First();
-            var changesWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.CHANGES_FIXES_METRIC_KEY + "_7d").First();
-            var linesChangedWithFixesMeasure = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == MeasureConverterListBuilder.LINES_CHANGED_FIXES_METRIC_KEY + "_7d").First();
-            Assert.Equal(new DateTime(2018, 9, 9, 00, 00, 00), changesMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesMeasure.EndDate);
-            Assert.Equal(new DateTime(2018, 9, 9, 00, 00, 00), linesChangedMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedMeasure.EndDate);
-            Assert.Equal(new DateTime(2018, 9, 9, 00, 00, 00), changesWithFixesMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), changesWithFixesMeasure.EndDate);
-            Assert.Equal(new DateTime(2018, 9, 9, 00, 00, 00), linesChangedWithFixesMeasure.StartDate);
-            Assert.Equal(new DateTime(2018, 9, 17, 00, 00, 00), linesChangedWithFixesMeasure.EndDate);
+            AssertAllMeasureConverters(converters, "_7d", new DateTime(2018, 9, 9, 00, 00, 00), new DateTime(2018, 9, 17, 00, 00, 00));
         }
     }
 }

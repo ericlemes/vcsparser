@@ -10,5 +10,6 @@ namespace vcsparser.core
     public interface IProcessWrapper
     {
         Stream Invoke(string executable, string arguments);
+        Stream Invoke(string executable, string arguments, string workingDir);
     }
 }

@@ -49,11 +49,11 @@ namespace vcsparser
         private static int RunSonarGenericMetrics(SonarGenericMetricsCommandLineArgs a)
         {
             var fileSystem = new FileSystem();
-            var csvParser = new CsvParser(new FileStreamFactory());
+            var jsonParser = new JsonDailyCodeChurnParser(new FileStreamFactory());
             var converters = new MeasureConverterListBuilder(new EnvironmentImpl()).Build(a);
             var jsonExporter = new JsonExporter(new FileStreamFactory());
 
-            var processor = new SonarGenericMetricsProcessor(fileSystem, csvParser, converters, jsonExporter, new ConsoleLogger());
+            var processor = new SonarGenericMetricsProcessor(fileSystem, jsonParser, converters, jsonExporter, new ConsoleLogger());
             processor.Process(a);
 
             return 0;

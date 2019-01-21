@@ -38,16 +38,16 @@ namespace vcsparser.unittests
 
             Assert.Equal(141284, result.ChangesetNumber);
             Assert.Equal("author.name@author.name_workspace-machine", result.Author);
-            Assert.Equal(new DateTime(2018, 06, 29, 18, 57, 47), result.Timestamp);
-            Assert.Equal("Long description of the change set" + Environment.NewLine + "with multiple lines" + Environment.NewLine, result.Message);
+            Assert.Equal(new DateTime(2018, 06, 29, 18, 57, 47), result.ChangesetTimestamp);
+            Assert.Equal("Long description of the change set" + Environment.NewLine + "with multiple lines" + Environment.NewLine, result.ChangesetMessage);
 
-            Assert.Equal("//depot/Dir1/Dir2/EntityModel/AuctionNotification.cpp", result.FileChanges[0].FileName);
-            Assert.Equal(1, result.FileChanges[0].Added);
-            Assert.Equal(4, result.FileChanges[0].Deleted);
-            Assert.Equal(12, result.FileChanges[0].ChangedBefore);
-            Assert.Equal(6, result.FileChanges[0].ChangedAfter);
+            Assert.Equal("//depot/Dir1/Dir2/EntityModel/AuctionNotification.cpp", result.ChangesetFileChanges[0].FileName);
+            Assert.Equal(1, result.ChangesetFileChanges[0].Added);
+            Assert.Equal(4, result.ChangesetFileChanges[0].Deleted);
+            Assert.Equal(12, result.ChangesetFileChanges[0].ChangedBefore);
+            Assert.Equal(6, result.ChangesetFileChanges[0].ChangedAfter);
 
-            Assert.Equal(5, result.FileChanges.Count);
+            Assert.Equal(5, result.ChangesetFileChanges.Count);
         }
 
         [Fact]

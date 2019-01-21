@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core
 {
-    public interface ICsvParser
+    public interface IDailyCodeChurnParser
     {
         List<DailyCodeChurn> ParseFile(string fileName);
     }

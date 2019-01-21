@@ -5,10 +5,11 @@ namespace vcsparser.core
 {
     public interface IChangeset
     {
-        object CommitIdentifier { get; }
-        DateTime Timestamp { get; }
-        List<FileChanges> FileChanges { get; }
-        Dictionary<string, string> FileRenames { get;  }
-        string Message { get; }
+        object ChangesetIdentifier { get; }
+        DateTime ChangesetTimestamp { get; }
+        List<FileChanges> ChangesetFileChanges { get; }
+        Dictionary<string, string> ChangesetFileRenames { get;  }
+        string ChangesetMessage { get; }        
+        string ChangesetAuthor { get; }
     }
 }
