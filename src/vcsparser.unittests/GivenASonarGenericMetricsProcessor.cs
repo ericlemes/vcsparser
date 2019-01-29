@@ -76,41 +76,6 @@ namespace vcsparser.unittests
         }
 
         [Fact]
-        public void WhenProcessingShouldReadJsonFilesFromInputDirectory()
-        {
-            processor.Process(this.commandLineArgs);
-            fileSystemMock.Verify(m => m.GetFiles("inputDir", "*.json"), Times.Once());
-        }
-
-        [Fact]
-        public void WhenProcessingShouldParseJsonFiles()
-        {
-            processor.Process(this.commandLineArgs);
-
-            this.parserMock.Verify(m => m.ParseFile("file1"), Times.Once());
-            this.parserMock.Verify(m => m.ParseFile("file2"), Times.Once());
-        }
-
-        [Fact]
-        public void WhenRunningThisShouldFail()
-        {
-            Assert.True(false);
-        }
-
-        [Fact]
-        public void WhenProcessingShouldProcessMeasureConverters()
-        {
-            processor.Process(this.commandLineArgs);
-
-            this.measureConverter1Mock.Verify(m => m.Process(dailyCodeChurn1[0], It.IsAny<SonarMeasuresJson>()), Times.Once());
-            this.measureConverter1Mock.Verify(m => m.Process(dailyCodeChurn1[1], It.IsAny<SonarMeasuresJson>()), Times.Once());
-            this.measureConverter1Mock.Verify(m => m.Process(dailyCodeChurn2[0], It.IsAny<SonarMeasuresJson>()), Times.Once());
-            this.measureConverter2Mock.Verify(m => m.Process(dailyCodeChurn1[0], It.IsAny<SonarMeasuresJson>()), Times.Once());
-            this.measureConverter2Mock.Verify(m => m.Process(dailyCodeChurn1[1], It.IsAny<SonarMeasuresJson>()), Times.Once());
-            this.measureConverter2Mock.Verify(m => m.Process(dailyCodeChurn2[0], It.IsAny<SonarMeasuresJson>()), Times.Once());
-        }
-
-        [Fact]
         public void WhenProcessingShouldExportJson()
         {
             processor.Process(this.commandLineArgs);
