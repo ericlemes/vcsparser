@@ -92,6 +92,12 @@ namespace vcsparser.unittests
         }
 
         [Fact]
+        public void WhenRunningThisShouldFail()
+        {
+            Assert.True(false);
+        }
+
+        [Fact]
         public void WhenProcessingShouldProcessMeasureConverters()
         {
             processor.Process(this.commandLineArgs);
