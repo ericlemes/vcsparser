@@ -137,7 +137,7 @@ namespace vcsparser.core.git
             oldFileName = fileName.Replace(stringToReplace, oldFileName).Replace("//", "/");
             newFileName = fileName.Replace(stringToReplace, newFileName).Replace("//", "/");
 
-            context.CurrentCommit.ChangesetFileRenames.Add(newFileName, oldFileName);
+            context.CurrentCommit.ChangesetFileRenames.Add(oldFileName, newFileName);
 
             return newFileName;
         }

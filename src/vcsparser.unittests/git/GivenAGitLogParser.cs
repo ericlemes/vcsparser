@@ -125,7 +125,7 @@ namespace vcsparser.unittests.git
 
             Assert.Equal("test2.txt", commits[1].ChangesetFileChanges[0].FileName);
             Assert.Single(commits[1].ChangesetFileRenames);
-            Assert.Equal("test1.txt", commits[1].ChangesetFileRenames["test2.txt"]);
+            Assert.Equal("test2.txt", commits[1].ChangesetFileRenames["test1.txt"]);
         }
 
         [Fact]
@@ -135,7 +135,7 @@ namespace vcsparser.unittests.git
             context.CurrentCommit = new GitCommit();
             parser.ProcessRenames(context, "some/common/path/root/{OldFileName.h => NewFileName.h}");
 
-            Assert.Equal("some/common/path/root/OldFileName.h", context.CurrentCommit.ChangesetFileRenames["some/common/path/root/NewFileName.h"]);
+            Assert.Equal("some/common/path/root/NewFileName.h", context.CurrentCommit.ChangesetFileRenames["some/common/path/root/OldFileName.h"]);
         }
 
         [Fact]
@@ -145,7 +145,7 @@ namespace vcsparser.unittests.git
             context.CurrentCommit = new GitCommit();
             parser.ProcessRenames(context, "OldFileName.h => NewFileName.h");
 
-            Assert.Equal("OldFileName.h", context.CurrentCommit.ChangesetFileRenames["NewFileName.h"]);
+            Assert.Equal("NewFileName.h", context.CurrentCommit.ChangesetFileRenames["OldFileName.h"]);
         }
 
         [Fact]
@@ -155,7 +155,7 @@ namespace vcsparser.unittests.git
             context.CurrentCommit = new GitCommit();
             parser.ProcessRenames(context, "some/root/{ => another/added/dir}/SomeFile.cpp");
 
-            Assert.Equal("some/root/SomeFile.cpp", context.CurrentCommit.ChangesetFileRenames["some/root/another/added/dir/SomeFile.cpp"]);
+            Assert.Equal("some/root/another/added/dir/SomeFile.cpp", context.CurrentCommit.ChangesetFileRenames["some/root/SomeFile.cpp"]);
         }
 
         [Fact]
