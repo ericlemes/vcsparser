@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core.MeasureAggregators
 {
-    public class NumberOfAuthorsMeasureAggregator : IMeasureAggregator
+    public class NumberOfAuthorsMeasureAggregator : IMeasureAggregator<int>
     {        
         private Dictionary<string, Dictionary<string, bool>> currentUniqueAuthorsPerFile = new Dictionary<string, Dictionary<string, bool>>();
 
-        public int GetValueForExistingMeasure(DailyCodeChurn dailyCodeChurn, Measure existingMeasure)
+        public int GetValueForExistingMeasure(DailyCodeChurn dailyCodeChurn, Measure<int> existingMeasure)
         {
             UpdateCurrentUniqueAuthors(dailyCodeChurn);
 

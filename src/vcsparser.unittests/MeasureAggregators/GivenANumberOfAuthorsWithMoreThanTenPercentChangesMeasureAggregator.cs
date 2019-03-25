@@ -138,7 +138,7 @@ namespace vcsparser.unittests.MeasureAggregators
             };
             this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn);
 
-            var measure = new Measure();
+            var measure = new Measure<int>();
             measure.Value = 3;
             dailyCodeChurn = new DailyCodeChurn()
             {

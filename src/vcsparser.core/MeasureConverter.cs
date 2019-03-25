@@ -3,45 +3,43 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using vcsparser.core.MeasureAggregators;
 
 namespace vcsparser.core
 {
-    public class MeasureConverter : IMeasureConverter
+    public class MeasureConverter<T> : IMeasureConverter
     {
         private DateTime startDate;
         private DateTime endDate;
         private Metric metric;
         private bool processedMetric = false;
-        public Metric Metric
-        {
+        public Metric Metric {
             get { return metric; }
         }
 
-        public DateTime StartDate
-        {
+        public DateTime StartDate {
             get { return startDate; }
         }
 
-        public DateTime EndDate
-        {
+        public DateTime EndDate {
             get { return endDate; }
         }
 
-        private IMeasureAggregator measureAggregator;
+        private IMeasureAggregator<T> measureAggregator;
 
-        public IMeasureAggregator MeasureAggregator {
+        public IMeasureAggregator<T> MeasureAggregator {
             get { return this.measureAggregator; }
         }
 
         private string filePrefixToRemove;
 
-        public MeasureConverter(DateTime startDate, DateTime endDate, Metric metric, IMeasureAggregator measureAggregator, string filePrefixToRemove)
+        public MeasureConverter(DateTime startDate, DateTime endDate, Metric metric, IMeasureAggregator<T> measureAggregator, string filePrefixToRemove)
         {
             this.startDate = startDate;
             this.endDate = endDate;
             this.metric = metric;
             this.measureAggregator = measureAggregator;
-            this.filePrefixToRemove = filePrefixToRemove;           
+            this.filePrefixToRemove = filePrefixToRemove;
         }
 
         public void Process(DailyCodeChurn dailyCodeChurn, SonarMeasuresJson sonarMeasuresJson)
@@ -56,10 +54,10 @@ namespace vcsparser.core
 
             var fileName = ProcessFileName(dailyCodeChurn.FileName, filePrefixToRemove);
 
-            var existingMeasure = sonarMeasuresJson.FindMeasure(metric.MetricKey, fileName);
+            var existingMeasure = sonarMeasuresJson.FindMeasure(metric.MetricKey, fileName) as Measure<T>;
             if (existingMeasure == null)
             {
-                sonarMeasuresJson.AddMeasure(new Measure()
+                sonarMeasuresJson.AddMeasure(new Measure<T>()
                 {
                     MetricKey = this.metric.MetricKey,
                     File = fileName,
@@ -67,8 +65,8 @@ namespace vcsparser.core
                 });
             }
             else
-            {                
-                existingMeasure.Value = measureAggregator.GetValueForExistingMeasure(dailyCodeChurn, existingMeasure); 
+            {
+                existingMeasure.Value = measureAggregator.GetValueForExistingMeasure(dailyCodeChurn, existingMeasure);
             }
         }
 

@@ -64,6 +64,7 @@
     <Compile Include="IMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\LinesChangedMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\LinesChangedWithFixesMeasureAggregator.cs" />
+    <Compile Include="MeasureAggregators\LinesFixedOverChangedMetricsMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\NumberOfAuthorsMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\NumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\NumberOfChangesMeasureAggregator.cs" />

@@ -23,7 +23,7 @@ namespace vcsparser.unittests
             {
                 Measures = new List<Measure>()
                 {
-                    new Measure()
+                    new Measure<int>()
                     {
                         MetricKey = "key",
                         File = "file",

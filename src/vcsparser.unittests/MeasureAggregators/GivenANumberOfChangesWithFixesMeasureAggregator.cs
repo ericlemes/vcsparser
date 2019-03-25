@@ -66,7 +66,7 @@ namespace vcsparser.unittests.MeasureAggregators
                 FileName = "file1",
                 NumberOfChangesWithFixes = 1                
             };
-            var measure = new Measure();
+            var measure = new Measure<int>();
             measure.Value = 3;
             Assert.Equal(4, this.measureAggregator.GetValueForExistingMeasure(dailyCodeChurn, measure));
         }

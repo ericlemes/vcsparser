@@ -26,7 +26,7 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenFindingMeasureForExistingMetricAndInexistentFileShouldReturnNull()
         {
-            this.sonarMeasuresJson.AddMeasure(new Measure()
+            this.sonarMeasuresJson.AddMeasure(new Measure<int>()
             {
                 MetricKey = "key",
                 File = "file2"
@@ -37,13 +37,13 @@ namespace vcsparser.unittests
         [Fact]        
         public void WhenAddingExistingMeasureShouldThrow()
         {
-            this.sonarMeasuresJson.AddMeasure(new Measure()
+            this.sonarMeasuresJson.AddMeasure(new Measure<int>()
             {
                 MetricKey = "key",
                 File = "file2"
             });
             Assert.Throws<Exception>(() => {
-                this.sonarMeasuresJson.AddMeasure(new Measure()
+                this.sonarMeasuresJson.AddMeasure(new Measure<int>()
                 {
                     MetricKey = "key",
                     File = "file2"

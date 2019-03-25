@@ -74,7 +74,7 @@ namespace vcsparser.unittests.MeasureAggregators
                 Deleted = 0,
                 NumberOfChanges = 5
             };
-            var measure = new Measure();
+            var measure = new Measure<int>();
             measure.Value = 3;
             Assert.Equal(8, this.measureAggregator.GetValueForExistingMeasure(dailyCodeChurn, measure));
         }

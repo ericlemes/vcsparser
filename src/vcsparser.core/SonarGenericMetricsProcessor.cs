@@ -29,7 +29,7 @@ namespace vcsparser.core
         public void Process(SonarGenericMetricsCommandLineArgs a)
         {
             var files = fileSystem.GetFiles(a.InputDir, "*.json");
-            SonarMeasuresJson outputJson = new SonarMeasuresJson();            
+            SonarMeasuresJson outputJson = new SonarMeasuresJson();
 
             foreach(var file in files)
             {

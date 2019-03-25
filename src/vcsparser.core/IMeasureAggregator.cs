@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core
 {
-    public interface IMeasureAggregator
+    public interface IMeasureAggregator<T>
     {
         bool HasValue(DailyCodeChurn dailyCodeChurn);
-        int GetValueForNewMeasure(DailyCodeChurn dailyCodeChurn);
-        int GetValueForExistingMeasure(DailyCodeChurn dailyCodeChurn, Measure existingMeasure);
+        T GetValueForNewMeasure(DailyCodeChurn dailyCodeChurn);
+        T GetValueForExistingMeasure(DailyCodeChurn dailyCodeChurn, Measure<T> existingMeasure);
     }
 }

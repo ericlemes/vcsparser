@@ -11,7 +11,7 @@ namespace vcsparser.core
         public string Name{ get; set; }
 
         [JsonProperty("type")]
-        public string Type { get { return "INT"; } }
+        public string Type { get; set; } = "INT";
 
         [JsonProperty("description")]
         public string Description { get; set; }

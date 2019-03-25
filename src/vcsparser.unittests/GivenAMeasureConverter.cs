@@ -11,24 +11,24 @@ namespace vcsparser.unittests
 {
     public class GivenAMeasureConverter
     {
-        private MeasureConverter measureConverter;
+        private MeasureConverter<int> measureConverter;
         private Metric metric;
-        private Mock<IMeasureAggregator> mockMeasureAggregator;
+        private Mock<IMeasureAggregator<int>> mockMeasureAggregator;
 
         public GivenAMeasureConverter()
         {
             metric = new Metric();
             metric.MetricKey = "key";
 
-            this.mockMeasureAggregator = new Mock<IMeasureAggregator>();
+            this.mockMeasureAggregator = new Mock<IMeasureAggregator<int>>();
             this.mockMeasureAggregator.Setup(m => m.HasValue(It.IsAny<DailyCodeChurn>())).
                 Returns((DailyCodeChurn d) => d.TotalLinesChanged > 0);
             this.mockMeasureAggregator.Setup(m => m.GetValueForNewMeasure(It.IsAny<DailyCodeChurn>())).
                 Returns((DailyCodeChurn d) => d.TotalLinesChanged);
-            this.mockMeasureAggregator.Setup(m => m.GetValueForExistingMeasure(It.IsAny<DailyCodeChurn>(), It.IsAny<Measure>())).
-                Returns((DailyCodeChurn d, Measure existingMeasure) => d.TotalLinesChanged + existingMeasure.Value);
+            this.mockMeasureAggregator.Setup(m => m.GetValueForExistingMeasure(It.IsAny<DailyCodeChurn>(), It.IsAny<Measure<int>>())).
+                Returns((DailyCodeChurn d, Measure<int> existingMeasure) => d.TotalLinesChanged + existingMeasure.Value);
 
-            this.measureConverter = new MeasureConverter(new DateTime(2018, 9, 17), new DateTime(2018, 9, 18), metric, mockMeasureAggregator.Object, "//prefix/");
+            this.measureConverter = new MeasureConverter<int>(new DateTime(2018, 9, 17), new DateTime(2018, 9, 18), metric, mockMeasureAggregator.Object, "//prefix/");
         }
 
         [Fact]
@@ -87,7 +87,7 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenConvertingWithinRangeAndNoFilePrefixShouldConvert()
         {
-            this.measureConverter = new MeasureConverter(new DateTime(2018, 9, 17), new DateTime(2018, 9, 18), metric, mockMeasureAggregator.Object, null);
+            this.measureConverter = new MeasureConverter<int>(new DateTime(2018, 9, 17), new DateTime(2018, 9, 18), metric, mockMeasureAggregator.Object, null);
             var dailyCodeChurn = new DailyCodeChurn()
             {
                 Timestamp = "2018/09/17 00:00:00",
@@ -118,7 +118,7 @@ namespace vcsparser.unittests
             this.measureConverter.Process(dailyCodeChurn, measures);
 
             Assert.Equal(dailyCodeChurn.TotalLinesChanged, 
-                measures.Measures.Where(m => m.MetricKey == "key" && m.File == dailyCodeChurn.FileName).Single().Value);            
+                measures.Measures.Where(m => m.MetricKey == "key" && m.File == dailyCodeChurn.FileName).Select(m => m as Measure<int>).Single().Value);            
         }
 
         [Fact]
@@ -132,7 +132,7 @@ namespace vcsparser.unittests
                 Deleted = 10
             };
             var measures = new SonarMeasuresJson();
-            measures.Measures.Add(new Measure()
+            measures.Measures.Add(new Measure<object>()
             {
                 MetricKey = "key2",
                 File = "file1",
@@ -142,7 +142,7 @@ namespace vcsparser.unittests
             this.measureConverter.Process(dailyCodeChurn, measures);
 
             Assert.Equal(dailyCodeChurn.TotalLinesChanged,
-                measures.Measures.Where(m => m.MetricKey == "key" && m.File == dailyCodeChurn.FileName).Single().Value);
+                measures.Measures.Where(m => m.MetricKey == "key" && m.File == dailyCodeChurn.FileName).Select(m => m as Measure<int>).Single().Value);
             Assert.Equal(2, measures.Measures.Count());
         }
 
@@ -206,7 +206,7 @@ namespace vcsparser.unittests
                 Deleted = 10
             };
             var measures = new SonarMeasuresJson();
-            measures.AddMeasure(new Measure()
+            measures.AddMeasure(new Measure<int>()
             {
                 MetricKey = "key",
                 File = "file1",
@@ -216,7 +216,7 @@ namespace vcsparser.unittests
             this.measureConverter.Process(dailyCodeChurn, measures);
 
             Assert.Equal(dailyCodeChurn.TotalLinesChanged + 5,
-                measures.Measures.Where(m => m.MetricKey == "key" && m.File == dailyCodeChurn.FileName).Single().Value);            
+                measures.Measures.Where(m => m.MetricKey == "key" && m.File == dailyCodeChurn.FileName).Select(m => m as Measure<int>).Single().Value);            
         }
     }
 }

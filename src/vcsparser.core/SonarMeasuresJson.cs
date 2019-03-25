@@ -38,8 +38,10 @@ namespace vcsparser.core
         public void AddMeasure(Measure measure)
         {
             this.Measures.Add(measure);
+
             if (!measureIndex.ContainsKey(measure.MetricKey))
                 measureIndex.Add(measure.MetricKey, new Dictionary<string, Measure>());
+
             if (!measureIndex[measure.MetricKey].ContainsKey(measure.File))
                 measureIndex[measure.MetricKey].Add(measure.File, measure);
             else

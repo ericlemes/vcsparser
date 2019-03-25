@@ -54,7 +54,7 @@ namespace vcsparser.unittests
 
         private void AssertMeasureConverter<MeasureAggregatorType>(List<IMeasureConverter> converters, string metricKey, DateTime startDate, DateTime endDate)
         {
-            var measureConverter = (MeasureConverter)converters.Where(c => ((MeasureConverter)c).Metric.MetricKey == metricKey).First();
+            var measureConverter = (MeasureConverter<int>)converters.Where(c => ((MeasureConverter<int>)c).Metric.MetricKey == metricKey).First();
             Assert.IsType<MeasureAggregatorType>(measureConverter.MeasureAggregator);
             Assert.Equal(startDate, measureConverter.StartDate);
             Assert.Equal(endDate, measureConverter.EndDate);

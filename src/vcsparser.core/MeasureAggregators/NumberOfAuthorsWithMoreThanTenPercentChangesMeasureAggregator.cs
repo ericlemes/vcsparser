@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core.MeasureAggregators
 {
-    public class NumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator : IMeasureAggregator
+    public class NumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator : IMeasureAggregator<int>
     {
         private readonly int THRESHOLD = 10;
 
         private Dictionary<string, Dictionary<string, int>> currentUniqueAuthorsPerFile = new Dictionary<string, Dictionary<string, int>>();
 
-        public int GetValueForExistingMeasure(DailyCodeChurn dailyCodeChurn, Measure existingMeasure)
+        public int GetValueForExistingMeasure(DailyCodeChurn dailyCodeChurn, Measure<int> existingMeasure)
         {
             UpdateCurrentUniqueAuthors(dailyCodeChurn);
             return CalculateNumberOfAuthorsOverThreshold(dailyCodeChurn, THRESHOLD);
