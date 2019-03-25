@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core.MeasureAggregators
 {
-    public class LinesFixedOverChangedMetricsMeasureAggregator : IMeasureAggregator<double>
+    public class LinesFixedOverChangedMetricsMeasureAggregator : IMeasureAggregatorProject<double>
     {
         private Dictionary<string, List<int[]>> currentChanges = new Dictionary<string, List<int[]>>();
 
@@ -22,6 +22,18 @@ namespace vcsparser.core.MeasureAggregators
             return CalculateCurrentChange(dailyCodeChurn.FileName);
         }
 
+        public double GetValueForExistingProjectMeasure(DailyCodeChurn dailyCodeChurn, Measure<double> existingMeasure)
+        {
+            // UpdateCurrentChanges(dailyCodeChurn);
+            return CalculateCurrent();
+        }
+
+        public double GetValueForNewProjectMeasure(DailyCodeChurn dailyCodeChurn)
+        {
+            // UpdateCurrentChanges(dailyCodeChurn);
+            return CalculateCurrent();
+        }
+
         private double CalculateCurrentChange(string fileName)
         {
             int totalLinesChangedWithFixes = 0;
@@ -31,6 +43,23 @@ namespace vcsparser.core.MeasureAggregators
             {
                 totalLinesChangedWithFixes += a[0];
                 totalLinesChanged += a[1];
+            }
+
+            return (totalLinesChangedWithFixes * 100.0) / totalLinesChanged;
+        }
+
+        private double CalculateCurrent()
+        {
+            int totalLinesChangedWithFixes = 0;
+            int totalLinesChanged = 0;
+
+            foreach (string fileName in currentChanges.Keys)
+            {
+                foreach (var a in currentChanges[fileName])
+                {
+                    totalLinesChangedWithFixes += a[0];
+                    totalLinesChanged += a[1];
+                }
             }
 
             return (totalLinesChangedWithFixes * 100.0) / totalLinesChanged;

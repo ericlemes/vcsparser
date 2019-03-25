@@ -59,17 +59,7 @@ namespace vcsparser.core
             return new DateTime(endDate.Year, endDate.Month, endDate.Day);
         }
 
-        private Metric CreateMetric(string key, string name, string description)
-        {
-            return new Metric()
-            {
-                MetricKey = key,
-                Name = name,
-                Description = description
-            };
-        }
-
-        private Metric CreateMetric(string key, string name, string description, string type)
+        private Metric CreateMetric(string key, string name, string description, string type = "INT")
         {
             return new Metric()
             {
@@ -103,7 +93,7 @@ namespace vcsparser.core
             result.Add(new MeasureConverter<int>(startDate, endDate, metricLinesChangedWithFixes, new LinesChangedWithFixesMeasureAggregator(), a.FilePrefixToRemove));
             result.Add(new MeasureConverter<int>(startDate, endDate, metricNumAuthors, new NumberOfAuthorsMeasureAggregator(), a.FilePrefixToRemove));
             result.Add(new MeasureConverter<int>(startDate, endDate, metricNumAuthors10Perc, new NumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter<double>(startDate, endDate, metricLineFixedOverChanges, new LinesFixedOverChangedMetricsMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter<double>(startDate, endDate, metricLineFixedOverChanges, new LinesFixedOverChangedMetricsMeasureAggregator(), a.FilePrefixToRemove, true));
         }
 
         private void CreateConvertersFor1Day(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)

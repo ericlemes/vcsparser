@@ -7,8 +7,8 @@ namespace vcsparser.core
     {
         [JsonProperty("metric-key")]
         public string MetricKey { get; set; }
-
-        [JsonProperty("file")]
+        
+        [JsonProperty("file", NullValueHandling = NullValueHandling.Ignore)]
         public string File { get; set; }
     }
 

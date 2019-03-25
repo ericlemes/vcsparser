@@ -20,30 +20,30 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenInexistentMeasureShouldReturnNull()
         {
-            Assert.Null(this.sonarMeasuresJson.FindMeasure("key", "file1"));
+            Assert.Null(this.sonarMeasuresJson.FindFileMeasure("key", "file1"));
         }
 
         [Fact]
         public void WhenFindingMeasureForExistingMetricAndInexistentFileShouldReturnNull()
         {
-            this.sonarMeasuresJson.AddMeasure(new Measure<int>()
+            this.sonarMeasuresJson.AddFileMeasure(new Measure<int>()
             {
                 MetricKey = "key",
                 File = "file2"
             });
-            Assert.Null(this.sonarMeasuresJson.FindMeasure("key", "file1"));
+            Assert.Null(this.sonarMeasuresJson.FindFileMeasure("key", "file1"));
         }
 
         [Fact]        
         public void WhenAddingExistingMeasureShouldThrow()
         {
-            this.sonarMeasuresJson.AddMeasure(new Measure<int>()
+            this.sonarMeasuresJson.AddFileMeasure(new Measure<int>()
             {
                 MetricKey = "key",
                 File = "file2"
             });
             Assert.Throws<Exception>(() => {
-                this.sonarMeasuresJson.AddMeasure(new Measure<int>()
+                this.sonarMeasuresJson.AddFileMeasure(new Measure<int>()
                 {
                     MetricKey = "key",
                     File = "file2"

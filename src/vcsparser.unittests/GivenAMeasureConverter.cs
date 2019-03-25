@@ -206,7 +206,7 @@ namespace vcsparser.unittests
                 Deleted = 10
             };
             var measures = new SonarMeasuresJson();
-            measures.AddMeasure(new Measure<int>()
+            measures.AddFileMeasure(new Measure<int>()
             {
                 MetricKey = "key",
                 File = "file1",

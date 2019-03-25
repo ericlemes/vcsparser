@@ -12,4 +12,10 @@ namespace vcsparser.core
         T GetValueForNewMeasure(DailyCodeChurn dailyCodeChurn);
         T GetValueForExistingMeasure(DailyCodeChurn dailyCodeChurn, Measure<T> existingMeasure);
     }
+
+    public interface IMeasureAggregatorProject<T> : IMeasureAggregator<T>
+    {
+        T GetValueForNewProjectMeasure(DailyCodeChurn dailyCodeChurn);
+        T GetValueForExistingProjectMeasure(DailyCodeChurn dailyCodeChurn, Measure<T> existingMeasure);
+    }
 }

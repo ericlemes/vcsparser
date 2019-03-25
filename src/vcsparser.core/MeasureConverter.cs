@@ -13,6 +13,9 @@ namespace vcsparser.core
         private DateTime endDate;
         private Metric metric;
         private bool processedMetric = false;
+
+        private bool projectMeasure;
+
         public Metric Metric {
             get { return metric; }
         }
@@ -33,13 +36,14 @@ namespace vcsparser.core
 
         private string filePrefixToRemove;
 
-        public MeasureConverter(DateTime startDate, DateTime endDate, Metric metric, IMeasureAggregator<T> measureAggregator, string filePrefixToRemove)
+        public MeasureConverter(DateTime startDate, DateTime endDate, Metric metric, IMeasureAggregator<T> measureAggregator, string filePrefixToRemove, bool projectMeasure = false)
         {
             this.startDate = startDate;
             this.endDate = endDate;
             this.metric = metric;
             this.measureAggregator = measureAggregator;
             this.filePrefixToRemove = filePrefixToRemove;
+            this.projectMeasure = projectMeasure;
         }
 
         public void Process(DailyCodeChurn dailyCodeChurn, SonarMeasuresJson sonarMeasuresJson)
@@ -54,19 +58,40 @@ namespace vcsparser.core
 
             var fileName = ProcessFileName(dailyCodeChurn.FileName, filePrefixToRemove);
 
-            var existingMeasure = sonarMeasuresJson.FindMeasure(metric.MetricKey, fileName) as Measure<T>;
-            if (existingMeasure == null)
+            var existingMeasureFile = sonarMeasuresJson.FindFileMeasure(metric.MetricKey, fileName) as Measure<T>;
+
+            if (existingMeasureFile == null)
             {
-                sonarMeasuresJson.AddMeasure(new Measure<T>()
+                sonarMeasuresJson.AddFileMeasure(new Measure<T>()
                 {
                     MetricKey = this.metric.MetricKey,
-                    File = fileName,
-                    Value = measureAggregator.GetValueForNewMeasure(dailyCodeChurn)
+                    Value = measureAggregator.GetValueForNewMeasure(dailyCodeChurn),
+                    File = fileName
                 });
             }
             else
             {
-                existingMeasure.Value = measureAggregator.GetValueForExistingMeasure(dailyCodeChurn, existingMeasure);
+                existingMeasureFile.Value = measureAggregator.GetValueForExistingMeasure(dailyCodeChurn, existingMeasureFile);
+            }
+            if (projectMeasure)
+            {
+                var existingMeasureProject = sonarMeasuresJson.FindProjectMeasure(metric.MetricKey) as Measure<T>;
+                var projectMeasureAggregator = measureAggregator as IMeasureAggregatorProject<T>;
+                if (projectMeasureAggregator == null)
+                    throw new Exception($"Measure Aggregator is not instance of IMeasureAggregatorProject<{typeof(T)}>");
+
+                if (existingMeasureProject == null)
+                {
+                    sonarMeasuresJson.AddProjectMeasure(new Measure<T>()
+                    {
+                        MetricKey = this.metric.MetricKey,
+                        Value = projectMeasureAggregator.GetValueForNewProjectMeasure(dailyCodeChurn)
+                    });
+                }
+                else
+                {
+                    existingMeasureProject.Value = projectMeasureAggregator.GetValueForExistingProjectMeasure(dailyCodeChurn, existingMeasureProject);
+                }
             }
         }
 
