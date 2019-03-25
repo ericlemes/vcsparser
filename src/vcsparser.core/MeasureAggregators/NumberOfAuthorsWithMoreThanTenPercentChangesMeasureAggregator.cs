@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core.MeasureAggregators
 {
-    public class NumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator : IMeasureAggregator<int>
+    public class NumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator : IMeasureAggregatorProject<int>
     {
         private readonly int THRESHOLD = 10;
 
@@ -22,6 +22,11 @@ namespace vcsparser.core.MeasureAggregators
         {
             UpdateCurrentUniqueAuthors(dailyCodeChurn);
 
+            return CalculateNumberOfAuthorsOverThreshold(dailyCodeChurn, THRESHOLD);
+        }
+
+        public int GetValueForProjectMeasure(DailyCodeChurn dailyCodeChurn)
+        {
             return CalculateNumberOfAuthorsOverThreshold(dailyCodeChurn, THRESHOLD);
         }
 

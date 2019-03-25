@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core.MeasureAggregators
 {
-    public class NumberOfAuthorsMeasureAggregator : IMeasureAggregator<int>
+    public class NumberOfAuthorsMeasureAggregator : IMeasureAggregatorProject<int>
     {        
         private Dictionary<string, Dictionary<string, bool>> currentUniqueAuthorsPerFile = new Dictionary<string, Dictionary<string, bool>>();
 
@@ -21,6 +21,11 @@ namespace vcsparser.core.MeasureAggregators
         {
             UpdateCurrentUniqueAuthors(dailyCodeChurn);
 
+            return currentUniqueAuthorsPerFile[dailyCodeChurn.FileName].Count();
+        }
+
+        public int GetValueForProjectMeasure(DailyCodeChurn dailyCodeChurn)
+        {
             return currentUniqueAuthorsPerFile[dailyCodeChurn.FileName].Count();
         }
 

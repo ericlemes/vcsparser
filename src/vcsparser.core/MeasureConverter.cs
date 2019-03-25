@@ -36,14 +36,14 @@ namespace vcsparser.core
 
         private string filePrefixToRemove;
 
-        public MeasureConverter(DateTime startDate, DateTime endDate, Metric metric, IMeasureAggregator<T> measureAggregator, string filePrefixToRemove, bool projectMeasure = false)
+        public MeasureConverter(DateTime startDate, DateTime endDate, Metric metric, IMeasureAggregator<T> measureAggregator, string filePrefixToRemove)
         {
             this.startDate = startDate;
             this.endDate = endDate;
             this.metric = metric;
             this.measureAggregator = measureAggregator;
             this.filePrefixToRemove = filePrefixToRemove;
-            this.projectMeasure = projectMeasure;
+            this.projectMeasure = measureAggregator is IMeasureAggregatorProject<T>;
         }
 
         public void Process(DailyCodeChurn dailyCodeChurn, SonarMeasuresJson sonarMeasuresJson)
@@ -85,12 +85,12 @@ namespace vcsparser.core
                     sonarMeasuresJson.AddProjectMeasure(new Measure<T>()
                     {
                         MetricKey = this.metric.MetricKey,
-                        Value = projectMeasureAggregator.GetValueForNewProjectMeasure(dailyCodeChurn)
+                        Value = projectMeasureAggregator.GetValueForProjectMeasure(dailyCodeChurn)
                     });
                 }
                 else
                 {
-                    existingMeasureProject.Value = projectMeasureAggregator.GetValueForExistingProjectMeasure(dailyCodeChurn, existingMeasureProject);
+                    existingMeasureProject.Value = projectMeasureAggregator.GetValueForProjectMeasure(dailyCodeChurn);
                 }
             }
         }

@@ -15,7 +15,6 @@ namespace vcsparser.core
 
     public interface IMeasureAggregatorProject<T> : IMeasureAggregator<T>
     {
-        T GetValueForNewProjectMeasure(DailyCodeChurn dailyCodeChurn);
-        T GetValueForExistingProjectMeasure(DailyCodeChurn dailyCodeChurn, Measure<T> existingMeasure);
+        T GetValueForProjectMeasure(DailyCodeChurn dailyCodeChurn);
     }
 }

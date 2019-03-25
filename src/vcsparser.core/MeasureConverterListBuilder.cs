@@ -93,7 +93,7 @@ namespace vcsparser.core
             result.Add(new MeasureConverter<int>(startDate, endDate, metricLinesChangedWithFixes, new LinesChangedWithFixesMeasureAggregator(), a.FilePrefixToRemove));
             result.Add(new MeasureConverter<int>(startDate, endDate, metricNumAuthors, new NumberOfAuthorsMeasureAggregator(), a.FilePrefixToRemove));
             result.Add(new MeasureConverter<int>(startDate, endDate, metricNumAuthors10Perc, new NumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter<double>(startDate, endDate, metricLineFixedOverChanges, new LinesFixedOverChangedMetricsMeasureAggregator(), a.FilePrefixToRemove, true));
+            result.Add(new MeasureConverter<double>(startDate, endDate, metricLineFixedOverChanges, new LinesFixedOverChangedMetricsMeasureAggregator(), a.FilePrefixToRemove));
         }
 
         private void CreateConvertersFor1Day(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)
