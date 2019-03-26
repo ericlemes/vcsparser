@@ -26,6 +26,7 @@ namespace vcsparser.core.MeasureAggregators
 
         public int GetValueForProjectMeasure(DailyCodeChurn dailyCodeChurn)
         {
+            if (!currentUniqueAuthorsPerFile.ContainsKey(dailyCodeChurn.FileName)) return 0;
             return currentUniqueAuthorsPerFile[dailyCodeChurn.FileName].Count();
         }
 

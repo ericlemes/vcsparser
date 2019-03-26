@@ -237,5 +237,53 @@ namespace vcsparser.unittests.MeasureAggregators
             Assert.Equal(2, this.measureAggregator.GetValueForExistingMeasure(dailyCodeChurn, measure));
         }
 
+        [Fact]
+        public void WhenGettingValueForprojectMeasureShouldReturnNumberOfChanges()
+        {
+            var dailyCodeChurn = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "file1",
+                Authors = new List<DailyCodeChurnAuthor>()
+                {
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author1",
+                        NumberOfChanges = 1
+                    },
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author2",
+                        NumberOfChanges = 2
+                    }
+                }
+            };
+            this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn);
+
+            Assert.Equal(2, this.measureAggregator.GetValueForProjectMeasure(dailyCodeChurn));
+
+            dailyCodeChurn = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "file1",
+                Authors = new List<DailyCodeChurnAuthor>()
+                {
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author2",
+                        NumberOfChanges = 1
+                    },
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author3",
+                        NumberOfChanges = 1
+                    }
+                }
+            };
+
+            this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn);
+
+            Assert.Equal(3, this.measureAggregator.GetValueForProjectMeasure(dailyCodeChurn));
+        }
     }
 }
