@@ -47,19 +47,62 @@ namespace vcsparser.unittests.MeasureAggregators
         }
 
         [Fact]
-        public void WhenGettingValueForNewMeasureShouldReturnNumberOfChanges()
+        public void WhenGettingValueForNewMeasureShouldReturnPercentage()
         {
             var dailyCodeChurn = new DailyCodeChurn()
             {
                 Timestamp = "2018/09/17 00:00:00",
                 FileName = "file1",
-                Added = 6,
-                Deleted = 1,
-                AddedWithFixes = 4,
+                Added = 10,
+                Deleted = 4,
+                AddedWithFixes = 5,
                 DeletedWithFixes = 2
             };
 
-            Assert.Equal(85.714285714285714285714285714286, this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn));
+            Assert.Equal(50, this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn));
+        }
+
+        [Fact]
+        public void WhenGettingValueForExistingMeasureShouldReturnPercentage()
+        {
+            var dailyCodeChurn = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "file1",
+                Added = 10,
+                Deleted = 4,
+                AddedWithFixes = 5,
+                DeletedWithFixes = 2
+            };
+            this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn);
+
+            var dailyCodeChurn2 = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "file1",
+                Added = 20,
+                AddedWithFixes = 5,
+            };
+
+            var measure = new Measure<double>();
+            Assert.Equal(35.294117647058823, this.measureAggregator.GetValueForExistingMeasure(dailyCodeChurn2, measure));
+        }
+
+        [Fact]
+        public void WhenGettingValueForProjectMeasureShouldReturnPercentage()
+        {
+            var dailyCodeChurn = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "file1",
+                Added = 10,
+                Deleted = 4,
+                AddedWithFixes = 5,
+                DeletedWithFixes = 2
+            };
+            this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn);
+
+            Assert.Equal(50, this.measureAggregator.GetValueForProjectMeasure(dailyCodeChurn));
         }
     }
 }

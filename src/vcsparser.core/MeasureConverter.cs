@@ -14,7 +14,7 @@ namespace vcsparser.core
         private Metric metric;
         private bool processedMetric = false;
 
-        private bool projectMeasure;
+        private readonly bool projectMeasure;
 
         public Metric Metric {
             get { return metric; }
@@ -77,8 +77,6 @@ namespace vcsparser.core
             {
                 var existingMeasureProject = sonarMeasuresJson.FindProjectMeasure(metric.MetricKey) as Measure<T>;
                 var projectMeasureAggregator = measureAggregator as IMeasureAggregatorProject<T>;
-                if (projectMeasureAggregator == null)
-                    throw new Exception($"Measure Aggregator is not instance of IMeasureAggregatorProject<{typeof(T)}>");
 
                 if (existingMeasureProject == null)
                 {

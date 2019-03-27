@@ -18,13 +18,13 @@ namespace vcsparser.unittests
         }
 
         [Fact]
-        public void WhenInexistentMeasureShouldReturnNull()
+        public void WhenInexistentFileMeasureShouldReturnNull()
         {
             Assert.Null(this.sonarMeasuresJson.FindFileMeasure("key", "file1"));
         }
 
         [Fact]
-        public void WhenFindingMeasureForExistingMetricAndInexistentFileShouldReturnNull()
+        public void WhenFindingFileMeasureForExistingMetricAndInexistentFileShouldReturnNull()
         {
             this.sonarMeasuresJson.AddFileMeasure(new Measure<int>()
             {
@@ -35,7 +35,7 @@ namespace vcsparser.unittests
         }
 
         [Fact]        
-        public void WhenAddingExistingMeasureShouldThrow()
+        public void WhenAddingExistingFileMeasureShouldThrow()
         {
             this.sonarMeasuresJson.AddFileMeasure(new Measure<int>()
             {
@@ -47,6 +47,37 @@ namespace vcsparser.unittests
                 {
                     MetricKey = "key",
                     File = "file2"
+                });
+            });
+        }
+
+        [Fact]
+        public void WhenInexistentProjectMeasureShouldReturnNull()
+        {
+            Assert.Null(this.sonarMeasuresJson.FindProjectMeasure("key"));
+        }
+
+        [Fact]
+        public void WhenFindingProjectMeasureForExistingMetricAndInexistentFileShouldReturnNotNull()
+        {
+            this.sonarMeasuresJson.AddProjectMeasure(new Measure<int>()
+            {
+                MetricKey = "key"
+            });
+            Assert.NotNull(this.sonarMeasuresJson.FindProjectMeasure("key"));
+        }
+
+        [Fact]
+        public void WhenAddingExistingProjectMeasureShouldThrow()
+        {
+            this.sonarMeasuresJson.AddProjectMeasure(new Measure<int>()
+            {
+                MetricKey = "key"
+            });
+            Assert.Throws<Exception>(() => {
+                this.sonarMeasuresJson.AddProjectMeasure(new Measure<int>()
+                {
+                    MetricKey = "key"
                 });
             });
         }
