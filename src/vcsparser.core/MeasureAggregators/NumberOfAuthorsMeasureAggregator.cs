@@ -24,7 +24,7 @@ namespace vcsparser.core.MeasureAggregators
             return currentUniqueAuthorsPerFile[dailyCodeChurn.FileName].Count();
         }
 
-        public int GetValueForProjectMeasure(DailyCodeChurn dailyCodeChurn)
+        public int GetValueForProjectMeasure()
         {
             List<string> uniqueAuthors = new List<string>();
             foreach (var files in currentUniqueAuthorsPerFile.Values)

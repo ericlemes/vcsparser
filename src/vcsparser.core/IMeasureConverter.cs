@@ -9,7 +9,7 @@ namespace vcsparser.core
     public interface IMeasureConverter
     {
         void ProcessFileMeasure(DailyCodeChurn dailyCodeChurn, SonarMeasuresJson sonarMeasuresJson);
-        void ProcessProjectMeasure(DailyCodeChurn dailyCodeChurn, SonarMeasuresJson sonarMeasuresJson);
+        void ProcessProjectMeasure(SonarMeasuresJson sonarMeasuresJson);
 
         DateTime StartDate { get; }
         DateTime EndDate { get; }

@@ -204,7 +204,7 @@ namespace vcsparser.unittests.MeasureAggregators
             this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn1);
             this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn2);
 
-            Assert.Equal(3, this.measureAggregator.GetValueForProjectMeasure(dailyCodeChurn1));
+            Assert.Equal(3, this.measureAggregator.GetValueForProjectMeasure());
         }
 
         [Fact]
@@ -249,7 +249,13 @@ namespace vcsparser.unittests.MeasureAggregators
             this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn1);
             this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn2);
 
-            Assert.Equal(3, this.measureAggregator.GetValueForProjectMeasure(dailyCodeChurn1));
+            Assert.Equal(3, this.measureAggregator.GetValueForProjectMeasure());
+        }
+
+        [Fact]
+        public void WhenGettingValueForprojectMeasureNoCodeChurnShouldReturnZero()
+        {
+            Assert.Equal(0, this.measureAggregator.GetValueForProjectMeasure());
         }
     }
 }

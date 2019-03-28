@@ -22,7 +22,7 @@ namespace vcsparser.core.MeasureAggregators
             return CalculateCurrentChange(dailyCodeChurn.FileName);
         }
 
-        public double GetValueForProjectMeasure(DailyCodeChurn dailyCodeChurn)
+        public double GetValueForProjectMeasure()
         {
             return CalculateCurrent();
         }

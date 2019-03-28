@@ -72,12 +72,9 @@ namespace vcsparser.core
             }
         }
 
-        public void ProcessProjectMeasure(DailyCodeChurn dailyCodeChurn, SonarMeasuresJson sonarMeasuresJson)
+        public void ProcessProjectMeasure(SonarMeasuresJson sonarMeasuresJson)
         {
             if (!projectMeasure)
-                return;
-
-            if (!ValidDailyCodeChurn(dailyCodeChurn))
                 return;
 
             ProcessMetric(sonarMeasuresJson);
@@ -90,12 +87,12 @@ namespace vcsparser.core
                 sonarMeasuresJson.AddProjectMeasure(new Measure<T>()
                 {
                     MetricKey = this.metric.MetricKey,
-                    Value = projectMeasureAggregator.GetValueForProjectMeasure(dailyCodeChurn)
+                    Value = projectMeasureAggregator.GetValueForProjectMeasure()
                 });
             }
             else
             {
-                existingMeasureProject.Value = projectMeasureAggregator.GetValueForProjectMeasure(dailyCodeChurn);
+                existingMeasureProject.Value = projectMeasureAggregator.GetValueForProjectMeasure();
             }
         }
 

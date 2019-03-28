@@ -37,8 +37,8 @@ namespace vcsparser.unittests
                 Returns((DailyCodeChurn d) => d.TotalLinesChanged);
             this.mockMeasureAggregatorProject.Setup(m => m.GetValueForExistingMeasure(It.IsAny<DailyCodeChurn>(), It.IsAny<Measure<int>>())).
                 Returns((DailyCodeChurn d, Measure<int> existingMeasure) => d.TotalLinesChanged + existingMeasure.Value);
-            this.mockMeasureAggregatorProject.Setup(m => m.GetValueForProjectMeasure(It.IsAny<DailyCodeChurn>())).
-               Returns((DailyCodeChurn d) => d.TotalLinesChanged);
+            this.mockMeasureAggregatorProject.Setup(m => m.GetValueForProjectMeasure()).
+               Returns(0);
 
             this.measureConverter = new MeasureConverter<int>(new DateTime(2018, 9, 17), new DateTime(2018, 9, 18), metric, mockMeasureAggregator.Object, "//prefix/");
         }
@@ -245,9 +245,28 @@ namespace vcsparser.unittests
             };
             var measures = new SonarMeasuresJson();
 
-            this.measureConverter.ProcessProjectMeasure(dailyCodeChurn, measures);
+            this.measureConverter.ProcessProjectMeasure(measures);
 
             Assert.NotEmpty(measures.MeasuresProject.Where(m => m.MetricKey == "key"));
+        }
+
+        [Fact]
+        public void WhenConvertingANonProjectAggregatorWithProjectMeausreShouldDoNothing()
+        {
+            this.measureConverter = new MeasureConverter<int>(new DateTime(2018, 9, 17), new DateTime(2018, 9, 18), metric, mockMeasureAggregator.Object, "//prefix/");
+
+            var dailyCodeChurn = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "file1",
+                Added = 10,
+                Deleted = 10
+            };
+            var measures = new SonarMeasuresJson();
+
+            this.measureConverter.ProcessProjectMeasure(measures);
+
+            Assert.Empty(measures.MeasuresProject.Where(m => m.MetricKey == "key"));
         }
 
         [Fact]
@@ -271,8 +290,8 @@ namespace vcsparser.unittests
             };
             var measures = new SonarMeasuresJson();
 
-            this.measureConverter.ProcessProjectMeasure(dailyCodeChurn1, measures);
-            this.measureConverter.ProcessProjectMeasure(dailyCodeChurn2, measures);
+            this.measureConverter.ProcessProjectMeasure(measures);
+            this.measureConverter.ProcessProjectMeasure(measures);
 
             Assert.Single(measures.MeasuresProject.Where(m => m.MetricKey == "key"));
         }

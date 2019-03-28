@@ -25,18 +25,15 @@ namespace vcsparser.core.MeasureAggregators
             return CalculateNumberOfAuthorsOverThreshold(dailyCodeChurn, THRESHOLD);
         }
 
-        public int GetValueForProjectMeasure(DailyCodeChurn dailyCodeChurn)
+        public int GetValueForProjectMeasure()
         {
             List<string> uniqueAuthors = new List<string>();
             foreach (var file in currentUniqueAuthorsPerFile.Keys)
             {
                 foreach (var author in CalculateListOfAuthorsOverThreshold(file, THRESHOLD))
-                {
-                    if (!uniqueAuthors.Contains(author))
-                        uniqueAuthors.Add(author);
-                }
+                    uniqueAuthors.Add(author);
             }
-            return uniqueAuthors.Count();
+            return uniqueAuthors.Distinct().Count();
         }
 
         private void UpdateCurrentUniqueAuthors(DailyCodeChurn dailyCodeChurn)
@@ -62,8 +59,6 @@ namespace vcsparser.core.MeasureAggregators
         private IEnumerable<string> CalculateListOfAuthorsOverThreshold(string fileName, int threshold)
         {
             List<string> authors = new List<string>();
-            if (!currentUniqueAuthorsPerFile.ContainsKey(fileName)) return authors;
-
             var currentUniqueAuthors = currentUniqueAuthorsPerFile[fileName];
             var total = currentUniqueAuthors.Sum(p => p.Value);
             foreach (var p in currentUniqueAuthors)

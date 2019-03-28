@@ -38,10 +38,9 @@ namespace vcsparser.core
                 foreach(var converter in measureConverters)
                 {
                     foreach (var codeChurn in codeChurnList)
-                    {
                         converter.ProcessFileMeasure(codeChurn, outputJson);
-                        converter.ProcessProjectMeasure(codeChurn, outputJson);
-                    }
+                    
+                    converter.ProcessProjectMeasure(outputJson);
                 }
             }
 

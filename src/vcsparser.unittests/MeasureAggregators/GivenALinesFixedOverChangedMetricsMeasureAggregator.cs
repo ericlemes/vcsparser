@@ -102,7 +102,7 @@ namespace vcsparser.unittests.MeasureAggregators
             };
             this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn);
 
-            Assert.Equal(50, this.measureAggregator.GetValueForProjectMeasure(dailyCodeChurn));
+            Assert.Equal(50, this.measureAggregator.GetValueForProjectMeasure());
         }
     }
 }
