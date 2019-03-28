@@ -96,12 +96,19 @@ namespace vcsparser.unittests
         {
             processor.Process(this.commandLineArgs);
 
-            this.measureConverter1Mock.Verify(m => m.Process(dailyCodeChurn1[0], It.IsAny<SonarMeasuresJson>()), Times.Once());
-            this.measureConverter1Mock.Verify(m => m.Process(dailyCodeChurn1[1], It.IsAny<SonarMeasuresJson>()), Times.Once());
-            this.measureConverter1Mock.Verify(m => m.Process(dailyCodeChurn2[0], It.IsAny<SonarMeasuresJson>()), Times.Once());
-            this.measureConverter2Mock.Verify(m => m.Process(dailyCodeChurn1[0], It.IsAny<SonarMeasuresJson>()), Times.Once());
-            this.measureConverter2Mock.Verify(m => m.Process(dailyCodeChurn1[1], It.IsAny<SonarMeasuresJson>()), Times.Once());
-            this.measureConverter2Mock.Verify(m => m.Process(dailyCodeChurn2[0], It.IsAny<SonarMeasuresJson>()), Times.Once());
+            this.measureConverter1Mock.Verify(m => m.ProcessFileMeasure(dailyCodeChurn1[0], It.IsAny<SonarMeasuresJson>()), Times.Once());
+            this.measureConverter1Mock.Verify(m => m.ProcessFileMeasure(dailyCodeChurn1[1], It.IsAny<SonarMeasuresJson>()), Times.Once());
+            this.measureConverter1Mock.Verify(m => m.ProcessFileMeasure(dailyCodeChurn2[0], It.IsAny<SonarMeasuresJson>()), Times.Once());
+            this.measureConverter2Mock.Verify(m => m.ProcessFileMeasure(dailyCodeChurn1[0], It.IsAny<SonarMeasuresJson>()), Times.Once());
+            this.measureConverter2Mock.Verify(m => m.ProcessFileMeasure(dailyCodeChurn1[1], It.IsAny<SonarMeasuresJson>()), Times.Once());
+            this.measureConverter2Mock.Verify(m => m.ProcessFileMeasure(dailyCodeChurn2[0], It.IsAny<SonarMeasuresJson>()), Times.Once());
+
+            this.measureConverter1Mock.Verify(m => m.ProcessProjectMeasure(dailyCodeChurn1[0], It.IsAny<SonarMeasuresJson>()), Times.Once());
+            this.measureConverter1Mock.Verify(m => m.ProcessProjectMeasure(dailyCodeChurn1[1], It.IsAny<SonarMeasuresJson>()), Times.Once());
+            this.measureConverter1Mock.Verify(m => m.ProcessProjectMeasure(dailyCodeChurn2[0], It.IsAny<SonarMeasuresJson>()), Times.Once());
+            this.measureConverter2Mock.Verify(m => m.ProcessProjectMeasure(dailyCodeChurn1[0], It.IsAny<SonarMeasuresJson>()), Times.Once());
+            this.measureConverter2Mock.Verify(m => m.ProcessProjectMeasure(dailyCodeChurn1[1], It.IsAny<SonarMeasuresJson>()), Times.Once());
+            this.measureConverter2Mock.Verify(m => m.ProcessProjectMeasure(dailyCodeChurn2[0], It.IsAny<SonarMeasuresJson>()), Times.Once());
         }
 
         [Fact]

@@ -46,15 +46,12 @@ namespace vcsparser.core
             this.projectMeasure = measureAggregator is IMeasureAggregatorProject<T>;
         }
 
-        public void Process(DailyCodeChurn dailyCodeChurn, SonarMeasuresJson sonarMeasuresJson)
+        public void ProcessFileMeasure(DailyCodeChurn dailyCodeChurn, SonarMeasuresJson sonarMeasuresJson)
         {
-            if (dailyCodeChurn.GetDateTimeAsDateTime() < startDate || dailyCodeChurn.GetDateTimeAsDateTime() > endDate)
+            if (!ValidDailyCodeChurn(dailyCodeChurn))
                 return;
 
             ProcessMetric(sonarMeasuresJson);
-
-            if (!measureAggregator.HasValue(dailyCodeChurn))
-                return;
 
             var fileName = ProcessFileName(dailyCodeChurn.FileName, filePrefixToRemove);
 
@@ -73,24 +70,44 @@ namespace vcsparser.core
             {
                 existingMeasureFile.Value = measureAggregator.GetValueForExistingMeasure(dailyCodeChurn, existingMeasureFile);
             }
-            if (projectMeasure)
-            {
-                var existingMeasureProject = sonarMeasuresJson.FindProjectMeasure(metric.MetricKey) as Measure<T>;
-                var projectMeasureAggregator = measureAggregator as IMeasureAggregatorProject<T>;
+        }
 
-                if (existingMeasureProject == null)
+        public void ProcessProjectMeasure(DailyCodeChurn dailyCodeChurn, SonarMeasuresJson sonarMeasuresJson)
+        {
+            if (!projectMeasure)
+                return;
+
+            if (!ValidDailyCodeChurn(dailyCodeChurn))
+                return;
+
+            ProcessMetric(sonarMeasuresJson);
+
+            var existingMeasureProject = sonarMeasuresJson.FindProjectMeasure(metric.MetricKey) as Measure<T>;
+            var projectMeasureAggregator = measureAggregator as IMeasureAggregatorProject<T>;
+
+            if (existingMeasureProject == null)
+            {
+                sonarMeasuresJson.AddProjectMeasure(new Measure<T>()
                 {
-                    sonarMeasuresJson.AddProjectMeasure(new Measure<T>()
-                    {
-                        MetricKey = this.metric.MetricKey,
-                        Value = projectMeasureAggregator.GetValueForProjectMeasure(dailyCodeChurn)
-                    });
-                }
-                else
-                {
-                    existingMeasureProject.Value = projectMeasureAggregator.GetValueForProjectMeasure(dailyCodeChurn);
-                }
+                    MetricKey = this.metric.MetricKey,
+                    Value = projectMeasureAggregator.GetValueForProjectMeasure(dailyCodeChurn)
+                });
             }
+            else
+            {
+                existingMeasureProject.Value = projectMeasureAggregator.GetValueForProjectMeasure(dailyCodeChurn);
+            }
+        }
+
+        private bool ValidDailyCodeChurn(DailyCodeChurn dailyCodeChurn)
+        {
+            if (dailyCodeChurn.GetDateTimeAsDateTime() < startDate || dailyCodeChurn.GetDateTimeAsDateTime() > endDate)
+                return false;
+
+            if (!measureAggregator.HasValue(dailyCodeChurn))
+                return false;
+
+            return true;
         }
 
         private string ProcessFileName(string fileName, string filePrefixToRemove)

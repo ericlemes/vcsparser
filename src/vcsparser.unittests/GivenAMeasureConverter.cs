@@ -55,7 +55,7 @@ namespace vcsparser.unittests
             };
             var measures = new SonarMeasuresJson();
 
-            this.measureConverter.Process(dailyCodeChurn, measures);
+            this.measureConverter.ProcessFileMeasure(dailyCodeChurn, measures);
 
             Assert.NotEmpty(measures.Metrics.Where(m => m.MetricKey == "key"));
         }
@@ -72,8 +72,8 @@ namespace vcsparser.unittests
             };
             var measures = new SonarMeasuresJson();
 
-            this.measureConverter.Process(dailyCodeChurn, measures);
-            this.measureConverter.Process(dailyCodeChurn, measures);
+            this.measureConverter.ProcessFileMeasure(dailyCodeChurn, measures);
+            this.measureConverter.ProcessFileMeasure(dailyCodeChurn, measures);
 
             Assert.Single(measures.Metrics.Where(m => m.MetricKey == "key"));
         }
@@ -90,7 +90,7 @@ namespace vcsparser.unittests
             };
             var measures = new SonarMeasuresJson();
 
-            this.measureConverter.Process(dailyCodeChurn, measures);
+            this.measureConverter.ProcessFileMeasure(dailyCodeChurn, measures);
 
             Assert.Equal("file",
                 measures.Measures.Where(m => m.MetricKey == "key").Single().File);
@@ -109,7 +109,7 @@ namespace vcsparser.unittests
             };
             var measures = new SonarMeasuresJson();
 
-            this.measureConverter.Process(dailyCodeChurn, measures);
+            this.measureConverter.ProcessFileMeasure(dailyCodeChurn, measures);
 
             Assert.Equal("//prefix/file",
                 measures.Measures.Where(m => m.MetricKey == "key").Single().File);
@@ -127,7 +127,7 @@ namespace vcsparser.unittests
             };
             var measures = new SonarMeasuresJson();
 
-            this.measureConverter.Process(dailyCodeChurn, measures);
+            this.measureConverter.ProcessFileMeasure(dailyCodeChurn, measures);
 
             Assert.Equal(dailyCodeChurn.TotalLinesChanged, 
                 measures.Measures.Where(m => m.MetricKey == "key" && m.File == dailyCodeChurn.FileName).Select(m => m as Measure<int>).Single().Value);            
@@ -151,7 +151,7 @@ namespace vcsparser.unittests
                 Value = 5
             });
 
-            this.measureConverter.Process(dailyCodeChurn, measures);
+            this.measureConverter.ProcessFileMeasure(dailyCodeChurn, measures);
 
             Assert.Equal(dailyCodeChurn.TotalLinesChanged,
                 measures.Measures.Where(m => m.MetricKey == "key" && m.File == dailyCodeChurn.FileName).Select(m => m as Measure<int>).Single().Value);
@@ -169,7 +169,7 @@ namespace vcsparser.unittests
                 Deleted = 10
             };
             var measures = new SonarMeasuresJson();
-            this.measureConverter.Process(dailyCodeChurn, measures);
+            this.measureConverter.ProcessFileMeasure(dailyCodeChurn, measures);
 
             Assert.Empty(measures.Measures);
         }
@@ -185,7 +185,7 @@ namespace vcsparser.unittests
                 Deleted = 10
             };
             var measures = new SonarMeasuresJson();
-            this.measureConverter.Process(dailyCodeChurn, measures);
+            this.measureConverter.ProcessFileMeasure(dailyCodeChurn, measures);
 
             Assert.Empty(measures.Measures);
         }
@@ -202,7 +202,7 @@ namespace vcsparser.unittests
                 NumberOfChanges = 0
             };
             var measures = new SonarMeasuresJson();
-            this.measureConverter.Process(dailyCodeChurn, measures);
+            this.measureConverter.ProcessFileMeasure(dailyCodeChurn, measures);
 
             Assert.Empty(measures.Measures);
         }
@@ -225,7 +225,7 @@ namespace vcsparser.unittests
                 Value = 5
             });
 
-            this.measureConverter.Process(dailyCodeChurn, measures);
+            this.measureConverter.ProcessFileMeasure(dailyCodeChurn, measures);
 
             Assert.Equal(dailyCodeChurn.TotalLinesChanged + 5,
                 measures.Measures.Where(m => m.MetricKey == "key" && m.File == dailyCodeChurn.FileName).Select(m => m as Measure<int>).Single().Value);            
@@ -245,7 +245,7 @@ namespace vcsparser.unittests
             };
             var measures = new SonarMeasuresJson();
 
-            this.measureConverter.Process(dailyCodeChurn, measures);
+            this.measureConverter.ProcessProjectMeasure(dailyCodeChurn, measures);
 
             Assert.NotEmpty(measures.MeasuresProject.Where(m => m.MetricKey == "key"));
         }
@@ -271,8 +271,8 @@ namespace vcsparser.unittests
             };
             var measures = new SonarMeasuresJson();
 
-            this.measureConverter.Process(dailyCodeChurn1, measures);
-            this.measureConverter.Process(dailyCodeChurn2, measures);
+            this.measureConverter.ProcessProjectMeasure(dailyCodeChurn1, measures);
+            this.measureConverter.ProcessProjectMeasure(dailyCodeChurn2, measures);
 
             Assert.Single(measures.MeasuresProject.Where(m => m.MetricKey == "key"));
         }
