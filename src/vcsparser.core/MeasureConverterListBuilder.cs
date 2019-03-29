@@ -21,7 +21,7 @@ namespace vcsparser.core
 
         public static readonly string NUM_AUTHORS_10_PERC = "vcsparser_numauthors10perc";
 
-        public static readonly string LINE_FIXED_OVER_CHANGED_METRIC_KEY = "vcsparser_linesfixedoverchanges";
+        public static readonly string LINES_FIXED_OVER_CHANGED_METRIC_KEY = "vcsparser_linesfixedoverchanged";
 
         private IEnvironment environment;
         
@@ -84,7 +84,7 @@ namespace vcsparser.core
                 "Number of authors (" + suffixLongDescription + ")", "Number of authors (" + suffixLongDescription + ")");
             var metricNumAuthors10Perc = CreateMetric(NUM_AUTHORS_10_PERC + metricKeySuffix,
                 "Number of authors over 10% contrib (" + suffixLongDescription + ")", "Number of authors with over 10% of changes (" + suffixLongDescription + ")");
-            var metricLineFixedOverChanges = CreateMetric(LINE_FIXED_OVER_CHANGED_METRIC_KEY + metricKeySuffix,
+            var metricLineFixedOverChanges = CreateMetric(LINES_FIXED_OVER_CHANGED_METRIC_KEY + metricKeySuffix,
                 "Percentage of lines fixed over changed (" + suffixLongDescription + ")", "Percentage of lines fixed over changed (" + suffixLongDescription + ")", "PERCENT");
 
             result.Add(new MeasureConverter<int>(startDate, endDate, metricChanges, new NumberOfChangesMeasureAggregator(), a.FilePrefixToRemove));

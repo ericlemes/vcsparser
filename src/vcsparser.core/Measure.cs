@@ -3,17 +3,21 @@
 namespace vcsparser.core
 {
 
-    public abstract class Measure
+    public interface IMeasure
+    {
+        string MetricKey { get; set; }
+        
+        string File { get; set; }
+    }
+
+    public class Measure<T> : IMeasure
     {
         [JsonProperty("metric-key")]
         public string MetricKey { get; set; }
-        
+
         [JsonProperty("file", NullValueHandling = NullValueHandling.Ignore)]
         public string File { get; set; }
-    }
 
-    public class Measure<T> : Measure
-    {
         [JsonProperty("value")]
         public T Value { get; set; }
     }

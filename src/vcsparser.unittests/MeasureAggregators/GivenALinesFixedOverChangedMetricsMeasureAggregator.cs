@@ -104,5 +104,18 @@ namespace vcsparser.unittests.MeasureAggregators
 
             Assert.Equal(50, this.measureAggregator.GetValueForProjectMeasure());
         }
+
+        [Fact]
+        public void WhenGettingValueForProjectMeasureWithNoChangesShouldReturnZero()
+        {
+            var dailyCodeChurn = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "file1"
+            };
+            this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn);
+
+            Assert.Equal(0, this.measureAggregator.GetValueForProjectMeasure());
+        }
     }
 }

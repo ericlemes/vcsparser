@@ -8,7 +8,7 @@ namespace vcsparser.core.MeasureAggregators
 {
     public class LinesFixedOverChangedMetricsMeasureAggregator : IMeasureAggregatorProject<double>
     {
-        private Dictionary<string, List<int[]>> currentChanges = new Dictionary<string, List<int[]>>();
+        private Dictionary<string, List<DailyCodeChurn>> currentChanges = new Dictionary<string, List<DailyCodeChurn>>();
 
         public double GetValueForExistingMeasure(DailyCodeChurn dailyCodeChurn, Measure<double> existingMeasure)
         {
@@ -32,10 +32,10 @@ namespace vcsparser.core.MeasureAggregators
             int totalLinesChangedWithFixes = 0;
             int totalLinesChanged = 0;
 
-            foreach (var a in currentChanges[fileName])
+            foreach (var churn in currentChanges[fileName])
             {
-                totalLinesChangedWithFixes += a[0];
-                totalLinesChanged += a[1];
+                totalLinesChangedWithFixes += churn.TotalLinesChangedWithFixes;
+                totalLinesChanged += churn.TotalLinesChanged;
             }
 
             return (totalLinesChangedWithFixes * 100.0) / totalLinesChanged;
@@ -48,23 +48,23 @@ namespace vcsparser.core.MeasureAggregators
 
             foreach (string fileName in currentChanges.Keys)
             {
-                foreach (var a in currentChanges[fileName])
+                foreach (var churn in currentChanges[fileName])
                 {
-                    totalLinesChangedWithFixes += a[0];
-                    totalLinesChanged += a[1];
+                    totalLinesChangedWithFixes += churn.TotalLinesChangedWithFixes;
+                    totalLinesChanged += churn.TotalLinesChanged;
                 }
             }
 
+            if (totalLinesChanged == 0) return 0;
             return (totalLinesChangedWithFixes * 100.0) / totalLinesChanged;
         }
 
         private void UpdateCurrentChanges(DailyCodeChurn dailyCodeChurn)
         {
             if (!currentChanges.ContainsKey(dailyCodeChurn.FileName))
-                currentChanges.Add(dailyCodeChurn.FileName, new List<int[]>());
-
-            int[] changes = new int[2] { dailyCodeChurn.TotalLinesChangedWithFixes, dailyCodeChurn.TotalLinesChanged };
-            currentChanges[dailyCodeChurn.FileName].Add(changes);
+                currentChanges.Add(dailyCodeChurn.FileName, new List<DailyCodeChurn>());
+            
+            currentChanges[dailyCodeChurn.FileName].Add(dailyCodeChurn);
         }
 
         public bool HasValue(DailyCodeChurn dailyCodeChurn)

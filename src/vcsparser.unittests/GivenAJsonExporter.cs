@@ -21,7 +21,7 @@ namespace vcsparser.unittests
 
             var measures = new SonarMeasuresJson()
             {
-                Measures = new List<Measure>()
+                Measures = new List<IMeasure>()
                 {
                     new Measure<int>()
                     {

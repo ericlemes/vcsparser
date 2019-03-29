@@ -26,13 +26,13 @@ namespace vcsparser.core.MeasureAggregators
 
         public int GetValueForProjectMeasure()
         {
-            List<string> uniqueAuthors = new List<string>();
+            Dictionary<string, bool> uniqueAuthors = new Dictionary<string, bool>();
             foreach (var files in currentUniqueAuthorsPerFile.Values)
             {
                 foreach (var author in files.Keys)
                 {
-                    if (!uniqueAuthors.Contains(author))
-                        uniqueAuthors.Add(author);
+                    if (!uniqueAuthors.ContainsKey(author))
+                        uniqueAuthors.Add(author, true);
                 }
             }
             return uniqueAuthors.Count();

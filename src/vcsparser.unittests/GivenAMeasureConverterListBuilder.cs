@@ -75,7 +75,7 @@ namespace vcsparser.unittests
                 startDate, endDate);
             AssertMeasureConverter<NumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator, int>(converters, MeasureConverterListBuilder.NUM_AUTHORS_10_PERC + metricKeySuffix,
                 startDate, endDate);
-            AssertMeasureConverter<LinesFixedOverChangedMetricsMeasureAggregator, double>(converters, MeasureConverterListBuilder.LINE_FIXED_OVER_CHANGED_METRIC_KEY + metricKeySuffix,
+            AssertMeasureConverter<LinesFixedOverChangedMetricsMeasureAggregator, double>(converters, MeasureConverterListBuilder.LINES_FIXED_OVER_CHANGED_METRIC_KEY + metricKeySuffix,
                 startDate, endDate);
         }
 
