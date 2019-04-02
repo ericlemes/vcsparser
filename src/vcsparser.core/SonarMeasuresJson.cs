@@ -11,37 +11,63 @@ namespace vcsparser.core
     {
         public SonarMeasuresJson()
         {
-            this.Measures = new List<Measure>();
+            this.Measures = new List<IMeasure>();
+            this.MeasuresProject = new List<IMeasure>();
             this.Metrics = new List<Metric>();
         }
 
-        [JsonProperty("measures")]
-        public List<Measure> Measures
+        [JsonProperty("file-measures")]
+        public List<IMeasure> Measures
         {
             get; set;
         }
 
-        private Dictionary<string, Dictionary<string, Measure>> measureIndex = new Dictionary<string, Dictionary<string, Measure>>();
+        [JsonProperty("project-measures")]
+        public List<IMeasure> MeasuresProject {
+            get; set;
+        }
+
+        private Dictionary<string, Dictionary<string, IMeasure>> measureFileIndex = new Dictionary<string, Dictionary<string, IMeasure>>();
+        private Dictionary<string, IMeasure> measureProjectIndex = new Dictionary<string, IMeasure>();
 
         [JsonProperty("metrics")]
         public List<Metric> Metrics { get; set; }
 
-        public Measure FindMeasure(string metricKey, string fileName)
+        public IMeasure FindFileMeasure(string metricKey, string fileName)
         {
-            if (!measureIndex.ContainsKey(metricKey))
+            if (!measureFileIndex.ContainsKey(metricKey))
                 return null;
-            if (!measureIndex[metricKey].ContainsKey(fileName))
+            if (!measureFileIndex[metricKey].ContainsKey(fileName))
                 return null;
-            return measureIndex[metricKey][fileName];            
+            return measureFileIndex[metricKey][fileName];            
         }
 
-        public void AddMeasure(Measure measure)
+        public void AddFileMeasure(IMeasure measure)
         {
             this.Measures.Add(measure);
-            if (!measureIndex.ContainsKey(measure.MetricKey))
-                measureIndex.Add(measure.MetricKey, new Dictionary<string, Measure>());
-            if (!measureIndex[measure.MetricKey].ContainsKey(measure.File))
-                measureIndex[measure.MetricKey].Add(measure.File, measure);
+
+            if (!measureFileIndex.ContainsKey(measure.MetricKey))
+                measureFileIndex.Add(measure.MetricKey, new Dictionary<string, IMeasure>());
+
+            if (!measureFileIndex[measure.MetricKey].ContainsKey(measure.File))
+                measureFileIndex[measure.MetricKey].Add(measure.File, measure);
+            else
+                throw new Exception("Measure already exists.");
+        }
+
+        public IMeasure FindProjectMeasure(string metricKey)
+        {
+            if (!measureProjectIndex.ContainsKey(metricKey))
+                return null;
+            return measureProjectIndex[metricKey];
+        }
+
+        public void AddProjectMeasure(IMeasure measure)
+        {
+            this.MeasuresProject.Add(measure);
+
+            if (!measureProjectIndex.ContainsKey(measure.MetricKey))
+                measureProjectIndex.Add(measure.MetricKey, measure);
             else
                 throw new Exception("Measure already exists.");
         }

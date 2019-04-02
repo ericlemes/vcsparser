@@ -18,35 +18,66 @@ namespace vcsparser.unittests
         }
 
         [Fact]
-        public void WhenInexistentMeasureShouldReturnNull()
+        public void WhenInexistentFileMeasureShouldReturnNull()
         {
-            Assert.Null(this.sonarMeasuresJson.FindMeasure("key", "file1"));
+            Assert.Null(this.sonarMeasuresJson.FindFileMeasure("key", "file1"));
         }
 
         [Fact]
-        public void WhenFindingMeasureForExistingMetricAndInexistentFileShouldReturnNull()
+        public void WhenFindingFileMeasureForExistingMetricAndInexistentFileShouldReturnNull()
         {
-            this.sonarMeasuresJson.AddMeasure(new Measure()
+            this.sonarMeasuresJson.AddFileMeasure(new Measure<int>()
             {
                 MetricKey = "key",
                 File = "file2"
             });
-            Assert.Null(this.sonarMeasuresJson.FindMeasure("key", "file1"));
+            Assert.Null(this.sonarMeasuresJson.FindFileMeasure("key", "file1"));
         }
 
         [Fact]        
-        public void WhenAddingExistingMeasureShouldThrow()
+        public void WhenAddingExistingFileMeasureShouldThrow()
         {
-            this.sonarMeasuresJson.AddMeasure(new Measure()
+            this.sonarMeasuresJson.AddFileMeasure(new Measure<int>()
             {
                 MetricKey = "key",
                 File = "file2"
             });
             Assert.Throws<Exception>(() => {
-                this.sonarMeasuresJson.AddMeasure(new Measure()
+                this.sonarMeasuresJson.AddFileMeasure(new Measure<int>()
                 {
                     MetricKey = "key",
                     File = "file2"
+                });
+            });
+        }
+
+        [Fact]
+        public void WhenInexistentProjectMeasureShouldReturnNull()
+        {
+            Assert.Null(this.sonarMeasuresJson.FindProjectMeasure("key"));
+        }
+
+        [Fact]
+        public void WhenFindingProjectMeasureForExistingMetricAndInexistentFileShouldReturnNotNull()
+        {
+            this.sonarMeasuresJson.AddProjectMeasure(new Measure<int>()
+            {
+                MetricKey = "key"
+            });
+            Assert.NotNull(this.sonarMeasuresJson.FindProjectMeasure("key"));
+        }
+
+        [Fact]
+        public void WhenAddingExistingProjectMeasureShouldThrow()
+        {
+            this.sonarMeasuresJson.AddProjectMeasure(new Measure<int>()
+            {
+                MetricKey = "key"
+            });
+            Assert.Throws<Exception>(() => {
+                this.sonarMeasuresJson.AddProjectMeasure(new Measure<int>()
+                {
+                    MetricKey = "key"
                 });
             });
         }

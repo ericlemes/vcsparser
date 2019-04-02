@@ -21,9 +21,9 @@ namespace vcsparser.unittests
 
             var measures = new SonarMeasuresJson()
             {
-                Measures = new List<Measure>()
+                Measures = new List<IMeasure>()
                 {
-                    new Measure()
+                    new Measure<int>()
                     {
                         MetricKey = "key",
                         File = "file",

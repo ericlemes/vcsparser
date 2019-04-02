@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core.MeasureAggregators
 {
-    public class LinesChangedMeasureAggregator : IMeasureAggregator
+    public class LinesChangedMeasureAggregator : IMeasureAggregator<int>
     {
-        public int GetValueForExistingMeasure(DailyCodeChurn dailyCodeChurn, Measure existingMeasure)
+        public int GetValueForExistingMeasure(DailyCodeChurn dailyCodeChurn, Measure<int> existingMeasure)
         {
             return dailyCodeChurn.TotalLinesChanged + existingMeasure.Value;
         }

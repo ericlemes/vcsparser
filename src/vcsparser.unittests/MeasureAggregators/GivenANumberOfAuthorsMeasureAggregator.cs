@@ -166,7 +166,7 @@ namespace vcsparser.unittests.MeasureAggregators
             };
             this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn);
 
-            var measure = new Measure();
+            var measure = new Measure<int>();
             measure.Value = 3;
             dailyCodeChurn = new DailyCodeChurn()
             {
@@ -213,7 +213,7 @@ namespace vcsparser.unittests.MeasureAggregators
             };
             this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn);
 
-            var measure = new Measure();
+            var measure = new Measure<int>();
             measure.Value = 1;
             dailyCodeChurn = new DailyCodeChurn()
             {
@@ -237,5 +237,117 @@ namespace vcsparser.unittests.MeasureAggregators
             Assert.Equal(2, this.measureAggregator.GetValueForExistingMeasure(dailyCodeChurn, measure));
         }
 
+        [Fact]
+        public void WhenGettingValueForProjectMeasureNoAuthorShouldReturnZero()
+        {
+            this.measureAggregator = new NumberOfAuthorsMeasureAggregator();
+
+            var dailyCodeChurn = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "file1"
+            };
+            this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn);
+            Assert.Equal(0, this.measureAggregator.GetValueForProjectMeasure());
+        }
+
+        [Fact]
+        public void WhenGettingValueForProjectMeasureSameFileShouldReturnUniqueAuthors()
+        {
+            var dailyCodeChurn1 = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "file1",
+                Authors = new List<DailyCodeChurnAuthor>()
+                {
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author1",
+                        NumberOfChanges = 1
+                    },
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author2",
+                        NumberOfChanges = 2
+                    }
+                }
+            };
+            var dailyCodeChurn2 = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "file1",
+                Authors = new List<DailyCodeChurnAuthor>()
+                {
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author2",
+                        NumberOfChanges = 1
+                    },
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author3",
+                        NumberOfChanges = 1
+                    }
+                }
+            };
+            this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn1);
+            this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn2);
+
+            Assert.Equal(3, this.measureAggregator.GetValueForProjectMeasure());
+        }
+
+        [Fact]
+        public void WhenGettingValueForProjectMeasureDifferentFilesShouldReturnProjectMeasure()
+        {
+            this.measureAggregator = new NumberOfAuthorsMeasureAggregator();
+
+            var dailyCodeChurn1 = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "file1",
+                Authors = new List<DailyCodeChurnAuthor>()
+                {
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author1",
+                        NumberOfChanges = 1
+                    },
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author2",
+                        NumberOfChanges = 2
+                    }
+                }
+            };
+            var dailyCodeChurn2 = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/18 00:00:00",
+                FileName = "file2",
+                Authors = new List<DailyCodeChurnAuthor>()
+                {
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author2",
+                        NumberOfChanges = 1
+                    },
+                    new DailyCodeChurnAuthor()
+                    {
+                        Author = "author3",
+                        NumberOfChanges = 2
+                    }
+                }
+            };
+
+            this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn1);
+            this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn2);
+
+            Assert.Equal(3, this.measureAggregator.GetValueForProjectMeasure());
+        }
+
+        [Fact]
+        public void WhenGettingValueForprojectMeasureNoCodeChurnShouldReturnZero()
+        {
+            Assert.Equal(0, this.measureAggregator.GetValueForProjectMeasure());
+        }
     }
 }

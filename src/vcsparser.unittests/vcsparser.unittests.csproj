@@ -90,6 +90,7 @@
     <Compile Include="GivenASonarMeasuresJson.cs" />
     <Compile Include="MeasureAggregators\GivenALinesChangedInFixesMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\GivenALinesChangedMeasureAggregator.cs" />
+    <Compile Include="MeasureAggregators\GivenALinesFixedOverChangedMetricsMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\GivenANumberOfAuthorsMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\GivenANumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\GivenANumberOfChangesMeasureAggregator.cs" />

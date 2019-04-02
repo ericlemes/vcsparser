@@ -17,7 +17,8 @@ namespace vcsparser.unittests
             {
                 MetricKey = "key",
                 Name = "name",
-                Description = "description"
+                Description = "description",
+                Type = "INT"
             };
             Assert.Equal("key", metric.MetricKey);
             Assert.Equal("name", metric.Name);

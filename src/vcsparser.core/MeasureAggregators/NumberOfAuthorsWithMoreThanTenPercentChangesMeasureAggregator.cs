@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core.MeasureAggregators
 {
-    public class NumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator : IMeasureAggregator
+    public class NumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator : IMeasureAggregatorProject<int>
     {
         private readonly int THRESHOLD = 10;
 
         private Dictionary<string, Dictionary<string, int>> currentUniqueAuthorsPerFile = new Dictionary<string, Dictionary<string, int>>();
 
-        public int GetValueForExistingMeasure(DailyCodeChurn dailyCodeChurn, Measure existingMeasure)
+        public int GetValueForExistingMeasure(DailyCodeChurn dailyCodeChurn, Measure<int> existingMeasure)
         {
             UpdateCurrentUniqueAuthors(dailyCodeChurn);
             return CalculateNumberOfAuthorsOverThreshold(dailyCodeChurn, THRESHOLD);
@@ -23,6 +23,17 @@ namespace vcsparser.core.MeasureAggregators
             UpdateCurrentUniqueAuthors(dailyCodeChurn);
 
             return CalculateNumberOfAuthorsOverThreshold(dailyCodeChurn, THRESHOLD);
+        }
+
+        public int GetValueForProjectMeasure()
+        {
+            List<string> uniqueAuthors = new List<string>();
+            foreach (var file in currentUniqueAuthorsPerFile.Keys)
+            {
+                foreach (var author in CalculateListOfAuthorsOverThreshold(file, THRESHOLD))
+                    uniqueAuthors.Add(author);
+            }
+            return uniqueAuthors.Distinct().Count();
         }
 
         private void UpdateCurrentUniqueAuthors(DailyCodeChurn dailyCodeChurn)
@@ -42,17 +53,21 @@ namespace vcsparser.core.MeasureAggregators
 
         private int CalculateNumberOfAuthorsOverThreshold(DailyCodeChurn dailyCodeChurn, int threshold)
         {
-            var currentUniqueAuthors = currentUniqueAuthorsPerFile[dailyCodeChurn.FileName];
+            return CalculateListOfAuthorsOverThreshold(dailyCodeChurn.FileName, threshold).Count();
+        }
 
+        private IEnumerable<string> CalculateListOfAuthorsOverThreshold(string fileName, int threshold)
+        {
+            List<string> authors = new List<string>();
+            var currentUniqueAuthors = currentUniqueAuthorsPerFile[fileName];
             var total = currentUniqueAuthors.Sum(p => p.Value);
-            var countOverThreshold = 0;
             foreach (var p in currentUniqueAuthors)
             {
                 double perc = (((double)p.Value) * 100f) / ((double)total);
                 if (perc > threshold)
-                    countOverThreshold++;
+                    authors.Add(p.Key);
             }
-            return countOverThreshold;
+            return authors;
         }
 
         public bool HasValue(DailyCodeChurn dailyCodeChurn)

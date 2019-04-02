@@ -21,6 +21,8 @@ namespace vcsparser.core
 
         public static readonly string NUM_AUTHORS_10_PERC = "vcsparser_numauthors10perc";
 
+        public static readonly string LINES_FIXED_OVER_CHANGED_METRIC_KEY = "vcsparser_linesfixedoverchanged";
+
         private IEnvironment environment;
         
         public MeasureConverterListBuilder(IEnvironment environment)
@@ -57,13 +59,14 @@ namespace vcsparser.core
             return new DateTime(endDate.Year, endDate.Month, endDate.Day);
         }
 
-        private Metric CreateMetric(string key, string name, string description)
+        private Metric CreateMetric(string key, string name, string description, string type = "INT")
         {
             return new Metric()
             {
                 MetricKey = key,
                 Name = name,
-                Description = description
+                Description = description,
+                Type = type
             };
         }
 
@@ -81,13 +84,16 @@ namespace vcsparser.core
                 "Number of authors (" + suffixLongDescription + ")", "Number of authors (" + suffixLongDescription + ")");
             var metricNumAuthors10Perc = CreateMetric(NUM_AUTHORS_10_PERC + metricKeySuffix,
                 "Number of authors over 10% contrib (" + suffixLongDescription + ")", "Number of authors with over 10% of changes (" + suffixLongDescription + ")");
+            var metricLineFixedOverChanges = CreateMetric(LINES_FIXED_OVER_CHANGED_METRIC_KEY + metricKeySuffix,
+                "Percentage of lines fixed over changed (" + suffixLongDescription + ")", "Percentage of lines fixed over changed (" + suffixLongDescription + ")", "PERCENT");
 
-            result.Add(new MeasureConverter(startDate, endDate, metricChanges, new NumberOfChangesMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChanged, new LinesChangedMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricChangesWithFixes, new NumberOfChangesWithFixesMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricLinesChangedWithFixes, new LinesChangedWithFixesMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricNumAuthors, new NumberOfAuthorsMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter(startDate, endDate, metricNumAuthors10Perc, new NumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter<int>(startDate, endDate, metricChanges, new NumberOfChangesMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter<int>(startDate, endDate, metricLinesChanged, new LinesChangedMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter<int>(startDate, endDate, metricChangesWithFixes, new NumberOfChangesWithFixesMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter<int>(startDate, endDate, metricLinesChangedWithFixes, new LinesChangedWithFixesMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter<int>(startDate, endDate, metricNumAuthors, new NumberOfAuthorsMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter<int>(startDate, endDate, metricNumAuthors10Perc, new NumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator(), a.FilePrefixToRemove));
+            result.Add(new MeasureConverter<double>(startDate, endDate, metricLineFixedOverChanges, new LinesFixedOverChangedMetricsMeasureAggregator(), a.FilePrefixToRemove));
         }
 
         private void CreateConvertersFor1Day(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)

@@ -70,7 +70,7 @@ namespace vcsparser.unittests.MeasureAggregators
                 AddedWithFixes = 5,
                 DeletedWithFixes = 1                
             };
-            var measure = new Measure();
+            var measure = new Measure<int>();
             measure.Value = 3;
             Assert.Equal(9, this.measureAggregator.GetValueForExistingMeasure(dailyCodeChurn, measure));
         }
