@@ -15,11 +15,17 @@ namespace vcsparser
     {
         static int Main(string[] args)
         {
-            var result = Parser.Default.ParseArguments<P4ExtractCommandLineArgs, GitExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
+            var parser = new Parser(config =>
+            {
+                config.HelpWriter = Console.Error;
+                config.EnableDashDash = true;
+            });
+            var result = parser.ParseArguments<P4ExtractCommandLineArgs, GitExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs, BugDatabaseLineArgs>(args)
                 .MapResult(
                     (P4ExtractCommandLineArgs a) => RunPerforceCodeChurnProcessor(a),
                     (GitExtractCommandLineArgs a) => RunGitCodeChurnProcessor(a),
                     (SonarGenericMetricsCommandLineArgs a) => RunSonarGenericMetrics(a),
+                    (BugDatabaseLineArgs a) => RunBugDatabase(a),
                     err => 1);
             return result;
         }
@@ -36,11 +42,11 @@ namespace vcsparser
             var processor = new PerforceCodeChurnProcessor(processWrapper, changesParser, describeParser, commandLineParser, logger, stopWatch, outputProcessor, a.BugRegexes);
 
             processor.Extract(a.OutputType, a.OutputFile, a.P4ChangesCommandLine, a.P4DescribeCommandLine);
-                return 0;
+            return 0;
         }
 
         private static int RunGitCodeChurnProcessor(GitExtractCommandLineArgs a)
-        {            
+        {
             var processor = new GitCodeChurnProcessor(new CommandLineParser(), new ProcessWrapper(), new GitLogParser(), new OutputProcessor(new FileStreamFactory(), new ConsoleLogger()), new ConsoleLogger(), a);
             processor.Extract();
             return 0;
@@ -59,6 +65,11 @@ namespace vcsparser
             return 0;
         }
 
-
+        private static int RunBugDatabase(BugDatabaseLineArgs a)
+        {
+            var processor = new BugDatabaseProcessor(new ConsoleLogger());
+            processor.Process(a);
+            return 0;
+        }
     }
 }

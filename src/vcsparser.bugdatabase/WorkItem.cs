@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace vcsparser.bugdatabase.azuredevops
+namespace vcsparser.bugdatabase
 {
     public class WorkItemList
     {
         public int TotalWorkItems { get; set; }
-        public WorkItem[] WorkItems { get; set; }
+        public IEnumerable<WorkItem> WorkItems { get; set; }
+        public int ValidWorkItems { get; set; }
+        public int ValidWorkItemsFlaggedAsBug { get; set; }
     }
 
     public class WorkItem

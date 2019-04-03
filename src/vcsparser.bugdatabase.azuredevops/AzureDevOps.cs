@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace vcsparser.bugdatabase.azuredevops
 {
-    public class AzureDevOps
+    internal class AzureDevOps
     {
         private readonly string Organization;
         private readonly string Project;
@@ -48,32 +48,15 @@ namespace vcsparser.bugdatabase.azuredevops
             }
         }
 
-        public AzureDevOps(string organization, string project, string team, string personalAccessToken, string query)
+        internal AzureDevOps(string organization, string project, string team, string personalAccessToken, string query, string from, string to)
         {
             this.Organization = organization;
             this.Project = project;
             this.Team = team;
             this.PersonalAccessToken = personalAccessToken;
-            this.QueryString = query;
+            this.QueryString = string.Format(query, from, to);
             this.request = new WebRequest();
         }
-
-        public AzureDevOps(string organization, string project, string team, string personalAccessToken, string from, string to) :
-            this(organization,
-                project,
-                team,
-                personalAccessToken,
-                $"Select [System.Id] From WorkItems Where [System.WorkItemType] = 'Bug' AND [System.State] = 'Closed' AND [Microsoft.VSTS.Common.ResolvedReason] = 'Fixed' and [Microsoft.VSTS.Common.ClosedDate] >= '{from}' and [Microsoft.VSTS.Common.ClosedDate] <= '{to}'")
-        { }
-
-        public AzureDevOps(string organization, string project, string team, string personalAccessToken, DateTime from, DateTime to) :
-            this(organization,
-                project,
-                team,
-                personalAccessToken,
-                from.ToString("yyyy-mm-dd"),
-                to.ToString("yyyy-mm-dd"))
-        { }
 
         private JSONQuery PostQuery(Uri uri)
         {
@@ -106,7 +89,8 @@ namespace vcsparser.bugdatabase.azuredevops
             var flaggedAsBug = false;
             DateTime? changesetDate = null;
 
-            // TODO GET p4 Changeset
+            // TODO Work out if p4 or Git
+            // TODO Get Changeset
 
             return new WorkItem
             {
@@ -142,8 +126,13 @@ namespace vcsparser.bugdatabase.azuredevops
 
         public WorkItemList Query()
         {
-            List<WorkItem> workItems = new List<WorkItem>();
+            Console.WriteLine(this.Uri);
             var json = PostQuery(this.Uri);
+            var workItemList = new WorkItemList
+            {
+                TotalWorkItems = json.workItems.Length,
+                WorkItems = new List<WorkItem>()
+            };
             for (int i = 0; i < json.workItems.Length; i++)
             {
                 try
@@ -151,8 +140,15 @@ namespace vcsparser.bugdatabase.azuredevops
                     Console.Write($"Work Item {i + 1}/{json.workItems.Length}");
                     var listItem = json.workItems[i];
                     var workItemFull = GetWorkItem(listItem.url);
-                    var workItem = ProcessWorkItem(workItemFull);
-                    workItems.Add(workItem);
+                    WorkItem workItem = ProcessWorkItem(workItemFull);
+
+                    if (workItem.ValidChangeset)
+                        workItemList.ValidWorkItems++;
+                    
+                    if (workItem.FlaggedAsBug)
+                        workItemList.ValidWorkItemsFlaggedAsBug++;
+
+                    (workItemList.WorkItems as List<WorkItem>).Add(workItem);
                 }
                 catch (Exception e)
                 {
@@ -163,11 +159,7 @@ namespace vcsparser.bugdatabase.azuredevops
                     Console.WriteLine();
                 }
             }
-            return new WorkItemList
-            {
-                TotalWorkItems = workItems.Count,
-                WorkItems = workItems.ToArray()
-            };
+            return workItemList;
         }
     }
 }

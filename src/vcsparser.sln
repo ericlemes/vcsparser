@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.27428.2043
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vcsparser.core", "vcsparser.core\vcsparser.core.csproj", "{C2035FFB-3ACD-4BED-9B67-75C824A6743A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C8937BF0-C4CA-4868-BDCA-2DDE9DDBFCB4} = {C8937BF0-C4CA-4868-BDCA-2DDE9DDBFCB4}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vcsparser.unittests", "vcsparser.unittests\vcsparser.unittests.csproj", "{62E4086E-1602-4D38-89DA-6A81A9EE55B8}"
 EndProject
@@ -16,8 +19,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vcsparser.bugdatabase.azuredevops", "vcsparser.bugdatabase.azuredevops\vcsparser.bugdatabase.azuredevops.csproj", "{C8937BF0-C4CA-4868-BDCA-2DDE9DDBFCB4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vcsparser.bugdatabase", "vcsparser.bugdatabase\vcsparser.bugdatabase.csproj", "{327F3C8D-B480-4B01-A9F6-0E63A4C0FB5B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebTest", "WebTest\WebTest.csproj", "{9697986E-B89A-47CC-803B-540F2CC187FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,10 +54,6 @@ Global
 		{327F3C8D-B480-4B01-A9F6-0E63A4C0FB5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{327F3C8D-B480-4B01-A9F6-0E63A4C0FB5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{327F3C8D-B480-4B01-A9F6-0E63A4C0FB5B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9697986E-B89A-47CC-803B-540F2CC187FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9697986E-B89A-47CC-803B-540F2CC187FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9697986E-B89A-47CC-803B-540F2CC187FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9697986E-B89A-47CC-803B-540F2CC187FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
