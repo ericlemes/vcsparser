@@ -69,7 +69,10 @@ namespace vcsparser.core
             }
             catch (Exception e)
             {
-                logger.LogToConsole(e.Message);
+                if (e is AggregateException)
+                    logger.LogToConsole($"Error: {e.InnerException.Message}");
+                else
+                    logger.LogToConsole($"Error: {e.Message}");
                 return 1;
             }
             return 0;

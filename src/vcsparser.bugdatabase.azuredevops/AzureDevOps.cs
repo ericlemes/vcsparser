@@ -96,6 +96,7 @@ namespace vcsparser.bugdatabase.azuredevops
         private WorkItem ProcessWorkItem(dynamic fullWorkItem)
         {
             var integrationBuild = (string)fullWorkItem.fields["Microsoft.VSTS.Build.IntegrationBuild"];
+            var closedDate = (DateTime)fullWorkItem.fields["Microsoft.VSTS.Common.ClosedDate"];
             var validChangeset = IsNumeric(integrationBuild);
             var message = "";
             var flaggedAsBug = false;
@@ -106,7 +107,7 @@ namespace vcsparser.bugdatabase.azuredevops
                 if (repoType == RepoType.Perforce)
                 {
                     var p4Changeset = changeset.ProcessPerforceRecord(Convert.ToInt32(integrationBuild));
-                    if (p4Changeset != null)
+                    if (p4Changeset != null) // TODO Does this statement come out when running in production?
                     {
                         if (p4Changeset.ChangesetNumber == 0)
                         {
@@ -122,7 +123,19 @@ namespace vcsparser.bugdatabase.azuredevops
                 }
                 else if (repoType == RepoType.Git)
                 {
-                    // TODO Implement Git Process
+                    var gitChangesets = changeset.ProcessGitRecord(closedDate);
+                    if (!gitChangesets.Any())
+                    {
+                        validChangeset = false;
+                    }
+                    else
+                    {
+                        // TODO Get the correct changeset
+                        var gitChangeset = gitChangesets.First();
+                        message = gitChangeset.ChangesetMessage;
+                        flaggedAsBug = BugRegex.IsMatch(message);
+                        changesetDate = gitChangeset.ChangesetTimestamp;
+                    }
                 }
             }
 
