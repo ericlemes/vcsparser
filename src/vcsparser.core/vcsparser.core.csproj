@@ -54,6 +54,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="bugdatabase\BugDatabaseProvider.cs" />
+    <Compile Include="bugdatabase\GetChangeset.cs" />
+    <Compile Include="bugdatabase\WebRequest.cs" />
+    <Compile Include="bugdatabase\WorkItem.cs" />
     <Compile Include="BugDatabaseProcessor.cs" />
     <Compile Include="ChangesetProcessor.cs" />
     <Compile Include="DailyCodeChurnAuthor.cs" />
@@ -114,12 +118,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\vcsparser.bugdatabase\vcsparser.bugdatabase.csproj">
-      <Project>{327f3c8d-b480-4b01-a9f6-0e63a4c0fb5b}</Project>
-      <Name>vcsparser.bugdatabase</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

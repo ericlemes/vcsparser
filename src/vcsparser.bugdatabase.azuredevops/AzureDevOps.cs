@@ -6,79 +6,91 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
+using vcsparser.core;
+using vcsparser.core.bugdatabase;
+using System.Text.RegularExpressions;
 
 namespace vcsparser.bugdatabase.azuredevops
 {
     internal class AzureDevOps
     {
-        private readonly string Organization;
-        private readonly string Project;
-        private readonly string Team;
-        private readonly string QueryString;
-        private readonly string PersonalAccessToken;
+        private readonly ILogger logger;
 
-        private readonly WebRequest request;
+        private readonly GetChangeset changeset;
+
+        private readonly string organisation;
+        private readonly string project;
+        private readonly string team;
+        private readonly string queryString;
+        private readonly string personalAccessToken;
+        private readonly RepoType repoType;
+
+        private readonly IWebRequest webRequest;
 
         private Uri Uri {
             get {
-                return new Uri($"https://dev.azure.com/{Organization}/{Project}/{Team}/_apis/wit/wiql?api-version=4.1");
+                return new Uri($"https://dev.azure.com/{organisation}/{project}/{team}/_apis/wit/wiql?api-version=4.1");
             }
         }
 
-        private const string application = "application/json";
-
         private AuthenticationHeaderValue Authorization {
             get {
-                string pat = $":{PersonalAccessToken}";
+                string pat = $":{personalAccessToken}";
                 var bytes = Encoding.UTF8.GetBytes(pat);
                 var base64 = Convert.ToBase64String(bytes);
                 return new AuthenticationHeaderValue("Basic", $"{base64}");
             }
         }
 
-        private HttpContent HttpContent {
+        private Regex BugRegex {
             get {
-                var json = JsonConvert.SerializeObject(new
-                {
-                    query = this.QueryString
-                });
-                var content = new StringContent(json, Encoding.UTF8, application);
-                content.Headers.ContentType = new MediaTypeHeaderValue(application);
-                return content;
+                return new Regex(@"(?i)((?:^|\W)bug(?:$|\W)|(?:^|\W)crash(?:$|\W)|(?:^|\W)crashes(?:$|\W))|(?:^|\W)bugs(?:$|\W)|(?:^|\W)bugfix(?:$|\W)|(?:^|\W)bugfixes(?:$|\W)");
             }
         }
 
-        internal AzureDevOps(string organization, string project, string team, string personalAccessToken, string query, string from, string to)
+        internal AzureDevOps(ILogger logger, GetChangeset changeset, IWebRequest webRequest, DllArgs args)
         {
-            this.Organization = organization;
-            this.Project = project;
-            this.Team = team;
-            this.PersonalAccessToken = personalAccessToken;
-            this.QueryString = string.Format(query, from, to);
-            this.request = new WebRequest();
+            this.logger = logger;
+            this.changeset = changeset;
+            this.webRequest = webRequest;
+            this.organisation = args.Organisation;
+            this.project = args.Project;
+            this.team = args.Team;
+            this.personalAccessToken = args.PersonalAccessToken;
+            this.repoType = args.RepoType;
+            this.queryString = string.Format(args.QueryString, args.From, args.To);
         }
 
-        private JSONQuery PostQuery(Uri uri)
+        private async Task<JSONQuery> GetWorkItemList(Uri uri)
         {
-            HttpRequestMessage httpRequest = new HttpRequestMessage
+            var json = JsonConvert.SerializeObject(new
             {
-                RequestUri = uri,
-                Method = HttpMethod.Post,
-                Content = HttpContent
-            };
-            httpRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(application));
-            return SendRequest<JSONQuery>(httpRequest);
+                query = this.queryString
+            });
+            var content = new StringContent(json, Encoding.UTF8, WebRequest.MEDIA_JSON);
+            content.Headers.ContentType = new MediaTypeHeaderValue(WebRequest.MEDIA_JSON);
+
+            HttpRequestMessage httpRequest = webRequest.NewHttpRequestMessage(uri, HttpMethod.Post);
+            httpRequest.Content = content;
+            return await SendRequest<JSONQuery>(httpRequest);
         }
 
-        private dynamic GetWorkItem(Uri uri)
+        private async Task<dynamic> GetFullWorkItem(Uri uri)
         {
-            HttpRequestMessage httpRequest = new HttpRequestMessage
+            HttpRequestMessage httpRequest = webRequest.NewHttpRequestMessage(uri, HttpMethod.Get);
+            return await SendRequest<dynamic>(httpRequest);
+        }
+
+        private async Task<T> SendRequest<T>(HttpRequestMessage httpRequest)
+        {
+            httpRequest.Headers.Authorization = Authorization;
+            var response = await webRequest.Send(httpRequest);
+            var responseString = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
             {
-                RequestUri = uri,
-                Method = HttpMethod.Get
-            };
-            httpRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(application));
-            return SendRequest(httpRequest);
+                return JsonConvert.DeserializeObject<T>(responseString);
+            }
+            throw new Exception($"Response {response.StatusCode}. Content: {responseString}");
         }
 
         private WorkItem ProcessWorkItem(dynamic fullWorkItem)
@@ -89,8 +101,30 @@ namespace vcsparser.bugdatabase.azuredevops
             var flaggedAsBug = false;
             DateTime? changesetDate = null;
 
-            // TODO Work out if p4 or Git
-            // TODO Get Changeset
+            if (validChangeset)
+            {
+                if (repoType == RepoType.Perforce)
+                {
+                    var p4Changeset = changeset.ProcessPerforceRecord(Convert.ToInt32(integrationBuild));
+                    if (p4Changeset != null)
+                    {
+                        if (p4Changeset.ChangesetNumber == 0)
+                        {
+                            validChangeset = false;
+                        }
+                        else
+                        {
+                            message = p4Changeset.ChangesetMessage;
+                            flaggedAsBug = BugRegex.IsMatch(message);
+                        }
+                        changesetDate = p4Changeset.ChangesetTimestamp;
+                    }
+                }
+                else if (repoType == RepoType.Git)
+                {
+                    // TODO Implement Git Process
+                }
+            }
 
             return new WorkItem
             {
@@ -104,61 +138,46 @@ namespace vcsparser.bugdatabase.azuredevops
             };
         }
 
-        private bool IsNumeric(string number)
-        {
-            if (int.TryParse(number, out int i))
-                return true;
-            return false;
-        }
+        private bool IsNumeric(string number) => int.TryParse(number, out _);
 
-        private dynamic SendRequest(HttpRequestMessage httpRequest) => SendRequest<dynamic>(httpRequest);
-        private T SendRequest<T>(HttpRequestMessage httpRequest)
+        private IEnumerable<WorkItem> GetWorkItemList(JSONQueryItem[] items)
         {
-            httpRequest.Headers.Authorization = Authorization;
-            var response = request.Send(httpRequest).Result;
-            var responseString = response.Content.ReadAsStringAsync().Result;
-            if (response.IsSuccessStatusCode)
+            int count = 0;
+            foreach (var item in items)
             {
-                return JsonConvert.DeserializeObject<T>(responseString);
-            }
-            throw new Exception($"Response {response.StatusCode}. Content: {responseString}");
-        }
-
-        public WorkItemList Query()
-        {
-            Console.WriteLine(this.Uri);
-            var json = PostQuery(this.Uri);
-            var workItemList = new WorkItemList
-            {
-                TotalWorkItems = json.workItems.Length,
-                WorkItems = new List<WorkItem>()
-            };
-            for (int i = 0; i < json.workItems.Length; i++)
-            {
+                count++;
+                logger.LogToConsole($"Processing Work Item {count}/{items.Length}");
+                WorkItem workItem = null;
                 try
                 {
-                    Console.Write($"Work Item {i + 1}/{json.workItems.Length}");
-                    var listItem = json.workItems[i];
-                    var workItemFull = GetWorkItem(listItem.url);
-                    WorkItem workItem = ProcessWorkItem(workItemFull);
-
-                    if (workItem.ValidChangeset)
-                        workItemList.ValidWorkItems++;
-                    
-                    if (workItem.FlaggedAsBug)
-                        workItemList.ValidWorkItemsFlaggedAsBug++;
-
-                    (workItemList.WorkItems as List<WorkItem>).Add(workItem);
+                    var fullWorkItem = GetFullWorkItem(item.url).Result;
+                    workItem = ProcessWorkItem(fullWorkItem);
                 }
                 catch (Exception e)
                 {
-                    Console.Write($" Error: {e.Message}");
+                    // TODO Decide if we want to log the errors or not?
+                    if (e is AggregateException)
+                        logger.LogToConsole($"Error: {e.InnerException.Message}");
+                    else
+                        logger.LogToConsole($"Error: {e.Message}");
                 }
-                finally
-                {
-                    Console.WriteLine();
-                }
+                if (workItem != null)
+                    yield return workItem;
             }
+        }
+
+        public WorkItemList GetWorkItems()
+        {
+            logger.LogToConsole(this.Uri.ToString());
+            var json = GetWorkItemList(this.Uri).Result;
+            var itemList = GetWorkItemList(json.workItems).ToList();
+            WorkItemList workItemList = new WorkItemList
+            {
+                TotalWorkItems = json.workItems.Length,
+                WorkItems = itemList,
+                ValidWorkItems = itemList.Where(item => item.ValidChangeset).Count(),
+                ValidWorkItemsFlaggedAsBug = itemList.Where(item => item.FlaggedAsBug).Count()
+            };
             return workItemList;
         }
     }

@@ -68,8 +68,8 @@ namespace vcsparser
         private static int RunBugDatabase(BugDatabaseLineArgs a)
         {
             var processor = new BugDatabaseProcessor(new ConsoleLogger());
-            processor.Process(a);
-            return 0;
+            int code = processor.Process(a);
+            return code;
         }
     }
 }

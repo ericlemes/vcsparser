@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace vcsparser.bugdatabase
+namespace vcsparser.core.bugdatabase
 {
     public class WorkItemList
     {

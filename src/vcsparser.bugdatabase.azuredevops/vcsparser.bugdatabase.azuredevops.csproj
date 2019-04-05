@@ -56,15 +56,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AzureDevOps.cs" />
-    <Compile Include="AzureDevOpsArgs.cs" />
-    <Compile Include="BugDatabaseProvider.cs" />
+    <Compile Include="DllArgs.cs" />
+    <Compile Include="BugDatabaseConnector.cs" />
     <Compile Include="JSONQuery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\vcsparser.bugdatabase\vcsparser.bugdatabase.csproj">
-      <Project>{327f3c8d-b480-4b01-a9f6-0e63a4c0fb5b}</Project>
-      <Name>vcsparser.bugdatabase</Name>
+    <ProjectReference Include="..\vcsparser.core\vcsparser.core.csproj">
+      <Project>{C2035FFB-3ACD-4BED-9B67-75C824A6743A}</Project>
+      <Name>vcsparser.core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

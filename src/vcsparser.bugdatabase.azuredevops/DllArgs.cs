@@ -8,7 +8,12 @@ using System.Threading.Tasks;
 
 namespace vcsparser.bugdatabase.azuredevops
 {
-    internal class AzureDevOpsArgs
+    internal enum RepoType
+    {
+        Git,
+        Perforce
+    }
+    internal class DllArgs
     {
         [Option("organisation", Required = true)]
         public string Organisation { get; set; }
@@ -30,5 +35,8 @@ namespace vcsparser.bugdatabase.azuredevops
 
         [Option("token", HelpText = "Azure DevOps Personal Access Token", Required = true)]
         public string PersonalAccessToken { get; set; }
+
+        [Option("repo-type", HelpText = "'Git' or 'Perforce'", Required = true)]
+        public RepoType RepoType { get; set; }
     }
 }
