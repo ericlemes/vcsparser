@@ -47,6 +47,22 @@ namespace vcsparser.core.p4
             return this.changesParser.Parse(stdOutStream);
         }
 
+        public void CollectBugDatabaseCache()
+        {
+            if (string.IsNullOrWhiteSpace(args.BugDatabaseDLL))
+                return;
+            if (string.IsNullOrWhiteSpace(args.BugDatabaseOutputFile))
+                throw new Exception("Dll specified without known output file");
+
+            var bugCache = bugDatabaseProcessor.ProcessBugDatabase(args.BugDatabaseDLL, args.BugDatabaseDllArgs);
+            if (bugCache == null)
+                return;
+
+            logger.LogToConsole(bugCache.Count + " bug database dates to output");
+
+            this.outputProcessor.ProcessOutput(args.BugDatabaseOutputType, args.BugDatabaseOutputFile, bugCache);
+        }
+
         public void Extract()
         {
             var changes = ParseChangeSets(args.P4ChangesCommandLine);
@@ -67,8 +83,8 @@ namespace vcsparser.core.p4
             }
             this.stopWatch.Stop();
 
-            this.bugDatabaseProcessor.Process(this.changesetProcessor, this.args.DLL, this.args.DllArgs);
-                        
+            // TODO Read Bug database cache
+
             this.outputProcessor.ProcessOutput(args.OutputType, args.OutputFile, this.changesetProcessor.Output);
         }
 

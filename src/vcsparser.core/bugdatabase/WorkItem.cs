@@ -6,16 +6,21 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core.bugdatabase
 {
-    public class WorkItemList
-    {
-        public int TotalWorkItems { get; set; }
-        public IEnumerable<WorkItem> WorkItems { get; set; }
-    }
-
-    public class WorkItem
+    public class WorkItem : IComparable, IOutputJson
     {
         public DateTime ClosedDate { get; set; }
         public string WorkItemId { get; set; }
         public string ChangesetId { get; set; }
+
+        public int CompareTo(object obj)
+        {
+            WorkItem dest = (WorkItem)obj;
+
+            var dates = this.ClosedDate.CompareTo(dest.ClosedDate);
+            if (dates != 0)
+                return dates;
+            else
+                return this.WorkItemId.CompareTo(dest.WorkItemId);
+        }
     }
 }

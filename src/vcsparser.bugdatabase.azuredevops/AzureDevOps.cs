@@ -17,7 +17,7 @@ namespace vcsparser.bugdatabase.azuredevops
 {
     public interface IAzureDevOps
     {
-        WorkItemList GetWorkItems();
+        Dictionary<DateTime, Dictionary<string, WorkItem>> GetWorkItems();
     }
 
     public class AzureDevOps : IAzureDevOps
@@ -27,21 +27,32 @@ namespace vcsparser.bugdatabase.azuredevops
         private readonly IApiConverter apiConverter;
         private readonly ITimeKeeper timeKeeper;
 
+        private object _lock;
+
         public AzureDevOps(ILogger logger, IAzureDevOpsRequest request, IApiConverter apiConverter, ITimeKeeper timeKeeper)
         {
             this.logger = logger;
             this.request = request;
             this.apiConverter = apiConverter;
             this.timeKeeper = timeKeeper;
+
+            this._lock = new object();
         }
 
-        private void ProcessWorkItem(List<WorkItem> workItems, JSONQueryItem item)
+        private void ProcessWorkItem(Dictionary<DateTime, Dictionary<string, WorkItem>> workItems, JSONQueryItem item)
         {
             try
             {
                 var fullWorkItem = request.GetFullWorkItem(item.Url).Result;
-                var workItem = apiConverter.ConvertToWorkItem(fullWorkItem);
-                workItems.Add(workItem);
+                WorkItem workItem = apiConverter.ConvertToWorkItem(fullWorkItem);
+
+                lock (_lock)
+                {
+                    if (!workItems.ContainsKey(workItem.ClosedDate.Date))
+                        workItems.Add(workItem.ClosedDate.Date, new Dictionary<string, WorkItem>());
+
+                    workItems[workItem.ClosedDate.Date].Add(workItem.ChangesetId, workItem);
+                }
             }
             catch (Exception e)
             {
@@ -49,9 +60,9 @@ namespace vcsparser.bugdatabase.azuredevops
             }
         }
 
-        private IEnumerable<WorkItem> ProcessWorkItemList(JSONQueryItem[] items)
+        private Dictionary<DateTime, Dictionary<string, WorkItem>> ProcessWorkItemList(JSONQueryItem[] items)
         {
-            List<WorkItem> workItems = new List<WorkItem>();
+            var workItems = new Dictionary<DateTime, Dictionary<string, WorkItem>>();
             timeKeeper.IntervalAction = () => logger.LogToConsole($"Finished processing {workItems.Count}/{items.Length} Work Items");
             timeKeeper.Start();
             var workItemsTasks = items.Select(
@@ -65,17 +76,11 @@ namespace vcsparser.bugdatabase.azuredevops
             return workItems;
         }
 
-        public WorkItemList GetWorkItems()
+        public Dictionary<DateTime, Dictionary<string, WorkItem>> GetWorkItems()
         {
             logger.LogToConsole($"AzureDevOps BugDatabase");
             var json = request.GetWorkItemList().Result;
-            var itemList = ProcessWorkItemList(json.WorkItems).ToArray();
-            WorkItemList workItemList = new WorkItemList
-            {
-                TotalWorkItems = itemList.Length,
-                WorkItems = itemList
-            };
-            return workItemList;
+            return ProcessWorkItemList(json.WorkItems);
         }
     }
 }

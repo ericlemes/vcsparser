@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core
 {
-    public class DailyCodeChurn : IComparable
+    public class DailyCodeChurn : IComparable, IOutputJson
     {
         public DailyCodeChurn()
         {

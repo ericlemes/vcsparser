@@ -34,61 +34,61 @@ namespace vcsparser.unittests.p4
             this.workItemConverter = new PerforceWorkItemConverter(this.commandLineParserMock.Object, this.processWrapperMock.Object, this.describeParserMock.Object);
         }
 
-        [Fact]
-        public void WhenConvertEmptyList_ThenDontConvert()
-        {
-            IEnumerable<WorkItem> items = new List<WorkItem>();
+        //[Fact]
+        //public void WhenConvertEmptyList_ThenDontConvert()
+        //{
+        //    IEnumerable<WorkItem> items = new List<WorkItem>();
 
-            var convertedList = this.workItemConverter.Convert(items).ToArray();
+        //    var convertedList = this.workItemConverter.Convert(items).ToArray();
 
-            Assert.Empty(convertedList);
-        }
+        //    Assert.Empty(convertedList);
+        //}
 
-        [Fact]
-        public void WhenConvertingInvalidChangesetId_ThenReturnNull()
-        {
-            IEnumerable<WorkItem> items = new List<WorkItem>()
-            {
-                new WorkItem {
-                    ChangesetId = "SomeNotANumber"
-                }
-            };
+        //[Fact]
+        //public void WhenConvertingInvalidChangesetId_ThenReturnNull()
+        //{
+        //    IEnumerable<WorkItem> items = new List<WorkItem>()
+        //    {
+        //        new WorkItem {
+        //            ChangesetId = "SomeNotANumber"
+        //        }
+        //    };
 
-            var convertedList = this.workItemConverter.Convert(items).ToArray();
+        //    var convertedList = this.workItemConverter.Convert(items).ToArray();
 
-            Assert.Empty(convertedList);
-        }
+        //    Assert.Empty(convertedList);
+        //}
 
-        [Fact]
-        public void WhenConvertingValidItem_ThenReturnConvertedItem()
-        {
-            IEnumerable<WorkItem> items = new List<WorkItem>()
-            {
-                new WorkItem { ChangesetId = "1" }
-            };
+        //[Fact]
+        //public void WhenConvertingValidItem_ThenReturnConvertedItem()
+        //{
+        //    IEnumerable<WorkItem> items = new List<WorkItem>()
+        //    {
+        //        new WorkItem { ChangesetId = "1" }
+        //    };
 
-            var convertedList = this.workItemConverter.Convert(items).ToArray();
+        //    var convertedList = this.workItemConverter.Convert(items).ToArray();
 
-            Assert.Single(convertedList);
-        }
+        //    Assert.Single(convertedList);
+        //}
 
-        [Fact]
-        public void WhenConvertingInvalidItem_ThenReturnConvertedList()
-        {
-            this.describeParserMock.SetupSequence((g) => g.Parse(It.IsAny<Stream>()))
-                .Returns(new PerforceChangeset())
-                .Returns((PerforceChangeset)null);
+        //[Fact]
+        //public void WhenConvertingInvalidItem_ThenReturnConvertedList()
+        //{
+        //    this.describeParserMock.SetupSequence((g) => g.Parse(It.IsAny<Stream>()))
+        //        .Returns(new PerforceChangeset())
+        //        .Returns((PerforceChangeset)null);
 
-            IEnumerable<WorkItem> items = new List<WorkItem>()
-            {
-                new WorkItem { ChangesetId = "1" },
-                new WorkItem { ChangesetId = "2" }
-            };
+        //    IEnumerable<WorkItem> items = new List<WorkItem>()
+        //    {
+        //        new WorkItem { ChangesetId = "1" },
+        //        new WorkItem { ChangesetId = "2" }
+        //    };
 
-            var convertedList = this.workItemConverter.Convert(items).ToArray();
+        //    var convertedList = this.workItemConverter.Convert(items).ToArray();
 
-            this.describeParserMock.Verify((g) => g.Parse(It.IsAny<Stream>()), Times.Exactly(2));
-            Assert.Single(convertedList);
-        }
+        //    this.describeParserMock.Verify((g) => g.Parse(It.IsAny<Stream>()), Times.Exactly(2));
+        //    Assert.Single(convertedList);
+        //}
     }
 }

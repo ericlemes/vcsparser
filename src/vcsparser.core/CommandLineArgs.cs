@@ -32,11 +32,17 @@ namespace vcsparser.core
         [Option("output-type", HelpText = "SingleFile or MultipleFile. MultipleFile dumps one file per date.", Required = true)]
         public OutputType OutputType { get; set; }
 
-        [Option("dll", HelpText = "File path to the dll to load", Required = false)]
-        public string DLL { get; set; }
+        [Option("bugdatabase-output", HelpText = "BugDatabase: File path for single file or file prefix for multiple files.", Required = false)]
+        public string BugDatabaseOutputFile { get; set; }
 
-        [Option("options", HelpText = "Options for the dll", Separator = ' ', Required = false, Min = 1)]
-        public IEnumerable<string> DllArgs { get; set; }
+        [Option("bugdatabase-output-type", HelpText = "BugDatabase: SingleFile or MultipleFile. MultipleFile dumps one file per date.", Required = false)]
+        public OutputType BugDatabaseOutputType { get; set; }
+
+        [Option("bugdatabase-dll", HelpText = "BugDatabase: File path to the dll to load", Required = false)]
+        public string BugDatabaseDLL { get; set; }
+
+        [Option("bugdatabase-args", HelpText = "BugDatabase: Options for the dll", Separator = ' ', Required = false, Min = 1)]
+        public IEnumerable<string> BugDatabaseDllArgs { get; set; }
     }
 
     [Verb("gitextract", HelpText = "Extracts code coverage information from git log file and outputs to json")]
@@ -54,11 +60,17 @@ namespace vcsparser.core
         [Option("output-type", HelpText = "SingleFile or MultipleFile. MultipleFile dumps one file per date.", Required = true)]
         public OutputType OutputType { get; set; }
 
-        [Option("dll", HelpText = "File path to the dll to load", Required = false)]
-        public string DLL { get; set; }
+        [Option("bugdatabase-output", HelpText = "BugDatabase: File path for single file or file prefix for multiple files.", Required = false)]
+        public string BugDatabaseOutputFile { get; set; }
 
-        [Option("bugdatabase-args", HelpText = "Options for the dll", Separator = ' ', Required = false, Min = 1)]
-        public IEnumerable<string> DllArgs { get; set; }
+        [Option("bugdatabase-output-type", HelpText = "BugDatabase: SingleFile or MultipleFile. MultipleFile dumps one file per date.", Required = false)]
+        public OutputType BugDatabaseOutputType { get; set; }
+
+        [Option("bugdatabase-dll", HelpText = "BugDatabase: File path to the dll to load", Required = false)]
+        public string BugDatabaseDLL { get; set; }
+
+        [Option("bugdatabase-args", HelpText = "BugDatabase: Options for the dll", Separator = ' ', Required = false, Min = 1)]
+        public IEnumerable<string> BugDatabaseDllArgs { get; set; }
     }
 
     [Verb("sonargenericmetrics", HelpText = "Process json files in intermediate code churn format and outputs to Sonar Generic Metrics JSON format")]

@@ -28,28 +28,35 @@ namespace vcsparser.unittests.bugdatabase
         {
             this.bugDatabaseProviderMock = new Mock<IBugDatabaseProvider>();
             this.bugDatabaseProviderMock.Setup(b => b.ProcessArgs(It.IsAny<IEnumerable<string>>())).Returns(0);
-            this.bugDatabaseProviderMock.Setup(b => b.Process()).Returns(new WorkItemList
+            this.bugDatabaseProviderMock.Setup(b => b.Process()).Returns(new Dictionary<DateTime, Dictionary<string, WorkItem>>()
             {
-                TotalWorkItems = 1,
-                WorkItems = new List<WorkItem>()
-                {
-                    new WorkItem
                     {
-                        ChangesetId = "SomeChangeSetId",
-                        ClosedDate = new DateTime(2019, 04, 11),
-                        WorkItemId = "1"
+                        new DateTime(2019, 04, 11),
+                        new Dictionary<string, WorkItem>()
+                        {
+                            {
+                                "SomeChangeSetId",
+                                new WorkItem
+                                {
+                                    ChangesetId = "SomeChangeSetId",
+                                    ClosedDate = new DateTime(2019, 04, 11),
+                                    WorkItemId = "1"
+                                }
+                            }
+                        }
+
                     }
-                }
             });
 
             this.bugDatabaseLoaderMock = new Mock<IBugDatabaseDllLoader>();
-            this.bugDatabaseLoaderMock.Setup(b => b.Load(It.IsAny<string>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IWebRequest>())).Returns(bugDatabaseProviderMock.Object);
+            this.bugDatabaseLoaderMock
+                .Setup(b => b.Load(It.IsAny<string>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IWebRequest>()))
+                .Returns(bugDatabaseProviderMock.Object);
 
             this.workItemConverterMock = new Mock<IWorkItemConverter>();
-            this.workItemConverterMock.Setup((w) => w.Convert(It.IsAny<IEnumerable<WorkItem>>())).Returns(new List<IChangeset>()
-            {
-                null
-            });
+            this.workItemConverterMock
+                .Setup((w) => w.Convert(It.IsAny<IDictionary<DateTime, IDictionary<string, WorkItem>>>()))
+                .Returns(new Dictionary<DateTime, IDictionary<string, IChangeset>>());
 
             this.webRequest = new Mock<IWebRequest>();
             this.loggerMock = new Mock<ILogger>();
@@ -65,21 +72,11 @@ namespace vcsparser.unittests.bugdatabase
         }
 
         [Fact]
-        public void WhenProcessingNoChangesetShouldExit()
-        {
-            this.CreateBugDatabaseProcessor();
-
-            this.bugDatabaseProcessor.Process(null, someDllPath, someDllArgs);
-
-            this.bugDatabaseLoaderMock.Verify(b => b.Load(It.IsAny<string>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IWebRequest>()), Times.Never);
-        }
-
-        [Fact]
         public void WhenProcessingNoDllPathProcessortShouldExit()
         {
             this.CreateBugDatabaseProcessor();
 
-            this.bugDatabaseProcessor.Process(changesetProcessor, null, someDllArgs);
+            this.bugDatabaseProcessor.ProcessBugDatabase(null, someDllArgs);
 
             this.bugDatabaseLoaderMock.Verify(b => b.Load(It.IsAny<string>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IWebRequest>()), Times.Never);
         }
@@ -89,7 +86,7 @@ namespace vcsparser.unittests.bugdatabase
         {
             this.CreateBugDatabaseProcessor();
 
-            this.bugDatabaseProcessor.Process(changesetProcessor, someDllPath, null);
+            this.bugDatabaseProcessor.ProcessBugDatabase(someDllPath, null);
 
             this.bugDatabaseLoaderMock.Verify(b => b.Load(It.IsAny<string>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IWebRequest>()), Times.Never);
         }
@@ -100,7 +97,7 @@ namespace vcsparser.unittests.bugdatabase
             this.bugDatabaseLoaderMock.Setup(b => b.Load(It.IsAny<string>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IWebRequest>())).Returns((IBugDatabaseProvider)null);
 
             this.CreateBugDatabaseProcessor();
-            this.bugDatabaseProcessor.Process(changesetProcessor, someDllPath, someDllArgs);
+            this.bugDatabaseProcessor.ProcessBugDatabase(someDllPath, someDllArgs);
 
             this.bugDatabaseProviderMock.Verify(b => b.Process(), Times.Never);
         }
@@ -109,10 +106,10 @@ namespace vcsparser.unittests.bugdatabase
         public void WhenProcessingDatabaseDllLoadedShouldProcessWorkItems()
         {
             this.CreateBugDatabaseProcessor();
-            this.bugDatabaseProcessor.Process(changesetProcessor, someDllPath, someDllArgs);
+            this.bugDatabaseProcessor.ProcessBugDatabase(someDllPath, someDllArgs);
 
             this.bugDatabaseProviderMock.Verify(b => b.Process(), Times.Once);
-            this.workItemConverterMock.Verify(b => b.Convert(It.IsAny<IEnumerable<WorkItem>>()), Times.Once);
+            this.workItemConverterMock.Verify(b => b.Convert(It.IsAny<IDictionary<DateTime, IDictionary<string, WorkItem>>>()), Times.Once);
         }
     }
 }

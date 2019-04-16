@@ -63,9 +63,9 @@ namespace vcsparser.bugdatabase
             return 0;
         }
 
-        public WorkItemList Process()
+        public Dictionary<DateTime, Dictionary<string, WorkItem>> Process()
         {
-            if (azureDevOps == null) return null;
+            if (azureDevOps == null) return new Dictionary<DateTime, Dictionary<string, WorkItem>>();
             return azureDevOps.GetWorkItems();
         }
     }

@@ -35,14 +35,25 @@ namespace vcsparser.core.p4
             return changeset;
         }
 
-        public IEnumerable<IChangeset> Convert(IEnumerable<WorkItem> items)
+        public IDictionary<DateTime, IDictionary<string, IChangeset>> Convert(IDictionary<DateTime, IDictionary<string, WorkItem>> items)
         {
-            foreach (var item in items)
+            var dict = new Dictionary<DateTime, IDictionary<string, IChangeset>>();
+
+            foreach (var workItemsByCloseDate in items.Values)
             {
-                var changeset = Convert(item);
-                if (changeset != null)
-                    yield return changeset;
+                foreach (var workItem in workItemsByCloseDate.Values)
+                {
+                    var changeset = Convert(workItem);
+                    if (changeset == null)
+                        continue;
+
+                    if (!dict.ContainsKey(changeset.ChangesetTimestamp.Date))
+                        dict.Add(changeset.ChangesetTimestamp.Date, new Dictionary<string, IChangeset>());
+
+                    dict[changeset.ChangesetTimestamp.Date].Add(changeset.ChangesetIdentifier.ToString(), changeset);
+                }
             }
+            return dict;
         }
     }
 }

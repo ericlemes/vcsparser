@@ -33,8 +33,12 @@ namespace vcsparser.core.bugdatabase
             {
                 while (!cancellationTokenSource.IsCancellationRequested)
                 {
-                    await Task.Delay(delay, cancellationTokenSource.Token);
-                    IntervalAction();
+                    try
+                    {
+                        await Task.Delay(delay, cancellationTokenSource.Token);
+                        IntervalAction();
+                    }
+                    catch (Exception) { }
                 }
             }, cancellationTokenSource.Token);
         }

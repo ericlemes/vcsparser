@@ -46,6 +46,7 @@ namespace vcsparser
             var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, workItemConverter, webRequest);
             var processor = new PerforceCodeChurnProcessor(processWrapper, changesParser, describeParser, commandLineParser, bugDatabaseProcessor, logger, stopWatch, outputProcessor, a);
 
+            processor.CollectBugDatabaseCache();
             processor.Extract();
             return 0;
         }
@@ -64,6 +65,7 @@ namespace vcsparser
             var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, workItemConverter, webRequest);
             var processor = new GitCodeChurnProcessor(commandLineParser, processWrapper, gitLogParser, outputProcessor, bugDatabaseProcessor, logger, a);
 
+            processor.CollectBugDatabaseCache();
             processor.Extract();
             return 0;
         }

@@ -12,6 +12,6 @@ namespace vcsparser.core.bugdatabase
         void SetWebRequest(IWebRequest webRequest);
 
         int ProcessArgs(IEnumerable<string> args);
-        WorkItemList Process();
+        Dictionary<DateTime, Dictionary<string, WorkItem>> Process();
     }
 }

@@ -39,9 +39,9 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
                 WorkItems = new JSONQueryItem[0]
             }));
 
-            var list = this.azureDevOps.GetWorkItems();
+            var dict = this.azureDevOps.GetWorkItems();
 
-            Assert.Empty(list.WorkItems);
+            Assert.Single(dict.Keys);
         }
 
         [Fact]
@@ -62,10 +62,11 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
                 WorkItemId = "Some Work Item Id"
             });
 
-            var list = this.azureDevOps.GetWorkItems();
+            var dict = this.azureDevOps.GetWorkItems();
 
-            var workItem = Assert.Single(list.WorkItems);
-            Assert.Equal("Some Work Item Id", workItem.WorkItemId);
+            Assert.True(false);
+            //var workItem = Assert.Single(dict.WorkItems.Values);
+            //Assert.Equal("Some Work Item Id", workItem.WorkItemId);
         }
 
         [Fact]
@@ -94,8 +95,9 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
 
             var list = this.azureDevOps.GetWorkItems();
 
-            Assert.Single(list.WorkItems);
-            this.loggerMock.Verify(l => l.LogToConsole("Error Processing Work Item 'Some Id 2': Some Exception!"), Times.Once);
+            Assert.True(false);
+            //Assert.Single(list.WorkItems);
+            //this.loggerMock.Verify(l => l.LogToConsole("Error Processing Work Item 'Some Id 2': Some Exception!"), Times.Once);
         }
     }
 }

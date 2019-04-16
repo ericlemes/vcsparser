@@ -14,7 +14,8 @@ namespace vcsparser.core.bugdatabase
 {
     public interface IBugDatabaseProcessor
     {
-        void Process(ChangesetProcessor changesetProcessor, string dllPath, IEnumerable<string> dllArgs);
+        Dictionary<DateTime, Dictionary<string, WorkItem>> ProcessBugDatabase(string dllPath, IEnumerable<string> dllArgs);
+        void ProcessCache(ChangesetProcessor changesetProcessor);
     }
 
     public class BugDatabaseProcessor : IBugDatabaseProcessor
@@ -30,23 +31,33 @@ namespace vcsparser.core.bugdatabase
             this.webRequest = webRequest;
         }
 
-        public void Process(ChangesetProcessor changesetProcessor, string dllPath, IEnumerable<string> dllArgs)
+        public Dictionary<DateTime, Dictionary<string, WorkItem>> ProcessBugDatabase(string dllPath, IEnumerable<string> dllArgs)
         {
-            if (changesetProcessor == null ||
-                string.IsNullOrWhiteSpace(dllPath) ||
+            if (string.IsNullOrWhiteSpace(dllPath) ||
                 dllArgs == null)
-                return;
+                return null;
 
             string path = Path.GetFullPath(dllPath);
             IBugDatabaseProvider databaseProvider = bugDatabaseDllLoader.Load(path, dllArgs, webRequest);
             if (databaseProvider == null)
+                return null;
+
+            return databaseProvider.Process();
+        }
+
+        public void ProcessCache(ChangesetProcessor changesetProcessor)
+        {
+            if (changesetProcessor == null)
                 return;
 
-            var workItems = databaseProvider.Process();
-            IEnumerable<IChangeset> changesets = workItemConverter.Convert(workItems.WorkItems);
+            var workItems = new Dictionary<DateTime, IDictionary<string, WorkItem>>();
+            // TODO Read work items into program
 
-            foreach (var changeset in changesets)
-                changesetProcessor.ProcessBugDatabaseChangeset(changeset);
+            IDictionary<DateTime, IDictionary<string, IChangeset>> changesets = workItemConverter.Convert(workItems);
+
+            foreach (var changesetsByDate in changesets)
+                foreach (var changesetById in changesetsByDate.Value)
+                    changesetProcessor.ProcessBugDatabaseChangeset(changesetById.Value);
         }
     }
 }
