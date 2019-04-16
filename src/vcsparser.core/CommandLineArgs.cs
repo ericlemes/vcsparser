@@ -31,6 +31,12 @@ namespace vcsparser.core
 
         [Option("output-type", HelpText = "SingleFile or MultipleFile. MultipleFile dumps one file per date.", Required = true)]
         public OutputType OutputType { get; set; }
+
+        [Option("dll", HelpText = "File path to the dll to load", Required = false)]
+        public string DLL { get; set; }
+
+        [Option("options", HelpText = "Options for the dll", Separator = ' ', Required = false, Min = 1)]
+        public IEnumerable<string> DllArgs { get; set; }
     }
 
     [Verb("gitextract", HelpText = "Extracts code coverage information from git log file and outputs to json")]
@@ -47,6 +53,12 @@ namespace vcsparser.core
 
         [Option("output-type", HelpText = "SingleFile or MultipleFile. MultipleFile dumps one file per date.", Required = true)]
         public OutputType OutputType { get; set; }
+
+        [Option("dll", HelpText = "File path to the dll to load", Required = false)]
+        public string DLL { get; set; }
+
+        [Option("bugdatabase-args", HelpText = "Options for the dll", Separator = ' ', Required = false, Min = 1)]
+        public IEnumerable<string> DllArgs { get; set; }
     }
 
     [Verb("sonargenericmetrics", HelpText = "Process json files in intermediate code churn format and outputs to Sonar Generic Metrics JSON format")]
@@ -91,15 +103,5 @@ namespace vcsparser.core
 
         [Option("generate1day", HelpText = "Generates 1 day churn data. ", Default = "true")]
         public string Generate1Day { get; set; }
-    }
-
-    [Verb("bugdatabase", HelpText = "Extracts code coverage information from git log file and outputs to json")]
-    public class BugDatabaseLineArgs
-    {
-        [Option("dll", HelpText = "File path to the dll to load", Required = true)]
-        public string DLL { get; set; }
-
-        [Option("args", HelpText = "Args for the dll", Separator = ' ', Required = true, Min = 1)]
-        public IEnumerable<string> DllArgs { get; set; }
     }
 }

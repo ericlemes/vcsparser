@@ -17,9 +17,14 @@ namespace vcsparser.core.bugdatabase
 
     public class WebRequest : IWebRequest
     {
-        private static readonly Lazy<HttpClient> httpClient = new Lazy<HttpClient>(() => new HttpClient());
+        IHttpClientWrapperFactory httpClientWrapperFactory;
 
         public static readonly string MEDIA_JSON = @"application/json";
+
+        public WebRequest(IHttpClientWrapperFactory httpClientWrapperFactory)
+        {
+            this.httpClientWrapperFactory = httpClientWrapperFactory;
+        }
 
         public HttpRequestMessage NewHttpRequestMessage(Uri uri, HttpMethod method) => NewHttpRequestMessage(uri, method, MEDIA_JSON);
         public HttpRequestMessage NewHttpRequestMessage(Uri uri, HttpMethod method, string mediaType)
@@ -35,7 +40,7 @@ namespace vcsparser.core.bugdatabase
 
         public async Task<HttpResponseMessage> Send(HttpRequestMessage message)
         {
-            return await httpClient.Value.SendAsync(message);
+            return await this.httpClientWrapperFactory.GetSingletonHttpClientWrapper().SendAsync(message);
         }
     }
 }

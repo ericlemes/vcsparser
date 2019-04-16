@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using vcsparser.core.bugdatabase;
 
 namespace vcsparser
 {
@@ -20,12 +21,11 @@ namespace vcsparser
                 config.HelpWriter = Console.Error;
                 config.EnableDashDash = true;
             });
-            var result = parser.ParseArguments<P4ExtractCommandLineArgs, GitExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs, BugDatabaseLineArgs>(args)
+            var result = parser.ParseArguments<P4ExtractCommandLineArgs, GitExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
                 .MapResult(
                     (P4ExtractCommandLineArgs a) => RunPerforceCodeChurnProcessor(a),
                     (GitExtractCommandLineArgs a) => RunGitCodeChurnProcessor(a),
                     (SonarGenericMetricsCommandLineArgs a) => RunSonarGenericMetrics(a),
-                    (BugDatabaseLineArgs a) => RunBugDatabase(a),
                     err => 1);
             return result;
         }
@@ -39,15 +39,31 @@ namespace vcsparser
             var logger = new ConsoleLogger();
             var stopWatch = new StopWatchWrapper();
             var outputProcessor = new OutputProcessor(new FileStreamFactory(), logger);
-            var processor = new PerforceCodeChurnProcessor(processWrapper, changesParser, describeParser, commandLineParser, logger, stopWatch, outputProcessor, a.BugRegexes);
+            var bugDatabaseFactory = new BugDatabaseFactory();
+            var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
+            var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
+            var workItemConverter = new PerforceWorkItemConverter(commandLineParser, processWrapper, describeParser);
+            var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, workItemConverter, webRequest);
+            var processor = new PerforceCodeChurnProcessor(processWrapper, changesParser, describeParser, commandLineParser, bugDatabaseProcessor, logger, stopWatch, outputProcessor, a);
 
-            processor.Extract(a.OutputType, a.OutputFile, a.P4ChangesCommandLine, a.P4DescribeCommandLine);
+            processor.Extract();
             return 0;
         }
 
         private static int RunGitCodeChurnProcessor(GitExtractCommandLineArgs a)
         {
-            var processor = new GitCodeChurnProcessor(new CommandLineParser(), new ProcessWrapper(), new GitLogParser(), new OutputProcessor(new FileStreamFactory(), new ConsoleLogger()), new ConsoleLogger(), a);
+            var processWrapper = new ProcessWrapper();
+            var commandLineParser = new CommandLineParser();
+            var gitLogParser = new GitLogParser();
+            var logger = new ConsoleLogger();
+            var outputProcessor = new OutputProcessor(new FileStreamFactory(), logger);
+            var bugDatabaseFactory = new BugDatabaseFactory();
+            var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
+            var workItemConverter = new GitWorkItemConverter(commandLineParser, processWrapper, gitLogParser);
+            var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
+            var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, workItemConverter, webRequest);
+            var processor = new GitCodeChurnProcessor(commandLineParser, processWrapper, gitLogParser, outputProcessor, bugDatabaseProcessor, logger, a);
+
             processor.Extract();
             return 0;
         }
@@ -63,13 +79,6 @@ namespace vcsparser
             processor.Process(a);
 
             return 0;
-        }
-
-        private static int RunBugDatabase(BugDatabaseLineArgs a)
-        {
-            var processor = new BugDatabaseProcessor(new ConsoleLogger());
-            int code = processor.Process(a);
-            return code;
         }
     }
 }

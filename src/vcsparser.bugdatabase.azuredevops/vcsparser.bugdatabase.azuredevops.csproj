@@ -56,8 +56,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AzureDevOps.cs" />
+    <Compile Include="AzureDevOpsApiConverter.cs" />
+    <Compile Include="AzureDevOpsFactory.cs" />
+    <Compile Include="AzureDevOpsRequest.cs" />
     <Compile Include="DllArgs.cs" />
-    <Compile Include="BugDatabaseConnector.cs" />
+    <Compile Include="BugDatabaseProvider.cs" />
     <Compile Include="JSONQuery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

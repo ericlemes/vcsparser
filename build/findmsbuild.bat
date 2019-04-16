@@ -10,4 +10,8 @@ if exist %InstallDir%\MSBuild\15.0\Bin\MSBuild.exe (
   set MSBuildDir=%InstallDir%\MSBuild\15.0\Bin\MSBuild.exe
 )
 
+if exist %InstallDir%\MSBuild\Current\Bin\MSBuild.exe (
+  set MSBuildDir=%InstallDir%\MSBuild\Current\Bin\MSBuild.exe
+)
+
 exit /b 0

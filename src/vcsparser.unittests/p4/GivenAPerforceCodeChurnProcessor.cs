@@ -8,12 +8,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using vcsparser.core.bugdatabase;
 
 namespace vcsparser.unittests
 {
     public class GivenAPerforceCodeChurnProcessor
     {
         private PerforceCodeChurnProcessor processor;
+        private P4ExtractCommandLineArgs commandLineArgs;
         private Mock<IProcessWrapper> processWrapperMock;
         private Mock<IChangesParser> changesParserMock;
         private Mock<IDescribeParser> describeParserMock;
@@ -21,6 +23,7 @@ namespace vcsparser.unittests
         private Mock<ILogger> loggerMock;
         private Mock<IStopWatch> stopWatchMock;
         private Mock<IOutputProcessor> outputProcessorMock;
+        private Mock<IBugDatabaseProcessor> bugDatabseMock;
         private Dictionary<DateTime, Dictionary<string, DailyCodeChurn>> output;
 
         public GivenAPerforceCodeChurnProcessor()
@@ -50,14 +53,23 @@ namespace vcsparser.unittests
                 }
             );
 
-            this.processor = new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object, null);
+            this.bugDatabseMock = new Mock<IBugDatabaseProcessor>();
+
+            this.commandLineArgs = new P4ExtractCommandLineArgs
+            {
+                OutputType = OutputType.SingleFile,
+                OutputFile = "filename",
+                P4ChangesCommandLine = "changes commandline",
+                P4DescribeCommandLine = "describe {0}"
+            };
+            this.processor = new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, bugDatabseMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object, commandLineArgs);
 
         }
 
         [Fact]
         public void WhenProcessingShouldInvokeChangesCommandLine()
         {
-            this.processor.Extract(OutputType.SingleFile, "filename", "changes commandline", "describe {0}");
+            this.processor.Extract();
 
             this.processWrapperMock.Verify(m => m.Invoke("changes", "commandline"), Times.Once());
         }
@@ -70,7 +82,7 @@ namespace vcsparser.unittests
             this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(ms);
             this.changesParserMock.Setup(m => m.Parse(ms)).Returns(new List<int>());
 
-            this.processor.Extract(OutputType.SingleFile, "filename", "changes commandline", "describe {0}");
+            this.processor.Extract();
 
             this.changesParserMock.Verify(m => m.Parse(ms), Times.Once());
         }
@@ -83,7 +95,7 @@ namespace vcsparser.unittests
             this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(changesMemoryStream);
             this.changesParserMock.Setup(m => m.Parse(changesMemoryStream)).Returns(new List<int>() { 1, 2 });            
 
-            this.processor.Extract(OutputType.SingleFile, "filename", "changes commandline", "describe {0}");
+            this.processor.Extract();
             this.processWrapperMock.Verify(m => m.Invoke("describe", "1"), Times.Once());
             this.processWrapperMock.Verify(m => m.Invoke("describe", "2"), Times.Once());
         }
@@ -105,7 +117,7 @@ namespace vcsparser.unittests
             this.describeParserMock.Setup(m => m.Parse(describeMemoryStream1)).Returns(changeset1);
             this.describeParserMock.Setup(m => m.Parse(describeMemoryStream2)).Returns(changeset2);
 
-            this.processor.Extract(OutputType.SingleFile, "filename", "changes commandline", "describe {0}");
+            this.processor.Extract();
 
             this.describeParserMock.Verify(m => m.Parse(describeMemoryStream1), Times.Once());
             this.describeParserMock.Verify(m => m.Parse(describeMemoryStream2), Times.Once());
@@ -187,7 +199,7 @@ namespace vcsparser.unittests
             this.describeParserMock.Setup(m => m.Parse(describeMemoryStream2)).Returns(changeset2);
             this.describeParserMock.Setup(m => m.Parse(describeMemoryStream3)).Returns(changeset3);
 
-            this.processor.Extract(OutputType.SingleFile, "filename", "changes commandline", "describe {0}");
+            this.processor.Extract();
             var result = this.output;
 
             Assert.Equal(2, result.Count);
@@ -225,6 +237,7 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenProcessingWithMultipleFilesShouldProcessOutputForMultipleFiles()
         {
+            commandLineArgs.OutputType = OutputType.MultipleFile;
             var changesMemoryStream = new MemoryStream();
             var describeMemoryStream1 = new MemoryStream();
             var describeMemoryStream2 = new MemoryStream();
@@ -239,7 +252,7 @@ namespace vcsparser.unittests
             this.describeParserMock.Setup(m => m.Parse(describeMemoryStream1)).Returns(changeset1);
             this.describeParserMock.Setup(m => m.Parse(describeMemoryStream2)).Returns(changeset2);
 
-            this.processor.Extract(OutputType.MultipleFile, "filename", "changes commandline", "describe {0}");
+            this.processor.Extract();
 
             this.outputProcessorMock.Verify(m => m.ProcessOutput(OutputType.MultipleFile, It.IsAny<string>(), It.IsAny<Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>()), Times.Once());
         }
@@ -263,7 +276,7 @@ namespace vcsparser.unittests
 
             this.stopWatchMock.SetupSequence(m => m.TotalSecondsElapsed()).Returns(10).Returns(70);
 
-            this.processor.Extract(OutputType.SingleFile, "filename", "changes commandline", "describe {0}");
+            this.processor.Extract();
 
             this.loggerMock.Verify(m => m.LogToConsole("Processed 1/2 changesets"), Times.Once());
         }

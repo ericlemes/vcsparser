@@ -203,7 +203,48 @@ namespace vcsparser.unittests
             Assert.Equal(2, GetOutputFor("file1").Authors[0].NumberOfChanges);
             Assert.Single(GetOutputFor("file1").Authors);
         }
-    }
 
-    
+        [Fact]
+        public void WhenProcessingBugDatabaseChangesetAndHasBugRegexesShouldEvaluateBugRegexes()
+        {
+            this.changesetProcessor = new ChangesetProcessor(@"gramolias+;bug+", this.loggerMock.Object);
+            var c = CreateCommitWithAddedLines("file2", 10);
+            c.ChangesetFileChanges[0].Deleted = 5;
+            c.ChangesetMessage = "This is a comment a newline \n\r and a bug";
+            this.changesetProcessor.ProcessBugDatabaseChangeset(c);
+            Assert.Equal(1, GetOutputFor("file2").BugDatabse.NumberOfChangesWithFixes);
+            Assert.Equal(15, GetOutputFor("file2").BugDatabse.TotalLinesChanged);
+        }
+
+        [Fact]
+        public void WhenProcessingBugDatabaseChangesetAndHasBugRegexesThatDoesnotMatchShouldNotCountAsBug()
+        {
+            this.changesetProcessor = new ChangesetProcessor(@"gramolias+;bug+", this.loggerMock.Object);
+            var c = CreateCommitWithAddedLines("file2", 10);
+            c.ChangesetFileChanges[0].Deleted = 5;
+            c.ChangesetMessage = "This is a comment a newline new feature";
+            this.changesetProcessor.ProcessBugDatabaseChangeset(c);
+            Assert.Equal(0, GetOutputFor("file2").BugDatabse.NumberOfChangesWithFixes);
+            Assert.Equal(15, GetOutputFor("file2").BugDatabse.TotalLinesChanged);
+        }
+
+        [Fact]
+        public void WhenProcessingBugDatabaseChangesetAndDailyCodeChurnContainsBugDatabaseThenAppenedExisting()
+        {
+            this.changesetProcessor = new ChangesetProcessor(@"gramolias+;bug+", this.loggerMock.Object);
+            var c1 = CreateCommitWithAddedLines("file2", 10);
+            c1.ChangesetFileChanges[0].Deleted = 5;
+            c1.ChangesetMessage = "This is a comment a newline \n\r and a bug";
+            this.changesetProcessor.ProcessBugDatabaseChangeset(c1);
+
+            var c2 = CreateCommitWithAddedLines("file2", 10);
+            c2.ChangesetFileChanges[0].Deleted = 5;
+            c2.ChangesetMessage = "This is a comment a newline \n\r and a bug";
+            this.changesetProcessor.ProcessBugDatabaseChangeset(c2);
+
+
+            Assert.Equal(2, GetOutputFor("file2").BugDatabse.NumberOfChangesWithFixes);
+            Assert.Equal(30, GetOutputFor("file2").BugDatabse.TotalLinesChanged);
+        }
+    }
 }

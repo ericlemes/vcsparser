@@ -54,17 +54,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="bugdatabase\BugDatabaseProvider.cs" />
-    <Compile Include="bugdatabase\GetChangeset.cs" />
+    <Compile Include="bugdatabase\BugDatabaseDllLoader.cs" />
+    <Compile Include="bugdatabase\BugDatabaseFactory.cs" />
+    <Compile Include="bugdatabase\HttpClientWrapper.cs" />
+    <Compile Include="bugdatabase\HttpClientWrapperFactory.cs" />
+    <Compile Include="bugdatabase\IBugDatabaseProvider.cs" />
+    <Compile Include="bugdatabase\TimeKeeper.cs" />
     <Compile Include="bugdatabase\WebRequest.cs" />
     <Compile Include="bugdatabase\WorkItem.cs" />
-    <Compile Include="BugDatabaseProcessor.cs" />
+    <Compile Include="bugdatabase\BugDatabaseProcessor.cs" />
+    <Compile Include="bugdatabase\WorkItemConverter.cs" />
     <Compile Include="ChangesetProcessor.cs" />
     <Compile Include="DailyCodeChurnAuthor.cs" />
+    <Compile Include="DailyCodeChurnBugDatabase.cs" />
     <Compile Include="git\GitCodeChurnProcessor.cs" />
     <Compile Include="git\GitCommit.cs" />
     <Compile Include="git\GitLogParser.cs" />
     <Compile Include="git\GitLogParserContext.cs" />
+    <Compile Include="git\GitWorkItemConverter.cs" />
     <Compile Include="git\IGitLogParser.cs" />
     <Compile Include="IMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\LinesChangedMeasureAggregator.cs" />
@@ -72,7 +79,9 @@
     <Compile Include="MeasureAggregators\LinesFixedOverChangedMetricsMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\NumberOfAuthorsMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\NumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator.cs" />
+    <Compile Include="MeasureAggregators\NumberOfChangesBugDatabaseMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\NumberOfChangesMeasureAggregator.cs" />
+    <Compile Include="MeasureAggregators\LinesChangedBugDatabaseMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\NumberOfChangesWithFixesMeasureAggregator.cs" />
     <Compile Include="p4\Changeset.cs" />
     <Compile Include="p4\ChangesParser.cs" />
@@ -110,6 +119,7 @@
     <Compile Include="MeasureConverterListBuilder.cs" />
     <Compile Include="Metric.cs" />
     <Compile Include="OutputProcessor.cs" />
+    <Compile Include="p4\PerforceWorkItemConverter.cs" />
     <Compile Include="ProcessWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SonarGenericMetricsProcessor.cs" />

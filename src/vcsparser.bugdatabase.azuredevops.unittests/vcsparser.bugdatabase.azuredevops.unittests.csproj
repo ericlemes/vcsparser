@@ -7,11 +7,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{62E4086E-1602-4D38-89DA-6A81A9EE55B8}</ProjectGuid>
+    <ProjectGuid>{B6B10D40-2E90-43B5-BB42-B58246083482}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>vcsparser.unittests</RootNamespace>
-    <AssemblyName>vcsparser.unittests</AssemblyName>
+    <RootNamespace>vcsparser.bugdatabase.azuredevops.unittests</RootNamespace>
+    <AssemblyName>vcsparser.bugdatabase.azuredevops.unittests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
@@ -43,6 +43,9 @@
     </Reference>
     <Reference Include="Moq, Version=4.8.0.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\packages\Moq.4.8.3\lib\net45\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -82,57 +85,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="bugdatabase\GivenABugDatabaseDllLoader.cs" />
-    <Compile Include="bugdatabase\GivenABugDatabaseProcessor.cs" />
-    <Compile Include="bugdatabase\GivenAHttpClientWrapperFactory.cs" />
-    <Compile Include="bugdatabase\GivenATimeKeeper.cs" />
-    <Compile Include="bugdatabase\GivenAWebRequest.cs" />
-    <Compile Include="git\GivenAGitCodeChurnProcessor.cs" />
-    <Compile Include="git\GivenAGitLogParser.cs" />
-    <Compile Include="git\GivenAGitWorkItemConverter.cs" />
-    <Compile Include="GivenAChangesetProcessor.cs" />
-    <Compile Include="git\GivenAGitCommit.cs" />
-    <Compile Include="GivenARegex.cs" />
-    <Compile Include="GivenASonarMeasuresJson.cs" />
-    <Compile Include="MeasureAggregators\GivenALinesChangedInFixesMeasureAggregator.cs" />
-    <Compile Include="MeasureAggregators\GivenALinesChangedBugDatabaseMeasureAggregator.cs" />
-    <Compile Include="MeasureAggregators\GivenALinesChangedMeasureAggregator.cs" />
-    <Compile Include="MeasureAggregators\GivenALinesFixedOverChangedMetricsMeasureAggregator.cs" />
-    <Compile Include="MeasureAggregators\GivenANumberOfAuthorsMeasureAggregator.cs" />
-    <Compile Include="MeasureAggregators\GivenANumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator.cs" />
-    <Compile Include="MeasureAggregators\GivenANumberOfChangesBugDatabaseMeasureAggregator.cs" />
-    <Compile Include="MeasureAggregators\GivenANumberOfChangesMeasureAggregator.cs" />
-    <Compile Include="MeasureAggregators\GivenANumberOfChangesWithFixesMeasureAggregator.cs" />
-    <Compile Include="p4\GivenAPerforceChangeset.cs" />
-    <Compile Include="p4\GivenAChangesParser.cs" />
-    <Compile Include="p4\GivenAPerforceCodeChurnProcessor.cs" />
-    <Compile Include="GivenACommandLineArgs.cs" />
-    <Compile Include="GivenACommandLineParser.cs" />
-    <Compile Include="GivenAConsoleLog.cs" />
-    <Compile Include="GivenAJsonDailyCodeChurnParser.cs" />
-    <Compile Include="GivenADailyCodeChurn.cs" />
-    <Compile Include="p4\GivenADescribeParser.cs" />
-    <Compile Include="GivenAFileStreamFactory.cs" />
-    <Compile Include="GivenAFileSystem.cs" />
-    <Compile Include="GivenAJsonExporter.cs" />
-    <Compile Include="GivenAMeasureConverterListBuilder.cs" />
-    <Compile Include="GivenAMeasureConverter.cs" />
-    <Compile Include="GivenAMetric.cs" />
-    <Compile Include="GivenAnEnvironmentImpl.cs" />
-    <Compile Include="GivenAnOuputProcessor.cs" />
-    <Compile Include="GivenAProcessWrapper.cs" />
-    <Compile Include="GivenASonarGenericMetricsProcessor.cs" />
-    <Compile Include="GivenAStopWatchWrapper.cs" />
-    <Compile Include="p4\GivenAPerforceWorkItemConverter.cs" />
+    <Compile Include="GivenAApiConverter.cs" />
+    <Compile Include="GivenAAzureDevOps.cs" />
+    <Compile Include="GivenAAzureDevOpsRequest.cs" />
+    <Compile Include="GivenABugDatabaseProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\xunit.analyzers.0.7.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
@@ -141,43 +98,17 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\vcsparser.bugdatabase.azuredevops\vcsparser.bugdatabase.azuredevops.csproj">
+      <Project>{c8937bf0-c4ca-4868-bdca-2dde9ddbfcb4}</Project>
+      <Name>vcsparser.bugdatabase.azuredevops</Name>
+    </ProjectReference>
     <ProjectReference Include="..\vcsparser.core\vcsparser.core.csproj">
       <Project>{c2035ffb-3acd-4bed-9b67-75c824a6743a}</Project>
       <Name>vcsparser.core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ChangesFiles1.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\DescribeFile1.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\DescribeFile2.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\DescribeFile3.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\DescribeFile4.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GitExample1.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GitExample2.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GitExample3.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GitExample4.txt" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

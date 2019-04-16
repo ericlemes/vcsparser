@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using vcsparser.core.bugdatabase;
 
 namespace vcsparser.core.git
 {
@@ -18,18 +19,22 @@ namespace vcsparser.core.git
 
         private ChangesetProcessor changesetProcessor;
 
+        private IBugDatabaseProcessor bugDatabaseProcessor;
+
         private ILogger logger;
 
         private GitExtractCommandLineArgs args;
 
-        public GitCodeChurnProcessor(ICommandLineParser commandLineParser, IProcessWrapper processWrapper, IGitLogParser gitLogParser, IOutputProcessor outputProcessor, ILogger logger, GitExtractCommandLineArgs args)
+        public GitCodeChurnProcessor(ICommandLineParser commandLineParser, IProcessWrapper processWrapper, IGitLogParser gitLogParser, IOutputProcessor outputProcessor, IBugDatabaseProcessor bugDatabaseProcessor, ILogger logger, GitExtractCommandLineArgs args)
         {
             this.commandLineParser = commandLineParser;
             this.processWrapper = processWrapper;
             this.gitLogParser = gitLogParser;
             this.outputProcessor = outputProcessor;
-            this.args = args;
+            this.bugDatabaseProcessor = bugDatabaseProcessor;
             this.logger = logger;
+            this.args = args;
+
             this.changesetProcessor = new ChangesetProcessor(this.args.BugRegexes, this.logger);            
         }
 
@@ -43,7 +48,10 @@ namespace vcsparser.core.git
             
             foreach (var changeset in changesets)
                 this.changesetProcessor.ProcessChangeset(changeset);
-            if (!String.IsNullOrEmpty(this.args.BugRegexes))
+
+            bugDatabaseProcessor.Process(this.changesetProcessor, args.DLL, args.DllArgs);
+
+            if (!string.IsNullOrEmpty(this.args.BugRegexes))
                 logger.LogToConsole(String.Format("Changesets with bugs: {0}/{1}", this.changesetProcessor.ChangesetsWithBugs, changesets.Count));
             logger.LogToConsole(this.changesetProcessor.Output.Count + " dates to output");
 

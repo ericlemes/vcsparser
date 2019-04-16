@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using vcsparser.core.bugdatabase;
 
 namespace vcsparser.unittests.git
 {
@@ -28,6 +29,8 @@ namespace vcsparser.unittests.git
         private Mock<ICommandLineParser> commandLineParserMock;
 
         private Mock<IProcessWrapper> processWrapperMock;
+
+        private Mock<IBugDatabaseProcessor> bugDatabseMock;
 
         private Mock<ILogger> logger;
 
@@ -57,9 +60,11 @@ namespace vcsparser.unittests.git
             processWrapperMock = new Mock<IProcessWrapper>();
             processWrapperMock.Setup(m => m.Invoke("git", "log blah")).Returns(this.memoryStream);
 
+            bugDatabseMock = new Mock<IBugDatabaseProcessor>();
+
             this.logger = new Mock<ILogger>();
 
-            processor = new GitCodeChurnProcessor(this.commandLineParserMock.Object, this.processWrapperMock.Object, gitLogParserMock.Object, outputProcessorMock.Object, logger.Object, args);            
+            processor = new GitCodeChurnProcessor(this.commandLineParserMock.Object, this.processWrapperMock.Object, gitLogParserMock.Object, outputProcessorMock.Object, bugDatabseMock.Object, logger.Object, args);            
         }
 
         [Fact]
@@ -134,7 +139,7 @@ namespace vcsparser.unittests.git
                 OutputFile = "outputfile"
             };
             processor = new GitCodeChurnProcessor(this.commandLineParserMock.Object, this.processWrapperMock.Object, 
-                this.gitLogParserMock.Object, this.outputProcessorMock.Object, this.logger.Object, args);
+                this.gitLogParserMock.Object, this.outputProcessorMock.Object, this.bugDatabseMock.Object, this.logger.Object, args);
 
             processor.Extract();
 

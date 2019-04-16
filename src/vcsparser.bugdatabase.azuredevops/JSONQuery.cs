@@ -6,25 +6,25 @@ using System.Threading.Tasks;
 
 namespace vcsparser.bugdatabase.azuredevops
 {
-    internal class JSONQueryColumn
+    //public class JSONQueryColumn
+    //{
+    //    public string ReferenceName { get; set; }
+    //    public string Name { get; set; }
+    //    public string Url { get; set; }
+    //}
+
+    public class JSONQueryItem
     {
-        public string referenceName { get; set; }
-        public string name { get; set; }
-        public string url { get; set; }
+        public string Id { get; set; }
+        public Uri Url { get; set; }
     }
 
-    internal class JSONQueryItem
+    public class JSONQuery
     {
-        public string id { get; set; }
-        public Uri url { get; set; }
-    }
-
-    internal class JSONQuery
-    {
-        public string queryType { get; set; }
-        public string queryResultType { get; set; }
-        public string asOf { get; set; }
-        public JSONQueryColumn[] columns { get; set; }
-        public JSONQueryItem[] workItems { get; set; }
+        //public string QueryType { get; set; }
+        //public string QueryResultType { get; set; }
+        //public string AsOf { get; set; }
+        //public JSONQueryColumn[] Columns { get; set; }
+        public JSONQueryItem[] WorkItems { get; set; }
     }
 }

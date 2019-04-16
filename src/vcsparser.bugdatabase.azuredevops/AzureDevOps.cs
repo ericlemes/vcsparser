@@ -9,187 +9,71 @@ using Newtonsoft.Json;
 using vcsparser.core;
 using vcsparser.core.bugdatabase;
 using System.Text.RegularExpressions;
+using vcsparser.core.p4;
+using vcsparser.core.git;
+using System.Threading;
 
 namespace vcsparser.bugdatabase.azuredevops
 {
-    internal class AzureDevOps
+    public interface IAzureDevOps
+    {
+        WorkItemList GetWorkItems();
+    }
+
+    public class AzureDevOps : IAzureDevOps
     {
         private readonly ILogger logger;
+        private readonly IAzureDevOpsRequest request;
+        private readonly IApiConverter apiConverter;
+        private readonly ITimeKeeper timeKeeper;
 
-        private readonly GetChangeset changeset;
-
-        private readonly string organisation;
-        private readonly string project;
-        private readonly string team;
-        private readonly string queryString;
-        private readonly string personalAccessToken;
-        private readonly RepoType repoType;
-
-        private readonly IWebRequest webRequest;
-
-        private Uri Uri {
-            get {
-                return new Uri($"https://dev.azure.com/{organisation}/{project}/{team}/_apis/wit/wiql?api-version=4.1");
-            }
-        }
-
-        private AuthenticationHeaderValue Authorization {
-            get {
-                string pat = $":{personalAccessToken}";
-                var bytes = Encoding.UTF8.GetBytes(pat);
-                var base64 = Convert.ToBase64String(bytes);
-                return new AuthenticationHeaderValue("Basic", $"{base64}");
-            }
-        }
-
-        private Regex BugRegex {
-            get {
-                return new Regex(@"(?i)((?:^|\W)bug(?:$|\W)|(?:^|\W)crash(?:$|\W)|(?:^|\W)crashes(?:$|\W))|(?:^|\W)bugs(?:$|\W)|(?:^|\W)bugfix(?:$|\W)|(?:^|\W)bugfixes(?:$|\W)");
-            }
-        }
-
-        internal AzureDevOps(ILogger logger, GetChangeset changeset, IWebRequest webRequest, DllArgs args)
+        public AzureDevOps(ILogger logger, IAzureDevOpsRequest request, IApiConverter apiConverter, ITimeKeeper timeKeeper)
         {
             this.logger = logger;
-            this.changeset = changeset;
-            this.webRequest = webRequest;
-            this.organisation = args.Organisation;
-            this.project = args.Project;
-            this.team = args.Team;
-            this.personalAccessToken = args.PersonalAccessToken;
-            this.repoType = args.RepoType;
-            this.queryString = string.Format(args.QueryString, args.From, args.To);
+            this.request = request;
+            this.apiConverter = apiConverter;
+            this.timeKeeper = timeKeeper;
         }
 
-        private async Task<JSONQuery> GetWorkItemList(Uri uri)
+        private void ProcessWorkItem(List<WorkItem> workItems, JSONQueryItem item)
         {
-            var json = JsonConvert.SerializeObject(new
+            try
             {
-                query = this.queryString
-            });
-            var content = new StringContent(json, Encoding.UTF8, WebRequest.MEDIA_JSON);
-            content.Headers.ContentType = new MediaTypeHeaderValue(WebRequest.MEDIA_JSON);
-
-            HttpRequestMessage httpRequest = webRequest.NewHttpRequestMessage(uri, HttpMethod.Post);
-            httpRequest.Content = content;
-            return await SendRequest<JSONQuery>(httpRequest);
-        }
-
-        private async Task<dynamic> GetFullWorkItem(Uri uri)
-        {
-            HttpRequestMessage httpRequest = webRequest.NewHttpRequestMessage(uri, HttpMethod.Get);
-            return await SendRequest<dynamic>(httpRequest);
-        }
-
-        private async Task<T> SendRequest<T>(HttpRequestMessage httpRequest)
-        {
-            httpRequest.Headers.Authorization = Authorization;
-            var response = await webRequest.Send(httpRequest);
-            var responseString = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
-            {
-                return JsonConvert.DeserializeObject<T>(responseString);
+                var fullWorkItem = request.GetFullWorkItem(item.Url).Result;
+                var workItem = apiConverter.ConvertToWorkItem(fullWorkItem);
+                workItems.Add(workItem);
             }
-            throw new Exception($"Response {response.StatusCode}. Content: {responseString}");
+            catch (Exception e)
+            {
+                logger.LogToConsole($"Error Processing Work Item '{item.Id}': {(e.InnerException == null ? e.Message : e.InnerException.Message)}");
+            }
         }
 
-        private WorkItem ProcessWorkItem(dynamic fullWorkItem)
+        private IEnumerable<WorkItem> ProcessWorkItemList(JSONQueryItem[] items)
         {
-            var integrationBuild = (string)fullWorkItem.fields["Microsoft.VSTS.Build.IntegrationBuild"];
-            var closedDate = (DateTime)fullWorkItem.fields["Microsoft.VSTS.Common.ClosedDate"];
-            var validChangeset = IsNumeric(integrationBuild);
-            var message = "";
-            var flaggedAsBug = false;
-            DateTime? changesetDate = null;
+            List<WorkItem> workItems = new List<WorkItem>();
+            timeKeeper.IntervalAction = () => logger.LogToConsole($"Finished processing {workItems.Count}/{items.Length} Work Items");
+            timeKeeper.Start();
+            var workItemsTasks = items.Select(
+                item => Task.Run(
+                    () => ProcessWorkItem(workItems, item)
+                )
+            );
 
-            if (validChangeset)
-            {
-                if (repoType == RepoType.Perforce)
-                {
-                    var p4Changeset = changeset.ProcessPerforceRecord(Convert.ToInt32(integrationBuild));
-                    if (p4Changeset != null) // TODO Does this statement come out when running in production?
-                    {
-                        if (p4Changeset.ChangesetNumber == 0)
-                        {
-                            validChangeset = false;
-                        }
-                        else
-                        {
-                            message = p4Changeset.ChangesetMessage;
-                            flaggedAsBug = BugRegex.IsMatch(message);
-                        }
-                        changesetDate = p4Changeset.ChangesetTimestamp;
-                    }
-                }
-                else if (repoType == RepoType.Git)
-                {
-                    var gitChangesets = changeset.ProcessGitRecord(closedDate);
-                    if (!gitChangesets.Any())
-                    {
-                        validChangeset = false;
-                    }
-                    else
-                    {
-                        // TODO Get the correct changeset
-                        var gitChangeset = gitChangesets.First();
-                        message = gitChangeset.ChangesetMessage;
-                        flaggedAsBug = BugRegex.IsMatch(message);
-                        changesetDate = gitChangeset.ChangesetTimestamp;
-                    }
-                }
-            }
-
-            return new WorkItem
-            {
-                WorkItemId = fullWorkItem.id,
-                IntegrationBuild = integrationBuild,
-                ClosedDate = fullWorkItem.fields["Microsoft.VSTS.Common.ClosedDate"],
-                ValidChangeset = validChangeset,
-                Message = message,
-                FlaggedAsBug = flaggedAsBug,
-                ChangesetDate = changesetDate
-            };
-        }
-
-        private bool IsNumeric(string number) => int.TryParse(number, out _);
-
-        private IEnumerable<WorkItem> GetWorkItemList(JSONQueryItem[] items)
-        {
-            int count = 0;
-            foreach (var item in items)
-            {
-                count++;
-                logger.LogToConsole($"Processing Work Item {count}/{items.Length}");
-                WorkItem workItem = null;
-                try
-                {
-                    var fullWorkItem = GetFullWorkItem(item.url).Result;
-                    workItem = ProcessWorkItem(fullWorkItem);
-                }
-                catch (Exception e)
-                {
-                    // TODO Decide if we want to log the errors or not?
-                    if (e is AggregateException)
-                        logger.LogToConsole($"Error: {e.InnerException.Message}");
-                    else
-                        logger.LogToConsole($"Error: {e.Message}");
-                }
-                if (workItem != null)
-                    yield return workItem;
-            }
+            Task.WaitAll(workItemsTasks.ToArray());
+            timeKeeper.Cancel();
+            return workItems;
         }
 
         public WorkItemList GetWorkItems()
         {
-            logger.LogToConsole(this.Uri.ToString());
-            var json = GetWorkItemList(this.Uri).Result;
-            var itemList = GetWorkItemList(json.workItems).ToList();
+            logger.LogToConsole($"AzureDevOps BugDatabase");
+            var json = request.GetWorkItemList().Result;
+            var itemList = ProcessWorkItemList(json.WorkItems).ToArray();
             WorkItemList workItemList = new WorkItemList
             {
-                TotalWorkItems = json.workItems.Length,
-                WorkItems = itemList,
-                ValidWorkItems = itemList.Where(item => item.ValidChangeset).Count(),
-                ValidWorkItemsFlaggedAsBug = itemList.Where(item => item.FlaggedAsBug).Count()
+                TotalWorkItems = itemList.Length,
+                WorkItems = itemList
             };
             return workItemList;
         }

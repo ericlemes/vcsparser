@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using vcsparser.core.bugdatabase;
 
 namespace vcsparser.core.p4
 {
@@ -17,18 +18,24 @@ namespace vcsparser.core.p4
         private ILogger logger;
         private IStopWatch stopWatch;
         private IOutputProcessor outputProcessor;
+        private IBugDatabaseProcessor bugDatabaseProcessor;
         private ChangesetProcessor changesetProcessor;
 
-        public PerforceCodeChurnProcessor(IProcessWrapper processWrapper, IChangesParser changesParser, IDescribeParser describeParser, ICommandLineParser commandLineParser, ILogger logger, IStopWatch stopWatch, IOutputProcessor outputProcessor, string bugRegexes)
+        private P4ExtractCommandLineArgs args;
+
+        public PerforceCodeChurnProcessor(IProcessWrapper processWrapper, IChangesParser changesParser, IDescribeParser describeParser, ICommandLineParser commandLineParser,IBugDatabaseProcessor bugDatabaseProcessor, ILogger logger, IStopWatch stopWatch, IOutputProcessor outputProcessor, P4ExtractCommandLineArgs args)
         {
             this.processWrapper = processWrapper;
             this.changesParser = changesParser;
             this.describeParser = describeParser;
             this.commandLineParser = commandLineParser;
+            this.bugDatabaseProcessor = bugDatabaseProcessor;
             this.logger = logger;
             this.stopWatch = stopWatch;
             this.outputProcessor = outputProcessor;
-            this.changesetProcessor = new ChangesetProcessor(bugRegexes, this.logger);
+            this.args = args;
+
+            this.changesetProcessor = new ChangesetProcessor(args.BugRegexes, this.logger);
         }
 
         private IList<int> ParseChangeSets(string changesCommandLine)
@@ -40,9 +47,9 @@ namespace vcsparser.core.p4
             return this.changesParser.Parse(stdOutStream);
         }
 
-        public void Extract(OutputType outputType, string outputFileNameOrFilePrefix, string changesCommandLine, string describeCommandLine)
+        public void Extract()
         {
-            var changes = ParseChangeSets(changesCommandLine);
+            var changes = ParseChangeSets(args.P4ChangesCommandLine);
 
             this.logger.LogToConsole(String.Format("Found {0} changesets to parse", changes.Count));            
             
@@ -53,14 +60,16 @@ namespace vcsparser.core.p4
             {
                 ReportProgressAfterOneMinute(i, changes);                
 
-                var cmd = commandLineParser.ParseCommandLine(String.Format(describeCommandLine, change));
+                var cmd = commandLineParser.ParseCommandLine(String.Format(args.P4DescribeCommandLine, change));
                 changesetProcessor.ProcessChangeset(describeParser.Parse(this.processWrapper.Invoke(cmd.Item1, cmd.Item2)));
 
                 i++;
             }
             this.stopWatch.Stop();
+
+            this.bugDatabaseProcessor.Process(this.changesetProcessor, this.args.DLL, this.args.DllArgs);
                         
-            this.outputProcessor.ProcessOutput(outputType, outputFileNameOrFilePrefix, this.changesetProcessor.Output);
+            this.outputProcessor.ProcessOutput(args.OutputType, args.OutputFile, this.changesetProcessor.Output);
         }
 
         private void ReportProgressAfterOneMinute(int currentChangeset, IList<int> changes)
