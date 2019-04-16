@@ -84,7 +84,7 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
         {
             var workItemList = this.provider.Process();
 
-            Assert.Null(workItemList);
+            Assert.Empty(workItemList);
         }
 
         [Fact]

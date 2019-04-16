@@ -10,6 +10,6 @@ namespace vcsparser.core.bugdatabase
 {
     public interface IWorkItemConverter
     {
-        IDictionary<DateTime, IDictionary<string, IChangeset>> Convert(IDictionary<DateTime, IDictionary<string, WorkItem>> items);
+        IEnumerable<IChangeset> Convert(IEnumerable<WorkItem> items);
     }
 }

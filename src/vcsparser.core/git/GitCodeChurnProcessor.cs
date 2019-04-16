@@ -65,7 +65,7 @@ namespace vcsparser.core.git
             foreach (var changeset in changesets)
                 this.changesetProcessor.ProcessChangeset(changeset);
 
-            // TODO Read Bug database cache
+            this.bugDatabaseProcessor.ProcessCache(args.BugDatabaseOutputFile, this.changesetProcessor);
 
             if (!string.IsNullOrEmpty(this.args.BugRegexes))
                 logger.LogToConsole(String.Format("Changesets with bugs: {0}/{1}", this.changesetProcessor.ChangesetsWithBugs, changesets.Count));

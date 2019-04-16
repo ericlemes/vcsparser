@@ -41,7 +41,7 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
 
             var dict = this.azureDevOps.GetWorkItems();
 
-            Assert.Single(dict.Keys);
+            Assert.Empty(dict.Keys);
         }
 
         [Fact]
@@ -55,18 +55,29 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
                 }}
             }));
             this.requestMock.Setup(r => r.GetFullWorkItem(It.IsAny<Uri>())).Returns(Task.Run(() => (dynamic)null));
+            var someDate = new DateTime(2019, 04, 15);
             this.apiConverterMock.Setup(a => a.ConvertToWorkItem(It.IsAny<object>())).Returns(new WorkItem
             {
                 ChangesetId = "Some Changeset Id",
-                ClosedDate = new DateTime(2019, 04, 15),
+                ClosedDate = someDate,
                 WorkItemId = "Some Work Item Id"
             });
 
             var dict = this.azureDevOps.GetWorkItems();
 
-            Assert.True(false);
-            //var workItem = Assert.Single(dict.WorkItems.Values);
-            //Assert.Equal("Some Work Item Id", workItem.WorkItemId);
+            var singleKey = Assert.Single(dict.Keys);
+            Assert.Equal(someDate, singleKey);
+
+            var singleValue = Assert.Single(dict.Values);
+
+            var singleItemKey = Assert.Single(singleValue.Keys);
+            Assert.Equal("Some Changeset Id", singleItemKey);
+
+            var singleItemValue = Assert.Single(singleValue.Values);
+
+            Assert.Equal("Some Changeset Id", singleItemValue.ChangesetId);
+            Assert.Equal(someDate, singleItemValue.ClosedDate);
+            Assert.Equal("Some Work Item Id", singleItemValue.WorkItemId);
         }
 
         [Fact]
@@ -93,11 +104,51 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
                 WorkItemId = "Some Work Item Id"
             }).Throws(new Exception("Some Exception!"));
 
-            var list = this.azureDevOps.GetWorkItems();
+            var dict = this.azureDevOps.GetWorkItems();
 
-            Assert.True(false);
-            //Assert.Single(list.WorkItems);
-            //this.loggerMock.Verify(l => l.LogToConsole("Error Processing Work Item 'Some Id 2': Some Exception!"), Times.Once);
+            var byDate = Assert.Single(dict.Values);
+            Assert.Single(byDate.Values);
+            this.loggerMock.Verify(l => l.LogToConsole("Error Processing Work Item 'Some Id 2': Some Exception!"), Times.Once);
+        }
+
+        [Fact]
+        public void WhenProcessWorkItemsWithSameDateThenReturnWorkItem()
+        {
+            this.requestMock.Setup(r => r.GetWorkItemList()).Returns(Task.Run(() => new JSONQuery
+            {
+                WorkItems = new JSONQueryItem[] {
+                    new JSONQueryItem {
+                        Id = "Some Id 1",
+                        Url = new Uri("http://some/url/1")
+                    },
+                    new JSONQueryItem {
+                        Id = "Some Id 2",
+                        Url = new Uri("http://some/url/2")
+                    }
+                }
+            }));
+            this.requestMock.Setup(r => r.GetFullWorkItem(It.IsAny<Uri>())).Returns(Task.Run(() => (dynamic)null));
+            var someDate = new DateTime(2019, 04, 15);
+            this.apiConverterMock.SetupSequence(a => a.ConvertToWorkItem(It.IsAny<object>())).Returns(new WorkItem
+            {
+                ChangesetId = "Some Changeset Id 1",
+                ClosedDate = someDate,
+                WorkItemId = "Some Work Item Id 1"
+            }).Returns(new WorkItem
+            {
+                ChangesetId = "Some Changeset Id 2",
+                ClosedDate = someDate,
+                WorkItemId = "Some Work Item Id 2"
+            });
+
+            var dict = this.azureDevOps.GetWorkItems();
+
+            var singleDateKey = Assert.Single(dict.Keys);
+            Assert.Equal(someDate, singleDateKey);
+
+            var singleDateValue = Assert.Single(dict.Values);
+
+            Assert.Equal(2, singleDateValue.Count);
         }
     }
 }

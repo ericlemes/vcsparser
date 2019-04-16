@@ -43,7 +43,9 @@ namespace vcsparser
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
             var workItemConverter = new PerforceWorkItemConverter(commandLineParser, processWrapper, describeParser);
-            var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, workItemConverter, webRequest);
+            var fileSystem = new FileSystem();
+            var jsonParser = new JsonWorkItemParser(new FileStreamFactory());
+            var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, workItemConverter, webRequest, fileSystem, jsonParser, logger);
             var processor = new PerforceCodeChurnProcessor(processWrapper, changesParser, describeParser, commandLineParser, bugDatabaseProcessor, logger, stopWatch, outputProcessor, a);
 
             processor.CollectBugDatabaseCache();
@@ -62,7 +64,9 @@ namespace vcsparser
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
             var workItemConverter = new GitWorkItemConverter(commandLineParser, processWrapper, gitLogParser);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
-            var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, workItemConverter, webRequest);
+            var fileSystem = new FileSystem();
+            var jsonParser = new JsonWorkItemParser(new FileStreamFactory());
+            var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, workItemConverter, webRequest, fileSystem, jsonParser, logger);
             var processor = new GitCodeChurnProcessor(commandLineParser, processWrapper, gitLogParser, outputProcessor, bugDatabaseProcessor, logger, a);
 
             processor.CollectBugDatabaseCache();

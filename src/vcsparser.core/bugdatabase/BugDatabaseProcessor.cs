@@ -15,7 +15,7 @@ namespace vcsparser.core.bugdatabase
     public interface IBugDatabaseProcessor
     {
         Dictionary<DateTime, Dictionary<string, WorkItem>> ProcessBugDatabase(string dllPath, IEnumerable<string> dllArgs);
-        void ProcessCache(ChangesetProcessor changesetProcessor);
+        void ProcessCache(string cacheDirectory, ChangesetProcessor changesetProcessor);
     }
 
     public class BugDatabaseProcessor : IBugDatabaseProcessor
@@ -24,11 +24,19 @@ namespace vcsparser.core.bugdatabase
         private readonly IWorkItemConverter workItemConverter;
         private readonly IWebRequest webRequest;
 
-        public BugDatabaseProcessor(IBugDatabaseDllLoader bugDatabaseDllLoader, IWorkItemConverter workItemConverter, IWebRequest webRequest)
+        private readonly IFileSystem fileSystem;
+        private readonly IJsonWorkItemParser workItemParser;
+        private readonly ILogger logger;
+
+        public BugDatabaseProcessor(IBugDatabaseDllLoader bugDatabaseDllLoader, IWorkItemConverter workItemConverter, IWebRequest webRequest, IFileSystem fileSystem, IJsonWorkItemParser workItemParser, ILogger logger)
         {
             this.bugDatabaseDllLoader = bugDatabaseDllLoader;
             this.workItemConverter = workItemConverter;
             this.webRequest = webRequest;
+
+            this.fileSystem = fileSystem;
+            this.workItemParser = workItemParser;
+            this.logger = logger;
         }
 
         public Dictionary<DateTime, Dictionary<string, WorkItem>> ProcessBugDatabase(string dllPath, IEnumerable<string> dllArgs)
@@ -45,19 +53,23 @@ namespace vcsparser.core.bugdatabase
             return databaseProvider.Process();
         }
 
-        public void ProcessCache(ChangesetProcessor changesetProcessor)
+        public void ProcessCache(string cacheOutput, ChangesetProcessor changesetProcessor)
         {
             if (changesetProcessor == null)
                 return;
 
-            var workItems = new Dictionary<DateTime, IDictionary<string, WorkItem>>();
-            // TODO Read work items into program
+            var cacheDirectory = Directory.GetParent(cacheOutput).FullName;
 
-            IDictionary<DateTime, IDictionary<string, IChangeset>> changesets = workItemConverter.Convert(workItems);
+            var files = fileSystem.GetFiles(cacheDirectory, "*.json");
 
-            foreach (var changesetsByDate in changesets)
-                foreach (var changesetById in changesetsByDate.Value)
-                    changesetProcessor.ProcessBugDatabaseChangeset(changesetById.Value);
+            foreach (var file in files)
+            {
+                logger.LogToConsole($"Processing {file.FileName}");
+                var workItemList = workItemParser.ParseFile(file.FileName);
+                var changesets = workItemConverter.Convert(workItemList);
+                foreach (var changeset in changesets)
+                    changesetProcessor.ProcessBugDatabaseChangeset(changeset);
+            }
         }
     }
 }

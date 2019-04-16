@@ -64,6 +64,7 @@
     <Compile Include="bugdatabase\WorkItem.cs" />
     <Compile Include="bugdatabase\BugDatabaseProcessor.cs" />
     <Compile Include="bugdatabase\WorkItemConverter.cs" />
+    <Compile Include="bugdatabase\JsonWorkItemParser.cs" />
     <Compile Include="ChangesetProcessor.cs" />
     <Compile Include="DailyCodeChurnAuthor.cs" />
     <Compile Include="DailyCodeChurnBugDatabase.cs" />

@@ -36,25 +36,14 @@ namespace vcsparser.core.git
             return commits.Single();
         }
 
-        public IDictionary<DateTime, IDictionary<string, IChangeset>> Convert(IDictionary<DateTime, IDictionary<string, WorkItem>> items)
+        public IEnumerable<IChangeset> Convert(IEnumerable<WorkItem> items)
         {
-            var dict = new Dictionary<DateTime, IDictionary<string, IChangeset>>();
-
-            foreach(var workItemsByCloseDate in items.Values)
+            foreach (var workItem in items)
             {
-                foreach (var workItem in workItemsByCloseDate.Values)
-                {
-                    var changeset = Convert(workItem);
-                    if (changeset == null)
-                        continue;
-
-                    if (!dict.ContainsKey(changeset.ChangesetTimestamp.Date))
-                        dict.Add(changeset.ChangesetTimestamp.Date, new Dictionary<string, IChangeset>());
-
-                    dict[changeset.ChangesetTimestamp.Date].Add(changeset.ChangesetIdentifier.ToString(), changeset);
-                }
+                var changeset = Convert(workItem);
+                if (changeset != null)
+                    yield return changeset;
             }
-            return dict;
         }
     }
 }

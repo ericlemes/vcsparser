@@ -87,6 +87,7 @@
     <Compile Include="bugdatabase\GivenAHttpClientWrapperFactory.cs" />
     <Compile Include="bugdatabase\GivenATimeKeeper.cs" />
     <Compile Include="bugdatabase\GivenAWebRequest.cs" />
+    <Compile Include="bugdatabase\GivenAWorkItem.cs" />
     <Compile Include="git\GivenAGitCodeChurnProcessor.cs" />
     <Compile Include="git\GivenAGitLogParser.cs" />
     <Compile Include="git\GivenAGitWorkItemConverter.cs" />

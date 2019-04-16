@@ -83,7 +83,7 @@ namespace vcsparser.core.p4
             }
             this.stopWatch.Stop();
 
-            // TODO Read Bug database cache
+            this.bugDatabaseProcessor.ProcessCache(args.BugDatabaseOutputFile, this.changesetProcessor);
 
             this.outputProcessor.ProcessOutput(args.OutputType, args.OutputFile, this.changesetProcessor.Output);
         }

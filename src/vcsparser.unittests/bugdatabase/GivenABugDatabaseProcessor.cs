@@ -16,6 +16,8 @@ namespace vcsparser.unittests.bugdatabase
         private Mock<IBugDatabaseDllLoader> bugDatabaseLoaderMock;
         private Mock<IWorkItemConverter> workItemConverterMock;
         private Mock<IWebRequest> webRequest;
+        private Mock<IFileSystem> fileSystemMock;
+        private Mock<IJsonWorkItemParser> workItemParser;
         private Mock<ILogger> loggerMock;
 
         private BugDatabaseProcessor bugDatabaseProcessor;
@@ -44,7 +46,6 @@ namespace vcsparser.unittests.bugdatabase
                                 }
                             }
                         }
-
                     }
             });
 
@@ -55,10 +56,15 @@ namespace vcsparser.unittests.bugdatabase
 
             this.workItemConverterMock = new Mock<IWorkItemConverter>();
             this.workItemConverterMock
-                .Setup((w) => w.Convert(It.IsAny<IDictionary<DateTime, IDictionary<string, WorkItem>>>()))
-                .Returns(new Dictionary<DateTime, IDictionary<string, IChangeset>>());
+                .Setup((w) => w.Convert(It.IsAny<IEnumerable<WorkItem>>()))
+                .Returns(new List<IChangeset>());
 
             this.webRequest = new Mock<IWebRequest>();
+
+            this.fileSystemMock = new Mock<IFileSystem>();
+
+            this.workItemParser = new Mock<IJsonWorkItemParser>();
+
             this.loggerMock = new Mock<ILogger>();
 
             this.someDllPath = "some/path/to/dll";
@@ -67,12 +73,12 @@ namespace vcsparser.unittests.bugdatabase
 
         private void CreateBugDatabaseProcessor()
         {
-            this.bugDatabaseProcessor = new BugDatabaseProcessor(this.bugDatabaseLoaderMock.Object, this.workItemConverterMock.Object, this.webRequest.Object);
+            this.bugDatabaseProcessor = new BugDatabaseProcessor(this.bugDatabaseLoaderMock.Object, this.workItemConverterMock.Object, this.webRequest.Object, this.fileSystemMock.Object, this.workItemParser.Object, this.loggerMock.Object);
             this.changesetProcessor = new ChangesetProcessor("", this.loggerMock.Object);
         }
 
         [Fact]
-        public void WhenProcessingNoDllPathProcessortShouldExit()
+        public void WhenProcessBugDatabaseNoDllPathProcessortShouldExit()
         {
             this.CreateBugDatabaseProcessor();
 
@@ -82,7 +88,7 @@ namespace vcsparser.unittests.bugdatabase
         }
 
         [Fact]
-        public void WhenProcessingNoDllArgsShouldExit()
+        public void WhenProcessBugDatabaseNoDllArgsShouldExit()
         {
             this.CreateBugDatabaseProcessor();
 
@@ -92,7 +98,7 @@ namespace vcsparser.unittests.bugdatabase
         }
 
         [Fact]
-        public void WhenProcessingDatabaseProviderNullShouldExit()
+        public void WhenProcessBugDatabaseProviderNullShouldExit()
         {
             this.bugDatabaseLoaderMock.Setup(b => b.Load(It.IsAny<string>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IWebRequest>())).Returns((IBugDatabaseProvider)null);
 
@@ -103,13 +109,25 @@ namespace vcsparser.unittests.bugdatabase
         }
 
         [Fact]
-        public void WhenProcessingDatabaseDllLoadedShouldProcessWorkItems()
+        public void WhenProcessCacheChangesetProviderNullShouldExit()
+        {
+            this.CreateBugDatabaseProcessor();
+            this.bugDatabaseProcessor.ProcessCache("", null);
+
+            this.workItemConverterMock.Verify(b => b.Convert(It.IsAny<List<WorkItem>>()), Times.Never);
+        }
+
+        [Fact]
+        public void WhenProcessCacheShouldProcessWorkItems()
         {
             this.CreateBugDatabaseProcessor();
             this.bugDatabaseProcessor.ProcessBugDatabase(someDllPath, someDllArgs);
+            this.bugDatabaseProcessor.ProcessCache("", this.changesetProcessor);
 
             this.bugDatabaseProviderMock.Verify(b => b.Process(), Times.Once);
-            this.workItemConverterMock.Verify(b => b.Convert(It.IsAny<IDictionary<DateTime, IDictionary<string, WorkItem>>>()), Times.Once);
+            this.workItemConverterMock.Verify(b => b.Convert(It.IsAny<List<WorkItem>>()), Times.Once);
         }
+
+        // Tests when reading in files
     }
 }
