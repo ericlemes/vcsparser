@@ -25,10 +25,10 @@ namespace vcsparser.core.bugdatabase
         private readonly IWebRequest webRequest;
 
         private readonly IFileSystem fileSystem;
-        private readonly IJsonWorkItemParser workItemParser;
+        private readonly IJsonParser<WorkItem> workItemParser;
         private readonly ILogger logger;
 
-        public BugDatabaseProcessor(IBugDatabaseDllLoader bugDatabaseDllLoader, IWorkItemConverter workItemConverter, IWebRequest webRequest, IFileSystem fileSystem, IJsonWorkItemParser workItemParser, ILogger logger)
+        public BugDatabaseProcessor(IBugDatabaseDllLoader bugDatabaseDllLoader, IWorkItemConverter workItemConverter, IWebRequest webRequest, IFileSystem fileSystem, IJsonParser<WorkItem> workItemParser, ILogger logger)
         {
             this.bugDatabaseDllLoader = bugDatabaseDllLoader;
             this.workItemConverter = workItemConverter;

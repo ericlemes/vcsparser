@@ -69,9 +69,6 @@ namespace vcsparser.core
 
         public void ProcessBugDatabaseChangeset(IChangeset changeset)
         {
-            if (changeset == null)
-                return;
-
             if (!dict.ContainsKey(changeset.ChangesetTimestamp.Date))
                 dict.Add(changeset.ChangesetTimestamp.Date, new Dictionary<string, DailyCodeChurn>());
 

@@ -8,25 +8,25 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core
 {
-    public class JsonDailyCodeChurnParser : IDailyCodeChurnParser
+    public class JsonParser<T> : IJsonParser<T> where T : IOutputJson
     {
-        private IStreamFactory streamFactory;
+        private readonly IStreamFactory streamFactory;
 
-        public JsonDailyCodeChurnParser(IStreamFactory streamFactory)
+        public JsonParser(IStreamFactory streamFactory)
         {
             this.streamFactory = streamFactory;
         }
 
-        public List<DailyCodeChurn> ParseFile(string fileName)
+        public List<T> ParseFile(string fileName)
         {
             var stream = streamFactory.readFile(fileName);
-            
+
             var serializer = JsonSerializer.Create();
-            var jsonReader = new JsonTextReader(new StreamReader(stream));            
+            var jsonReader = new JsonTextReader(new StreamReader(stream));
 
             using (stream)
             {
-                return serializer.Deserialize<List<DailyCodeChurn>>(jsonReader);
+                return serializer.Deserialize<List<T>>(jsonReader);
             }
         }
     }

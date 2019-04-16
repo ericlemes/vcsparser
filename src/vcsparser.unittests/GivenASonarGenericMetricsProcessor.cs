@@ -17,7 +17,7 @@ namespace vcsparser.unittests
 
         private SonarGenericMetricsCommandLineArgs commandLineArgs;
 
-        private Mock<IDailyCodeChurnParser> parserMock;
+        private Mock<IJsonParser<DailyCodeChurn>> parserMock;
 
         private List<IMeasureConverter> measureConverters;
 
@@ -35,7 +35,7 @@ namespace vcsparser.unittests
             this.commandLineArgs.InputDir = "inputDir";
 
             this.fileSystemMock = new Mock<IFileSystem>();
-            this.parserMock = new Mock<IDailyCodeChurnParser>();            
+            this.parserMock = new Mock<IJsonParser<DailyCodeChurn>>();            
 
             var file1Mock = new Mock<IFile>();
             file1Mock.Setup(m => m.FileName).Returns("file1");

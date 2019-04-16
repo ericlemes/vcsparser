@@ -15,12 +15,12 @@ namespace vcsparser.unittests.bugdatabase
         {
             WorkItem item1 = new WorkItem
             {
-                ClosedDate = new DateTime(0)
+                ClosedDate = "2019-04-16 00:00:00",
             };
 
             WorkItem item2 = new WorkItem
             {
-                ClosedDate = new DateTime(1)
+                ClosedDate = "2019-04-17 00:00:00",
             };
 
             int compare = item2.CompareTo(item1);
@@ -33,13 +33,13 @@ namespace vcsparser.unittests.bugdatabase
         {
             WorkItem item1 = new WorkItem
             {
-                ClosedDate = new DateTime(2019, 04, 16),
+                ClosedDate = "2019-04-16 00:00:00",
                 WorkItemId = "abc"
             };
 
             WorkItem item2 = new WorkItem
             {
-                ClosedDate = new DateTime(2019, 04, 16),
+                ClosedDate = "2019-04-16 00:00:00",
                 WorkItemId = "def"
             };
 
@@ -53,7 +53,7 @@ namespace vcsparser.unittests.bugdatabase
         {
             WorkItem item = new WorkItem
             {
-                ClosedDate = new DateTime(2019, 04, 16),
+                ClosedDate = "2019-04-16 00:00:00",
                 WorkItemId = "abc"
             };
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,14 +18,15 @@ namespace vcsparser.bugdatabase.azuredevops
         public WorkItem ConvertToWorkItem(dynamic fullWorkItem)
         {
             string integrationBuild = fullWorkItem.fields["Microsoft.VSTS.Build.IntegrationBuild"];
-            DateTime closedDate = DateTime.Parse((string)fullWorkItem.fields["Microsoft.VSTS.Common.ClosedDate"]);
+            DateTime closedDate = DateTime.Parse((string)fullWorkItem.fields["Microsoft.VSTS.Common.ClosedDate"], CultureInfo.InvariantCulture);
 
-            return new WorkItem
+            var workItem =  new WorkItem
             {
                 WorkItemId = fullWorkItem.id,
-                ChangesetId = integrationBuild,
-                ClosedDate = closedDate
+                ChangesetId = integrationBuild
             };
+            workItem.SetClosedDateFromDateTime(closedDate);
+            return workItem;
         }
     }
 }

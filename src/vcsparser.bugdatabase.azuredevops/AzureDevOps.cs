@@ -48,10 +48,11 @@ namespace vcsparser.bugdatabase.azuredevops
 
                 lock (_lock)
                 {
-                    if (!workItems.ContainsKey(workItem.ClosedDate.Date))
-                        workItems.Add(workItem.ClosedDate.Date, new Dictionary<string, WorkItem>());
+                    var date = workItem.GetClosedDateAsDateTime().Date;
+                    if (!workItems.ContainsKey(date))
+                        workItems.Add(date, new Dictionary<string, WorkItem>());
 
-                    workItems[workItem.ClosedDate.Date].Add(workItem.ChangesetId, workItem);
+                    workItems[date].Add(workItem.ChangesetId, workItem);
                 }
             }
             catch (Exception e)

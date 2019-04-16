@@ -44,7 +44,7 @@ namespace vcsparser
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
             var workItemConverter = new PerforceWorkItemConverter(commandLineParser, processWrapper, describeParser);
             var fileSystem = new FileSystem();
-            var jsonParser = new JsonWorkItemParser(new FileStreamFactory());
+            var jsonParser = new JsonParser<WorkItem>(new FileStreamFactory());
             var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, workItemConverter, webRequest, fileSystem, jsonParser, logger);
             var processor = new PerforceCodeChurnProcessor(processWrapper, changesParser, describeParser, commandLineParser, bugDatabaseProcessor, logger, stopWatch, outputProcessor, a);
 
@@ -65,7 +65,7 @@ namespace vcsparser
             var workItemConverter = new GitWorkItemConverter(commandLineParser, processWrapper, gitLogParser);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
             var fileSystem = new FileSystem();
-            var jsonParser = new JsonWorkItemParser(new FileStreamFactory());
+            var jsonParser = new JsonParser<WorkItem>(new FileStreamFactory());
             var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, workItemConverter, webRequest, fileSystem, jsonParser, logger);
             var processor = new GitCodeChurnProcessor(commandLineParser, processWrapper, gitLogParser, outputProcessor, bugDatabaseProcessor, logger, a);
 
@@ -77,7 +77,7 @@ namespace vcsparser
         private static int RunSonarGenericMetrics(SonarGenericMetricsCommandLineArgs a)
         {
             var fileSystem = new FileSystem();
-            var jsonParser = new JsonDailyCodeChurnParser(new FileStreamFactory());
+            var jsonParser = new JsonParser<DailyCodeChurn>(new FileStreamFactory());
             var converters = new MeasureConverterListBuilder(new EnvironmentImpl()).Build(a);
             var jsonExporter = new JsonExporter(new FileStreamFactory());
 

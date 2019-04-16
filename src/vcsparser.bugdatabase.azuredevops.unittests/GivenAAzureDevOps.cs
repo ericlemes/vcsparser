@@ -1,6 +1,7 @@
 ﻿using Moq;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -59,7 +60,7 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
             this.apiConverterMock.Setup(a => a.ConvertToWorkItem(It.IsAny<object>())).Returns(new WorkItem
             {
                 ChangesetId = "Some Changeset Id",
-                ClosedDate = someDate,
+                ClosedDate = someDate.ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture),
                 WorkItemId = "Some Work Item Id"
             });
 
@@ -76,7 +77,7 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
             var singleItemValue = Assert.Single(singleValue.Values);
 
             Assert.Equal("Some Changeset Id", singleItemValue.ChangesetId);
-            Assert.Equal(someDate, singleItemValue.ClosedDate);
+            Assert.Equal(someDate, singleItemValue.GetClosedDateAsDateTime());
             Assert.Equal("Some Work Item Id", singleItemValue.WorkItemId);
         }
 
@@ -100,7 +101,7 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
             this.apiConverterMock.SetupSequence(a => a.ConvertToWorkItem(It.IsAny<object>())).Returns(new WorkItem
             {
                 ChangesetId = "Some Changeset Id",
-                ClosedDate = new DateTime(2019, 04, 15),
+                ClosedDate = new DateTime(2019, 04, 15).ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture),
                 WorkItemId = "Some Work Item Id"
             }).Throws(new Exception("Some Exception!"));
 
@@ -132,12 +133,12 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
             this.apiConverterMock.SetupSequence(a => a.ConvertToWorkItem(It.IsAny<object>())).Returns(new WorkItem
             {
                 ChangesetId = "Some Changeset Id 1",
-                ClosedDate = someDate,
+                ClosedDate = someDate.ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture),
                 WorkItemId = "Some Work Item Id 1"
             }).Returns(new WorkItem
             {
                 ChangesetId = "Some Changeset Id 2",
-                ClosedDate = someDate,
+                ClosedDate = someDate.ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture),
                 WorkItemId = "Some Work Item Id 2"
             });
 

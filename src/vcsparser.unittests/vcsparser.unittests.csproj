@@ -93,6 +93,7 @@
     <Compile Include="git\GivenAGitWorkItemConverter.cs" />
     <Compile Include="GivenAChangesetProcessor.cs" />
     <Compile Include="git\GivenAGitCommit.cs" />
+    <Compile Include="GivenAJsonWorkItemParser.cs" />
     <Compile Include="GivenARegex.cs" />
     <Compile Include="GivenASonarMeasuresJson.cs" />
     <Compile Include="MeasureAggregators\GivenALinesChangedInFixesMeasureAggregator.cs" />
