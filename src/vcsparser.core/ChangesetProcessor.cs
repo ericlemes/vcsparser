@@ -7,7 +7,16 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core
 {
-    public class ChangesetProcessor
+    public interface IChangesetProcessor
+    {
+        Dictionary<DateTime, Dictionary<string, DailyCodeChurn>> Output { get; }
+        int ChangesetsWithBugs { get; }
+
+        void ProcessChangeset(IChangeset changeset);
+        void ProcessBugDatabaseChangeset(IChangeset changeset);
+    }
+
+    public class ChangesetProcessor : IChangesetProcessor
     {
         private Dictionary<DateTime, Dictionary<string, DailyCodeChurn>> dict = new Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>();
         public Dictionary<DateTime, Dictionary<string, DailyCodeChurn>> Output {

@@ -9,41 +9,51 @@ namespace vcsparser.core.bugdatabase
 {
     public interface ITimeKeeper
     {
-        bool IsCompleted { get; }
+        TimeSpan Delay { get; set; }
         Action IntervalAction { get; set; }
-        void Start();
+        bool IsCompleted { get; }
+        Task Start();
         void Cancel();
     }
 
     public class TimeKeeper : ITimeKeeper
     {
-        private readonly CancellationTokenSource cancellationTokenSource;
-        private readonly Task task;
-
+        public TimeSpan Delay { get; set; }
+        public Action IntervalAction { get; set; }
         public bool IsCompleted { get => task.IsCompleted; }
 
-        public Action IntervalAction { get; set; }
+        private readonly CancellationTokenSource cancellationTokenSource;
+        private Task task;
 
         public TimeKeeper(TimeSpan delay) : this(delay, () => { }) { }
         public TimeKeeper(TimeSpan delay, Action intervalAction)
         {
             cancellationTokenSource = new CancellationTokenSource();
             IntervalAction = intervalAction;
-            task = new Task(async () =>
-            {
-                while (!cancellationTokenSource.IsCancellationRequested)
-                {
-                    try
-                    {
-                        await Task.Delay(delay, cancellationTokenSource.Token);
-                        IntervalAction();
-                    }
-                    catch (Exception) { }
-                }
-            }, cancellationTokenSource.Token);
+            Delay = delay;
         }
 
-        public void Start() => task.Start();
+        private void RunInterval()
+        {
+            try
+            {
+                Task.Delay(Delay, cancellationTokenSource.Token).Wait();
+                IntervalAction();
+            }
+            catch (TaskCanceledException)
+            {
+                return;
+            }
+        }
+
+        public Task Start()
+        {
+            return task = Task.Run(() =>
+            {
+                while (!cancellationTokenSource.IsCancellationRequested)
+                    RunInterval();
+            }, cancellationTokenSource.Token);
+        }
 
         public void Cancel() => cancellationTokenSource.Cancel();
     }

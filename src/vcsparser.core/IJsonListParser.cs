@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core
 {
-    public interface IJsonParser<T> where T : IOutputJson
+    public interface IJsonListParser<T> where T : IOutputJson
     {
         List<T> ParseFile(string fileName);
     }

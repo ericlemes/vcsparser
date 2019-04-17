@@ -20,13 +20,12 @@ namespace vcsparser.bugdatabase.azuredevops
             string integrationBuild = fullWorkItem.fields["Microsoft.VSTS.Build.IntegrationBuild"];
             DateTime closedDate = DateTime.Parse((string)fullWorkItem.fields["Microsoft.VSTS.Common.ClosedDate"], CultureInfo.InvariantCulture);
 
-            var workItem =  new WorkItem
+            return new WorkItem
             {
                 WorkItemId = fullWorkItem.id,
-                ChangesetId = integrationBuild
+                ChangesetId = integrationBuild,
+                ClosedDate = closedDate
             };
-            workItem.SetClosedDateFromDateTime(closedDate);
-            return workItem;
         }
     }
 }

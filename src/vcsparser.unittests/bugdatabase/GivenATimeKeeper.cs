@@ -16,16 +16,17 @@ namespace vcsparser.unittests.bugdatabase
         private ITimeKeeper timeKeeper;
 
         [Fact]
-        public void WhenStartCalledAfterCancelThenThrowInvalidOperationException()
+        public void WhenStartCalledAfterCancelThenThrowTaskCanceledException()
         {
             Mock<Action> someAction = new Mock<Action>();
 
             timeKeeper = new TimeKeeper(TimeSpan.Zero, someAction.Object);
             timeKeeper.Cancel();
-            Action start = () => timeKeeper.Start();
+            Action start = () => timeKeeper.Start().Wait();
 
-            var exception = Assert.Throws<InvalidOperationException>(start);
-            Assert.Equal("Start may not be called on a task that has completed.", exception.Message);
+            var aggregateException = Assert.Throws<AggregateException>(start);
+            Assert.IsType<TaskCanceledException>(aggregateException.InnerException);
+            someAction.Verify(a => a(), Times.Never);
         }
 
         [Fact]
@@ -61,6 +62,43 @@ namespace vcsparser.unittests.bugdatabase
             waitHandle.WaitOne(TimeSpan.FromSeconds(1));
 
             Assert.True(timeKeeper.IsCompleted);
+        }
+
+        [Fact]
+        public void WhenActionThrowsTaskCancledThenBreakTask()
+        {
+            var waitHandle = new ManualResetEvent(false);
+            timeKeeper = new TimeKeeper(TimeSpan.Zero, () => timeKeeper.Cancel());
+            timeKeeper.Start().Wait();
+            Assert.True(timeKeeper.IsCompleted);
+        }
+
+        [Fact]
+        public void WhenActionThrowsThenBreakTask()
+        {
+            timeKeeper = new TimeKeeper(TimeSpan.Zero, () => throw new Exception("Some Exception!"));
+            Action start = () => timeKeeper.Start().Wait();
+
+            var aggregateException = Assert.Throws<AggregateException>(start);
+            var exception = Assert.IsType<Exception>(aggregateException.InnerException);
+            Assert.Equal("Some Exception!", exception.Message);
+        }
+
+        [Fact]
+        public void WhenActionThrowsTaskCanceledExceptionThenDoNothing()
+        {
+            Mock<Action> someAction = new Mock<Action>();
+            someAction.SetupSequence(a => a()).Throws(new TaskCanceledException("Some Exceptiom!")).Pass();
+
+            timeKeeper = new TimeKeeper(TimeSpan.Zero, () =>
+            {
+                someAction.Object();
+                timeKeeper.Cancel();
+            });
+            timeKeeper.Start().Wait();
+
+            Assert.True(timeKeeper.IsCompleted);
+            someAction.Verify(a => a(), Times.Exactly(2));
         }
     }
 }

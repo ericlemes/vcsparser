@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -9,7 +11,7 @@ namespace vcsparser.core.bugdatabase
 {
     public class WorkItem : IComparable, IOutputJson
     {
-        public string ClosedDate { get; set; }
+        public DateTime ClosedDate { get; set; }
         public string WorkItemId { get; set; }
         public string ChangesetId { get; set; }
 
@@ -22,16 +24,6 @@ namespace vcsparser.core.bugdatabase
                 return dates;
             else
                 return this.WorkItemId.CompareTo(dest.WorkItemId);
-        }
-
-        public void SetClosedDateFromDateTime(DateTime value)
-        {
-            this.ClosedDate = value.ToString(DailyCodeChurn.DATE_FORMAT, CultureInfo.InvariantCulture);
-        }
-
-        public DateTime GetClosedDateAsDateTime()
-        {
-            return DateTime.ParseExact(this.ClosedDate, DailyCodeChurn.DATE_FORMAT, CultureInfo.InvariantCulture);
         }
     }
 }

@@ -28,7 +28,7 @@ namespace vcsparser.unittests
 
         public GivenAPerforceCodeChurnProcessor()
         {
-            var changesMemoryStream = new MemoryStream();            
+            var changesMemoryStream = new MemoryStream();
 
             this.processWrapperMock = new Mock<IProcessWrapper>();
             this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(changesMemoryStream);
@@ -48,7 +48,8 @@ namespace vcsparser.unittests
 
             this.outputProcessorMock = new Mock<IOutputProcessor>();
             this.outputProcessorMock.Setup(m => m.ProcessOutput(OutputType.SingleFile, It.IsAny<string>(), It.IsAny<Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>())).Callback<OutputType, string, Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>(
-                (outputType, file, output) => {
+                (outputType, file, output) =>
+                {
                     this.output = output;
                 }
             );
@@ -93,7 +94,7 @@ namespace vcsparser.unittests
             var changesMemoryStream = new MemoryStream();
 
             this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(changesMemoryStream);
-            this.changesParserMock.Setup(m => m.Parse(changesMemoryStream)).Returns(new List<int>() { 1, 2 });            
+            this.changesParserMock.Setup(m => m.Parse(changesMemoryStream)).Returns(new List<int>() { 1, 2 });
 
             this.processor.Extract();
             this.processWrapperMock.Verify(m => m.Invoke("describe", "1"), Times.Once());
@@ -121,7 +122,7 @@ namespace vcsparser.unittests
 
             this.describeParserMock.Verify(m => m.Parse(describeMemoryStream1), Times.Once());
             this.describeParserMock.Verify(m => m.Parse(describeMemoryStream2), Times.Once());
-        }                
+        }
 
         [Fact]
         public void WhenProcessingShouldSaveOutputWithExpectedResults()
@@ -206,7 +207,7 @@ namespace vcsparser.unittests
             Assert.Equal(2, result[new DateTime(2018, 07, 05)].Count);
             Assert.Single(result[new DateTime(2018, 07, 06)]);
 
-            var dailyCodeChurn = result[new DateTime(2018, 07, 05)]["File1.cs"];            
+            var dailyCodeChurn = result[new DateTime(2018, 07, 05)]["File1.cs"];
             Assert.Equal("2018/07/05 00:00:00", dailyCodeChurn.Timestamp);
             Assert.Equal("File1.cs", dailyCodeChurn.FileName);
             Assert.Equal(2, dailyCodeChurn.Added);
@@ -279,6 +280,79 @@ namespace vcsparser.unittests
             this.processor.Extract();
 
             this.loggerMock.Verify(m => m.LogToConsole("Processed 1/2 changesets"), Times.Once());
+        }
+
+        [Fact]
+        public void WhenCollectingBugDatabaseCacheAndDllIsEmptyShouldReturn()
+        {
+            this.commandLineArgs = new P4ExtractCommandLineArgs()
+            {
+                BugDatabaseDLL = string.Empty
+            };
+
+            this.processor = new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, bugDatabseMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object, commandLineArgs);
+
+            processor.CollectBugDatabaseCache();
+
+            this.bugDatabseMock.Verify(b => b.ProcessBugDatabase(It.IsAny<string>(), It.IsAny<IEnumerable<string>>()), Times.Never);
+        }
+
+        [Fact]
+        public void WhenCollectingBugDatabaseCacheAndNoOutputFileShouldThrowException()
+        {
+            this.commandLineArgs = new P4ExtractCommandLineArgs()
+            {
+                BugDatabaseDLL = "some/path/to.dll"
+            };
+
+            this.processor = new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, bugDatabseMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object, commandLineArgs);
+
+            Action collect = () => processor.CollectBugDatabaseCache();
+
+            var exception = Assert.Throws<Exception>(collect);
+            Assert.Equal("Dll specified without known output file", exception.Message);
+        }
+
+        [Fact]
+        public void WhenCollectingBugDatabaseCacheAndBugCacheNullShouldReturn()
+        {
+            this.commandLineArgs = new P4ExtractCommandLineArgs()
+            {
+                BugDatabaseDLL = "some/path/to.dll",
+                BugDatabaseOutputFile = "some/path/to/output/files"
+            };
+
+            this.bugDatabseMock
+                .Setup(b => b.ProcessBugDatabase(It.IsAny<string>(), It.IsAny<IEnumerable<string>>()))
+                .Returns((Dictionary<DateTime, Dictionary<string, WorkItem>>)null);
+
+            this.processor = new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, bugDatabseMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object, commandLineArgs);
+
+            processor.CollectBugDatabaseCache();
+
+            this.loggerMock.Verify(l => l.LogToConsole(It.IsAny<string>()), Times.Never);
+        }
+
+        [Fact]
+        public void WhenCollectingBugDatabaseCacheShouldProcessOutput()
+        {
+            this.commandLineArgs = new P4ExtractCommandLineArgs()
+            {
+                BugDatabaseDLL = "some/path/to.dll",
+                BugDatabaseOutputFile = "some/path/to/output/files"
+            };
+
+            this.bugDatabseMock
+                .Setup(b => b.ProcessBugDatabase(It.IsAny<string>(), It.IsAny<IEnumerable<string>>()))
+                .Returns(new Dictionary<DateTime, Dictionary<string, WorkItem>>());
+
+            this.processor = new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, bugDatabseMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object, commandLineArgs);
+
+            processor.CollectBugDatabaseCache();
+
+            this.outputProcessorMock
+                .Verify(o => o.ProcessOutput(this.commandLineArgs.BugDatabaseOutputType, this.commandLineArgs.BugDatabaseOutputFile, It.IsAny<Dictionary<DateTime, Dictionary<string, WorkItem>>>()),
+                Times.Once);
         }
     }
 }

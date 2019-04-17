@@ -17,7 +17,7 @@ namespace vcsparser.core.git
 
         private IOutputProcessor outputProcessor;
 
-        private ChangesetProcessor changesetProcessor;
+        private IChangesetProcessor changesetProcessor;
 
         private IBugDatabaseProcessor bugDatabaseProcessor;
 

@@ -36,7 +36,7 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
 
             Assert.Equal(fullItem["id"].ToString(), workItem.WorkItemId);
             Assert.Equal(fullItem["fields"]["Microsoft.VSTS.Build.IntegrationBuild"].ToString(), workItem.ChangesetId);
-            Assert.Equal(DateTime.Parse(fullItem["fields"]["Microsoft.VSTS.Common.ClosedDate"].ToString()), workItem.GetClosedDateAsDateTime());
+            Assert.Equal(DateTime.Parse(fullItem["fields"]["Microsoft.VSTS.Common.ClosedDate"].ToString()), workItem.ClosedDate);
         }
 
         [Fact]

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -26,6 +27,7 @@ namespace vcsparser.core
             var sw = new StreamWriter(fs);
 
             var jsonSerializer = JsonSerializer.Create();
+            jsonSerializer.Converters.Add(new JsonDateTimeCustomConverter(DailyCodeChurn.DATE_FORMAT, CultureInfo.InvariantCulture));
             using (sw)
             {
                 logger.LogToConsole("Writing json to " + fileName);
@@ -90,7 +92,7 @@ namespace vcsparser.core
                 return ConvertCodeChurnDictToOrderedList(dict as Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>) as IList<T>;
             if (typeof(T) == typeof(WorkItem))
                 return ConvertBugDatabaseDictToOrderedList(dict as Dictionary<DateTime, Dictionary<string, WorkItem>>) as IList<T>;
-            return null;
+            return new List<T>();
         }
 
         private SortedList<DateTime, SortedList<T, T>> ConvertDictToOrderedListPerDay<T>(Dictionary<DateTime, Dictionary<string, T>> dict) where T : IOutputJson
@@ -99,7 +101,7 @@ namespace vcsparser.core
                 return ConvertCodeChurnDictToOrderedListPerDay(dict as Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>) as SortedList<DateTime, SortedList<T, T>>;
             if (typeof(T) == typeof(WorkItem))
                 return ConvertBugDatabaseDictToOrderedListPerDay(dict as Dictionary<DateTime, Dictionary<string, WorkItem>>) as SortedList<DateTime, SortedList<T, T>>;
-            return null;
+            return new SortedList<DateTime, SortedList<T, T>>();
         }
 
         public void ProcessOutputMultipleFile<T>(string filePrefix, Dictionary<DateTime, Dictionary<string, T>> dict) where T : IOutputJson

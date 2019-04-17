@@ -19,7 +19,7 @@ namespace vcsparser.core.p4
         private IStopWatch stopWatch;
         private IOutputProcessor outputProcessor;
         private IBugDatabaseProcessor bugDatabaseProcessor;
-        private ChangesetProcessor changesetProcessor;
+        private IChangesetProcessor changesetProcessor;
 
         private P4ExtractCommandLineArgs args;
 

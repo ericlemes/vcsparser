@@ -34,46 +34,46 @@ namespace vcsparser.unittests.git
             this.workItemConverter = new GitWorkItemConverter(this.commandLineParserMock.Object, this.processWrapperMock.Object, this.gitLogParserMock.Object);
         }
 
-        //[Fact]
-        //public void WhenConvertEmptyList_ThenDontConvert()
-        //{
-        //    IEnumerable<WorkItem> items = new List<WorkItem>();
+        [Fact]
+        public void WhenConvertEmptyList_ThenDontConvert()
+        {
+            IEnumerable<WorkItem> items = new List<WorkItem>();
 
-        //    var convertedList = this.workItemConverter.Convert(items).ToArray();
+            var convertedList = this.workItemConverter.Convert(items).ToArray();
 
-        //    Assert.Empty(convertedList);
-        //}
+            Assert.Empty(convertedList);
+        }
 
-        //[Fact]
-        //public void WhenConvertingValidItem_ThenReturnConvertedItem()
-        //{
-        //    IEnumerable<WorkItem> items = new List<WorkItem>()
-        //    {
-        //        new WorkItem()
-        //    };
+        [Fact]
+        public void WhenConvertingValidItem_ThenReturnConvertedItem()
+        {
+            IEnumerable<WorkItem> items = new List<WorkItem>()
+            {
+                new WorkItem()
+            };
 
-        //    var convertedList = this.workItemConverter.Convert(items).ToArray();
+            var convertedList = this.workItemConverter.Convert(items).ToArray();
 
-        //    Assert.Single(convertedList);
-        //}
+            Assert.Single(convertedList);
+        }
 
-        //[Fact]
-        //public void WhenConvertingInvalidItem_ThenReturnConvertedList()
-        //{
-        //    this.gitLogParserMock.SetupSequence((g) => g.Parse(It.IsAny<Stream>()))
-        //        .Returns(new List<GitCommit>() { new GitCommit() })
-        //        .Returns(new List<GitCommit>() { });
+        [Fact]
+        public void WhenConvertingInvalidItem_ThenReturnConvertedList()
+        {
+            this.gitLogParserMock.SetupSequence((g) => g.Parse(It.IsAny<Stream>()))
+                .Returns(new List<GitCommit>() { new GitCommit() })
+                .Returns(new List<GitCommit>() { });
 
-        //    IEnumerable<WorkItem> items = new List<WorkItem>()
-        //    {
-        //        new WorkItem(),
-        //        new WorkItem()
-        //    };
+            IEnumerable<WorkItem> items = new List<WorkItem>()
+            {
+                new WorkItem(),
+                new WorkItem()
+            };
 
-        //    var convertedList = this.workItemConverter.Convert(items).ToArray();
+            var convertedList = this.workItemConverter.Convert(items).ToArray();
 
-        //    this.gitLogParserMock.Verify((g) => g.Parse(It.IsAny<Stream>()), Times.Exactly(2));
-        //    Assert.Single(convertedList);
-        //}
+            this.gitLogParserMock.Verify((g) => g.Parse(It.IsAny<Stream>()), Times.Exactly(2));
+            Assert.Single(convertedList);
+        }
     }
 }

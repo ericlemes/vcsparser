@@ -74,6 +74,7 @@
     <Compile Include="git\GitWorkItemConverter.cs" />
     <Compile Include="git\IGitLogParser.cs" />
     <Compile Include="IMeasureAggregator.cs" />
+    <Compile Include="JsonDateTimeCustomConverter.cs" />
     <Compile Include="MeasureAggregators\LinesChangedMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\LinesChangedWithFixesMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\LinesFixedOverChangedMetricsMeasureAggregator.cs" />
@@ -89,7 +90,7 @@
     <Compile Include="CommandLineArgs.cs" />
     <Compile Include="CommandLineParser.cs" />
     <Compile Include="ConsoleLogger.cs" />
-    <Compile Include="JsonDailyCodeChurnParser.cs" />
+    <Compile Include="JsonListParser.cs" />
     <Compile Include="DailyCodeChurn.cs" />
     <Compile Include="p4\DescribeParser.cs" />
     <Compile Include="EnvironmentImpl.cs" />
@@ -100,7 +101,7 @@
     <Compile Include="IChangeset.cs" />
     <Compile Include="p4\IChangesParser.cs" />
     <Compile Include="ICommandLineParser.cs" />
-    <Compile Include="IDailyCodeChurnParser.cs" />
+    <Compile Include="IJsonListParser.cs" />
     <Compile Include="p4\IDescribeParser.cs" />
     <Compile Include="IEnvironment.cs" />
     <Compile Include="IFile.cs" />

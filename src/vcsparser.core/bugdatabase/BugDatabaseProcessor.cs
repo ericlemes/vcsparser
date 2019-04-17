@@ -15,7 +15,7 @@ namespace vcsparser.core.bugdatabase
     public interface IBugDatabaseProcessor
     {
         Dictionary<DateTime, Dictionary<string, WorkItem>> ProcessBugDatabase(string dllPath, IEnumerable<string> dllArgs);
-        void ProcessCache(string cacheDirectory, ChangesetProcessor changesetProcessor);
+        void ProcessCache(string cacheDirectory, IChangesetProcessor changesetProcessor);
     }
 
     public class BugDatabaseProcessor : IBugDatabaseProcessor
@@ -25,10 +25,10 @@ namespace vcsparser.core.bugdatabase
         private readonly IWebRequest webRequest;
 
         private readonly IFileSystem fileSystem;
-        private readonly IJsonParser<WorkItem> workItemParser;
+        private readonly IJsonListParser<WorkItem> workItemParser;
         private readonly ILogger logger;
 
-        public BugDatabaseProcessor(IBugDatabaseDllLoader bugDatabaseDllLoader, IWorkItemConverter workItemConverter, IWebRequest webRequest, IFileSystem fileSystem, IJsonParser<WorkItem> workItemParser, ILogger logger)
+        public BugDatabaseProcessor(IBugDatabaseDllLoader bugDatabaseDllLoader, IWorkItemConverter workItemConverter, IWebRequest webRequest, IFileSystem fileSystem, IJsonListParser<WorkItem> workItemParser, ILogger logger)
         {
             this.bugDatabaseDllLoader = bugDatabaseDllLoader;
             this.workItemConverter = workItemConverter;
@@ -53,7 +53,7 @@ namespace vcsparser.core.bugdatabase
             return databaseProvider.Process();
         }
 
-        public void ProcessCache(string cacheOutput, ChangesetProcessor changesetProcessor)
+        public void ProcessCache(string cacheOutput, IChangesetProcessor changesetProcessor)
         {
             if (changesetProcessor == null)
                 return;
