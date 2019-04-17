@@ -14,14 +14,14 @@ namespace vcsparser.unittests
 {
     public class GivenAJsonWorkItemParser
     {
-        private JsonParser<WorkItem> jsonWorkItemParser;
+        private JsonListParser<WorkItem> jsonWorkItemParser;
 
         private Mock<IStreamFactory> streamFactory;
 
         public GivenAJsonWorkItemParser()
         {
             streamFactory = new Mock<IStreamFactory>();
-            this.jsonWorkItemParser = new JsonParser<WorkItem>(streamFactory.Object);
+            this.jsonWorkItemParser = new JsonListParser<WorkItem>(streamFactory.Object);
         }
 
         [Fact]

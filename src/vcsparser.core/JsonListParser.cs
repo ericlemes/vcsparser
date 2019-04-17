@@ -12,11 +12,11 @@ using vcsparser.core.bugdatabase;
 
 namespace vcsparser.core
 {
-    public class JsonParser<T> : IJsonListParser<T> where T : IOutputJson
+    public class JsonListParser<T> : IJsonListParser<T> where T : IOutputJson
     {
         private readonly IStreamFactory streamFactory;
 
-        public JsonParser(IStreamFactory streamFactory)
+        public JsonListParser(IStreamFactory streamFactory)
         {
             this.streamFactory = streamFactory;
         }

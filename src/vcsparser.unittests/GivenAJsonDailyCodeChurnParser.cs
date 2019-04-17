@@ -12,14 +12,14 @@ namespace vcsparser.unittests
 {
     public class GivenAJsonDailyCodeChurnParser
     {
-        private JsonParser<DailyCodeChurn> jsonDailyCodeChurnParser;
+        private JsonListParser<DailyCodeChurn> jsonDailyCodeChurnParser;
 
         private Mock<IStreamFactory> streamFactory;
 
         public GivenAJsonDailyCodeChurnParser()
         {
             streamFactory = new Mock<IStreamFactory>();
-            this.jsonDailyCodeChurnParser = new JsonParser<DailyCodeChurn>(streamFactory.Object);
+            this.jsonDailyCodeChurnParser = new JsonListParser<DailyCodeChurn>(streamFactory.Object);
         }
 
         [Fact]
