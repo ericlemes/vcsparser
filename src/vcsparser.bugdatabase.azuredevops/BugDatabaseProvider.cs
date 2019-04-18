@@ -16,27 +16,11 @@ namespace vcsparser.bugdatabase
 {
     public class BugDatabaseProvider : IBugDatabaseProvider
     {
-        public ILogger logger;
-        private IWebRequest webRequest;
-
-        private IAzureDevOpsFactory azureDevOpsFactory = new AzureDevOpsFactory();
+        public ILogger Logger { get; set; }
+        public IWebRequest WebRequest { get; set; }
+        public IAzureDevOpsFactory AzureDevOpsFactory { get; set; } = new AzureDevOpsFactory();
 
         private IAzureDevOps azureDevOps;
-
-        public void SetLogger(ILogger logger)
-        {
-            this.logger = logger;
-        }
-
-        public void SetWebRequest(IWebRequest webRequest)
-        {
-            this.webRequest = webRequest;
-        }
-
-        public void SetAzureDevOpsFactory(IAzureDevOpsFactory azureDevOpsFactory)
-        {
-            this.azureDevOpsFactory = azureDevOpsFactory;
-        }
 
         public int ProcessArgs(IEnumerable<string> args)
         {
@@ -52,14 +36,14 @@ namespace vcsparser.bugdatabase
             if (!DateTime.TryParseExact(args.From, dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime _) ||
                 !DateTime.TryParseExact(args.To, dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime _))
             {
-                logger.LogToConsole($"Date inputs must match '{dateFormat}'");
+                Logger.LogToConsole($"Date inputs must match '{dateFormat}'");
                 return 1;
             }
 
-            IAzureDevOpsRequest request = new AzureDevOpsRequest(webRequest, args);
+            IAzureDevOpsRequest request = new AzureDevOpsRequest(WebRequest, args);
             IApiConverter converter = new ApiConverter();
             ITimeKeeper timeKeeper = new TimeKeeper(TimeSpan.FromSeconds(30));
-            azureDevOps = azureDevOpsFactory.GetAzureDevOps(logger, request, converter, timeKeeper);
+            azureDevOps = AzureDevOpsFactory.GetAzureDevOps(Logger, request, converter, timeKeeper);
             return 0;
         }
 

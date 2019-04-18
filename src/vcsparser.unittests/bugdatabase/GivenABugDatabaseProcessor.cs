@@ -79,16 +79,10 @@ namespace vcsparser.unittests.bugdatabase
         [Fact]
         public void WhenProcessBugDatabaseNoDllPathProcessortShouldExit()
         {
-            this.bugDatabaseProcessor.ProcessBugDatabase(null, someDllArgs);
+            Action action = () => this.bugDatabaseProcessor.ProcessBugDatabase(null, someDllArgs);
 
-            this.bugDatabaseLoaderMock.Verify(b => b.Load(It.IsAny<string>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IWebRequest>()), Times.Never);
-        }
-
-        [Fact]
-        public void WhenProcessBugDatabaseNoDllArgsShouldExit()
-        {
-            this.bugDatabaseProcessor.ProcessBugDatabase(someDllPath, null);
-
+            var exception = Assert.Throws<ArgumentNullException>(action);
+            Assert.StartsWith("Value cannot be null.", exception.Message);
             this.bugDatabaseLoaderMock.Verify(b => b.Load(It.IsAny<string>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IWebRequest>()), Times.Never);
         }
 
@@ -97,10 +91,12 @@ namespace vcsparser.unittests.bugdatabase
         {
             this.bugDatabaseLoaderMock
                 .Setup(b => b.Load(It.IsAny<string>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IWebRequest>()))
-                .Returns((IBugDatabaseProvider)null);
+                .Throws(new Exception("Some Exception!"));
 
-            this.bugDatabaseProcessor.ProcessBugDatabase(someDllPath, someDllArgs);
+            Action action = () => this.bugDatabaseProcessor.ProcessBugDatabase(someDllPath, someDllArgs);
 
+            var exception = Assert.Throws<Exception>(action);
+            Assert.Equal("Some Exception!", exception.Message);
             this.bugDatabaseProviderMock.Verify(b => b.Process(), Times.Never);
         }
 

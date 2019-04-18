@@ -54,10 +54,10 @@ namespace vcsparser.unittests.bugdatabase
         {
             this.bugDatabaseFactoryMock.Setup((f) => f.LoadFile(It.IsAny<string>())).Returns(() => throw new Exception("Some Exception!"));
 
-            var provider = this.bugDatabaseDllLoader.Load(this.dllPath, this.dllArgs, this.webRequestMock.Object);
+            Action action = () => this.bugDatabaseDllLoader.Load(this.dllPath, this.dllArgs, this.webRequestMock.Object);
 
-            Assert.Null(provider);
-            this.loggerMock.Verify((l) => l.LogToConsole($"Error loading Dll. Some Exception!"), Times.Once);
+            var exception = Assert.Throws<Exception>(action);
+            Assert.Equal($"Some Exception!", exception.Message);
         }
 
         [Fact]
@@ -65,10 +65,10 @@ namespace vcsparser.unittests.bugdatabase
         {
             this.assemblyMock.Setup((a) => a.GetExportedTypes()).Returns(new Type[] { });
 
-            var provider = this.bugDatabaseDllLoader.Load(this.dllPath, this.dllArgs, this.webRequestMock.Object);
+            Action action = () => this.bugDatabaseDllLoader.Load(this.dllPath, this.dllArgs, this.webRequestMock.Object);
 
-            Assert.Null(provider);
-            this.loggerMock.Verify((l) => l.LogToConsole($"Dll must contain a public implementation of '{typeof(IBugDatabaseProvider)}'"), Times.Once);
+            var exception = Assert.Throws<Exception>(action);
+            Assert.Equal($"Dll must contain a public implementation of '{typeof(IBugDatabaseProvider)}'", exception.Message);
         }
 
         [Fact]
@@ -76,10 +76,10 @@ namespace vcsparser.unittests.bugdatabase
         {
             this.assemblyMock.Setup((a) => a.GetExportedTypes()).Returns(new Type[] { typeof(NotAnImplementationOfIBugDatabaseProvider) });
 
-            var provider = this.bugDatabaseDllLoader.Load(this.dllPath, this.dllArgs, this.webRequestMock.Object);
+            Action action = () => this.bugDatabaseDllLoader.Load(this.dllPath, this.dllArgs, this.webRequestMock.Object);
 
-            Assert.Null(provider);
-            this.loggerMock.Verify((l) => l.LogToConsole($"Dll must contain a public implementation of '{typeof(IBugDatabaseProvider)}'"), Times.Once);
+            var exception = Assert.Throws<Exception>(action);
+            Assert.Equal($"Dll must contain a public implementation of '{typeof(IBugDatabaseProvider)}'", exception.Message);
         }
 
         [Fact]
@@ -87,10 +87,10 @@ namespace vcsparser.unittests.bugdatabase
         {
             this.assemblyMock.Setup((a) => a.GetExportedTypes()).Returns(new Type[] { typeof(IBugDatabaseProvider), typeof(IBugDatabaseProvider) });
 
-            var provider = this.bugDatabaseDllLoader.Load(this.dllPath, this.dllArgs, this.webRequestMock.Object);
+            Action action = () => this.bugDatabaseDllLoader.Load(this.dllPath, this.dllArgs, this.webRequestMock.Object);
 
-            Assert.Null(provider);
-            this.loggerMock.Verify((l) => l.LogToConsole($"Dll can only contain one public implementation of '{typeof(IBugDatabaseProvider)}'. Found 2"), Times.Once);
+            var exception = Assert.Throws<Exception>(action);
+            Assert.Equal($"Dll can only contain one public implementation of '{typeof(IBugDatabaseProvider)}'. Found 2", exception.Message);
         }
 
         [Fact]
@@ -98,10 +98,10 @@ namespace vcsparser.unittests.bugdatabase
         {
             this.bugDatabaseProviderMock.Setup((p) => p.ProcessArgs(It.IsAny<IEnumerable<string>>())).Returns(1);
 
-            var provider = this.bugDatabaseDllLoader.Load(this.dllPath, this.dllArgs, this.webRequestMock.Object);
+            Action action = () => this.bugDatabaseDllLoader.Load(this.dllPath, this.dllArgs, this.webRequestMock.Object);
 
-            Assert.Null(provider);
-            this.loggerMock.Verify((l) => l.LogToConsole("Unable to parse Dll arguments. Check requirements"), Times.Once);
+            var exception = Assert.Throws<Exception>(action);
+            Assert.Equal("Unable to parse Dll arguments. Check requirements", exception.Message);
         }
 
         [Fact]

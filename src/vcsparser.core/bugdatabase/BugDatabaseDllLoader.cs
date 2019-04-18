@@ -8,11 +8,6 @@ using System.Runtime.InteropServices;
 
 namespace vcsparser.core.bugdatabase
 {
-    public interface IBugDatabaseDllLoader
-    {
-        IBugDatabaseProvider Load(string path, IEnumerable<string> args, IWebRequest webRequest);
-    }
-
     public class BugDatabaseDllLoader : IBugDatabaseDllLoader
     {
         private readonly ILogger logger;
@@ -26,37 +21,20 @@ namespace vcsparser.core.bugdatabase
 
         public IBugDatabaseProvider Load(string path, IEnumerable<string> args, IWebRequest webRequest)
         {
-            _Assembly dll;
-            try
-            {
-                dll = bugDatabaseFactory.LoadFile(path);
-            }
-            catch (Exception e)
-            {
-                logger.LogToConsole($"Error loading Dll. {e.Message}");
-                return null;
-            }
+            _Assembly dll = bugDatabaseFactory.LoadFile(path);
+
             IEnumerable<Type> validTypes = dll.GetExportedTypes().Where((type) => typeof(IBugDatabaseProvider).IsAssignableFrom(type));
             if (!validTypes.Any())
-            {
-                logger.LogToConsole($"Dll must contain a public implementation of '{typeof(IBugDatabaseProvider)}'");
-                return null;
-            }
+                throw new Exception($"Dll must contain a public implementation of '{typeof(IBugDatabaseProvider)}'");
             else if (validTypes.Count() > 1)
-            {
-                logger.LogToConsole($"Dll can only contain one public implementation of '{typeof(IBugDatabaseProvider)}'. Found {validTypes.Count()}");
-                return null;
-            }
+                throw new Exception($"Dll can only contain one public implementation of '{typeof(IBugDatabaseProvider)}'. Found {validTypes.Count()}");
 
             IBugDatabaseProvider databaseProvider = bugDatabaseFactory.CreateInstance(validTypes.First());
-            databaseProvider.SetLogger(logger);
-            databaseProvider.SetWebRequest(webRequest);
-            int parsed = databaseProvider.ProcessArgs(args);
-            if (parsed != 0)
-            {
-                logger.LogToConsole("Unable to parse Dll arguments. Check requirements");
-                return null;
-            }
+            databaseProvider.Logger = logger;
+            databaseProvider.WebRequest = webRequest;
+            if (databaseProvider.ProcessArgs(args) != 0)
+                throw new Exception("Unable to parse Dll arguments. Check requirements");
+
             return databaseProvider;
         }
     }

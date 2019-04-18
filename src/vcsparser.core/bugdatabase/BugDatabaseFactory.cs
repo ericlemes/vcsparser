@@ -9,13 +9,6 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core.bugdatabase
 {
-    public interface IBugDatabaseFactory {
-        IHttpClientWrapper GetHttpClientWrapper();
-
-        _Assembly LoadFile(string file);
-        IBugDatabaseProvider CreateInstance(Type type);
-    }
-
     public class BugDatabaseFactory : IBugDatabaseFactory
     {
         public IHttpClientWrapper GetHttpClientWrapper()

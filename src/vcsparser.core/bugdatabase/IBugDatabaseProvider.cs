@@ -8,8 +8,8 @@ namespace vcsparser.core.bugdatabase
 {
     public interface IBugDatabaseProvider
     {
-        void SetLogger(ILogger logger);
-        void SetWebRequest(IWebRequest webRequest);
+        ILogger Logger { get; set; }
+        IWebRequest WebRequest { get; set; }
 
         int ProcessArgs(IEnumerable<string> args);
         Dictionary<DateTime, Dictionary<string, WorkItem>> Process();

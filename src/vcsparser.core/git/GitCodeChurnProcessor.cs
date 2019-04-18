@@ -46,8 +46,6 @@ namespace vcsparser.core.git
                 throw new Exception("Dll specified without known output file");
 
             var bugCache = bugDatabaseProcessor.ProcessBugDatabase(args.BugDatabaseDLL, args.BugDatabaseDllArgs);
-            if (bugCache == null)
-                return;
 
             logger.LogToConsole(bugCache.Count + " bug database dates to output");
 

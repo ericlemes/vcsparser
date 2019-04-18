@@ -8,11 +8,6 @@ using vcsparser.core.bugdatabase;
 
 namespace vcsparser.bugdatabase.azuredevops
 {
-    public interface IApiConverter
-    {
-        WorkItem ConvertToWorkItem(dynamic fullWorkItem);
-    }
-
     public class ApiConverter : IApiConverter
     {
         public WorkItem ConvertToWorkItem(dynamic fullWorkItem)

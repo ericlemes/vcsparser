@@ -10,17 +10,6 @@ using vcsparser.core.bugdatabase;
 
 namespace vcsparser.bugdatabase.azuredevops
 {
-    public interface IAzureDevOpsRequest
-    {
-        AuthenticationHeaderValue Authorization { get; }
-        Uri WorkItemListUri { get; }
-        string JsonQuery { get; }
-
-        Task<JSONQuery> GetWorkItemList();
-        Task<dynamic> GetFullWorkItem(Uri uri);
-        Task<T> SendRequest<T>(HttpRequestMessage httpRequest);
-    }
-
     public class AzureDevOpsRequest : IAzureDevOpsRequest
     {
         private readonly DllArgs args;

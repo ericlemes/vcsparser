@@ -12,12 +12,6 @@ using vcsparser.core.p4;
 
 namespace vcsparser.core.bugdatabase
 {
-    public interface IBugDatabaseProcessor
-    {
-        Dictionary<DateTime, Dictionary<string, WorkItem>> ProcessBugDatabase(string dllPath, IEnumerable<string> dllArgs);
-        void ProcessCache(string cacheDirectory, IChangesetProcessor changesetProcessor);
-    }
-
     public class BugDatabaseProcessor : IBugDatabaseProcessor
     {
         private readonly IBugDatabaseDllLoader bugDatabaseDllLoader;
@@ -41,15 +35,8 @@ namespace vcsparser.core.bugdatabase
 
         public Dictionary<DateTime, Dictionary<string, WorkItem>> ProcessBugDatabase(string dllPath, IEnumerable<string> dllArgs)
         {
-            if (string.IsNullOrWhiteSpace(dllPath) ||
-                dllArgs == null)
-                return null;
-
             string path = Path.GetFullPath(dllPath);
             IBugDatabaseProvider databaseProvider = bugDatabaseDllLoader.Load(path, dllArgs, webRequest);
-            if (databaseProvider == null)
-                return null;
-
             return databaseProvider.Process();
         }
 

@@ -8,13 +8,6 @@ using System.Net.Http.Headers;
 
 namespace vcsparser.core.bugdatabase
 {
-    public interface IWebRequest
-    {
-        HttpRequestMessage NewHttpRequestMessage(Uri uri, HttpMethod method);
-        HttpRequestMessage NewHttpRequestMessage(Uri uri, HttpMethod method, string mediaType);
-        Task<HttpResponseMessage> Send(HttpRequestMessage message);
-    }
-
     public class WebRequest : IWebRequest
     {
         IHttpClientWrapperFactory httpClientWrapperFactory;

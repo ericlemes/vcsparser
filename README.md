@@ -30,9 +30,9 @@ The main use case is:
 
 When exporting to SonarQube, it requires that the files referenced inside your .json file is found during the SonarQube analysis. That's what the `--fileprefixtoremove` is for. The same option `--fileprefixtoremove` is useless for Git, since it considers the root by default.
 
-When suppliing a bug database, make sure that the `--bugdatabase-output` location is a diffrent location to the `--ouput` location. This is important when exporting to SonarQube that the wrong files wont get read.
+When supplying a bug database, make sure that the `--bugdatabase-output` location is a different location to the `--output` location. This is important when exporting to SonarQube that the wrong files wont get read.
 
-When suppliing a bug database, `--bugdatabase-args` must be the last argument and must be appended with a double dash before dll arguments are sepecified.
+When supplying a bug database, `--bugdatabase-args` must be the last argument and must be appended with a double dash before dll arguments are specified.
 Example:
 
 ```

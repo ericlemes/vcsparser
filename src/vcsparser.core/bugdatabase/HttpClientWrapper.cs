@@ -7,11 +7,6 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core.bugdatabase
 {
-    public interface IHttpClientWrapper
-    {
-        Task<HttpResponseMessage> SendAsync(HttpRequestMessage request);
-    }
-
     public class HttpClientWrapper : IHttpClientWrapper
     {
         private readonly HttpClient httpClient;

@@ -8,10 +8,6 @@ using vcsparser.core.bugdatabase;
 
 namespace vcsparser.bugdatabase.azuredevops
 {
-    public interface IAzureDevOpsFactory {
-        IAzureDevOps GetAzureDevOps(ILogger logger, IAzureDevOpsRequest request, IApiConverter apiConverter, ITimeKeeper timeKeeper);
-    }
-
     public class AzureDevOpsFactory : IAzureDevOpsFactory
     {
         public IAzureDevOps GetAzureDevOps(ILogger logger, IAzureDevOpsRequest request, IApiConverter apiConverter, ITimeKeeper timeKeeper)

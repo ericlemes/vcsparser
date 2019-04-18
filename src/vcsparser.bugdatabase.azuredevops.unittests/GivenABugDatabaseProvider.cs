@@ -41,9 +41,9 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
             };
 
             this.provider = new BugDatabaseProvider();
-            this.provider.SetLogger(this.loggerMock.Object);
-            this.provider.SetWebRequest(this.webRequestMock.Object);
-            this.provider.SetAzureDevOpsFactory(this.azureDevOpsFactoryMock.Object);
+            this.provider.Logger = this.loggerMock.Object;
+            this.provider.WebRequest = webRequestMock.Object;
+            this.provider.AzureDevOpsFactory = this.azureDevOpsFactoryMock.Object;
         }
 
         [Fact]

@@ -15,11 +15,6 @@ using System.Threading;
 
 namespace vcsparser.bugdatabase.azuredevops
 {
-    public interface IAzureDevOps
-    {
-        Dictionary<DateTime, Dictionary<string, WorkItem>> GetWorkItems();
-    }
-
     public class AzureDevOps : IAzureDevOps
     {
         private readonly ILogger logger;

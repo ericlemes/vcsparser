@@ -56,11 +56,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AzureDevOps.cs" />
-    <Compile Include="AzureDevOpsApiConverter.cs" />
+    <Compile Include="ApiConverter.cs" />
     <Compile Include="AzureDevOpsFactory.cs" />
     <Compile Include="AzureDevOpsRequest.cs" />
     <Compile Include="DllArgs.cs" />
     <Compile Include="BugDatabaseProvider.cs" />
+    <Compile Include="IApiConverter.cs" />
+    <Compile Include="IAzureDevOps.cs" />
+    <Compile Include="IAzureDevOpsFactory.cs" />
+    <Compile Include="IAzureDevOpsRequest.cs" />
     <Compile Include="JSONQuery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

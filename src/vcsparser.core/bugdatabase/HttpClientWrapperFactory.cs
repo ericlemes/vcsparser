@@ -6,11 +6,6 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core.bugdatabase
 {
-    public interface IHttpClientWrapperFactory
-    {
-        IHttpClientWrapper GetSingletonHttpClientWrapper();
-    }
-
     public class HttpClientWrapperFactory : IHttpClientWrapperFactory
     {
         private static IBugDatabaseFactory bugDatabaseFactory;

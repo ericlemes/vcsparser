@@ -180,27 +180,6 @@ namespace vcsparser.unittests.git
         }
 
         [Fact]
-        public void WhenCollectingBugDatabaseCacheAndBugCacheNullShouldReturn()
-        {
-            args = new GitExtractCommandLineArgs()
-            {
-                BugDatabaseDLL = "some/path/to.dll",
-                BugDatabaseOutputFile = "some/path/to/output/files"
-            };
-
-            this.bugDatabseMock
-                .Setup(b => b.ProcessBugDatabase(It.IsAny<string>(), It.IsAny<IEnumerable<string>>()))
-                .Returns((Dictionary<DateTime, Dictionary<string, WorkItem>>)null);
-
-            processor = new GitCodeChurnProcessor(this.commandLineParserMock.Object, this.processWrapperMock.Object,
-               this.gitLogParserMock.Object, this.outputProcessorMock.Object, this.bugDatabseMock.Object, this.logger.Object, args);
-
-            processor.CollectBugDatabaseCache();
-
-            this.logger.Verify(l => l.LogToConsole(It.IsAny<string>()), Times.Never);
-        }
-
-        [Fact]
         public void WhenCollectingBugDatabaseCacheShouldProcessOutput()
         {
             args = new GitExtractCommandLineArgs()
