@@ -109,7 +109,7 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
 
             var byDate = Assert.Single(dict.Values);
             Assert.Single(byDate.Values);
-            this.loggerMock.Verify(l => l.LogToConsole("Error Processing Work Item 'Some Id 2': Some Exception!"), Times.Once);
+            this.loggerMock.Verify(l => l.LogToConsole(It.IsRegex(@"Error Processing Work Item 'Some Id \d+': Some Exception!")), Times.Once);
         }
 
         [Fact]

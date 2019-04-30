@@ -121,6 +121,14 @@ namespace vcsparser.unittests.bugdatabase
         }
 
         [Fact]
+        public void WhenProcessCacheCacheOutputShouldExit()
+        {
+            this.bugDatabaseProcessor.ProcessCache(null, this.changesetProcessorMock.Object);
+
+            this.workItemConverterMock.Verify(b => b.Convert(It.IsAny<List<WorkItem>>()), Times.Never);
+        }
+
+        [Fact]
         public void WhenProcessCacheShouldGetParentDirectory()
         {
             var cwd = Directory.GetCurrentDirectory();

@@ -42,7 +42,7 @@ namespace vcsparser.core.bugdatabase
 
         public void ProcessCache(string cacheOutput, IChangesetProcessor changesetProcessor)
         {
-            if (changesetProcessor == null)
+            if (changesetProcessor == null || string.IsNullOrEmpty(cacheOutput))
                 return;
 
             var cacheDirectory = Directory.GetParent(cacheOutput).FullName;
