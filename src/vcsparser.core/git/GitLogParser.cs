@@ -131,8 +131,8 @@ namespace vcsparser.core.git
                 stringToReplace = fileName.Substring(fileName.IndexOf("{"), fileName.IndexOf("}") - fileName.IndexOf("{") + 1).Trim();
                 stringWithBothValues = stringToReplace.Substring(1, stringToReplace.Length - 2);
             }            
-            string oldFileName = stringWithBothValues.Substring(0, stringWithBothValues.IndexOf("=>")).Trim();
-            string newFileName = stringWithBothValues.Substring(stringWithBothValues.IndexOf("=>") + 2).Trim();
+            string oldFileName = stringWithBothValues.Substring(0, stringWithBothValues.IndexOf("=>")).Trim().Trim('"');
+            string newFileName = stringWithBothValues.Substring(stringWithBothValues.IndexOf("=>") + 2).Trim().Trim('"');
 
             oldFileName = fileName.Replace(stringToReplace, oldFileName).Replace("//", "/");
             newFileName = fileName.Replace(stringToReplace, newFileName).Replace("//", "/");
