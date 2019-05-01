@@ -115,7 +115,7 @@ namespace vcsparser.core.git
             FileChanges file = new FileChanges();
             file.Added = Convert.ToInt32(stats[0].Replace('-', '0'));
             file.Deleted = Convert.ToInt32(stats[1].Replace('-', '0'));
-            file.FileName = ProcessRenames(context, stats[2]);
+            file.FileName = ProcessRenames(context, stats[2].Trim('"'));
             context.CurrentCommit.ChangesetFileChanges.Add(file);
         }
 
