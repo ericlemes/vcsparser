@@ -64,8 +64,8 @@ The `p4extract` command is used to read data from perforce and save to a .json f
 The `gitextract` command is used to read data from Git repositores and save to a .json file.
 
 ```
---gitlogcommand    Required. Command line that will be invoked to get git log. Syntax should be similar to: git log
-                   --pretty=fuller --date=iso --after=YYYY-MM-DD --numstat
+--gitlogcommand    Required. Command line that will be invoked to get git log. Syntax should be similar to: git -c
+                   core.quotepath=off log --pretty=fuller --date=iso --after=YYYY-MM-DD --numstat
 
 --output           Required. File path for single file or file prefix for multiple files.
 
