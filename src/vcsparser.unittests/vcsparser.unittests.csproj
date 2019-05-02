@@ -91,7 +91,6 @@
     <Compile Include="bugdatabase\GivenAWorkItem.cs" />
     <Compile Include="git\GivenAGitCodeChurnProcessor.cs" />
     <Compile Include="git\GivenAGitLogParser.cs" />
-    <Compile Include="git\GivenAGitWorkItemConverter.cs" />
     <Compile Include="GivenAChangesetProcessor.cs" />
     <Compile Include="git\GivenAGitCommit.cs" />
     <Compile Include="GivenAJsonDateTimeCustomConverter.cs" />
@@ -127,7 +126,6 @@
     <Compile Include="GivenAProcessWrapper.cs" />
     <Compile Include="GivenASonarGenericMetricsProcessor.cs" />
     <Compile Include="GivenAStopWatchWrapper.cs" />
-    <Compile Include="p4\GivenAPerforceWorkItemConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>

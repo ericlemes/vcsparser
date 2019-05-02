@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using System.Text.RegularExpressions;
+using vcsparser.core.bugdatabase;
 
 namespace vcsparser.unittests
 {
@@ -36,7 +37,8 @@ namespace vcsparser.unittests
                         FileName = fileName,
                         Added = addedLines
                     }
-                }
+                },
+                CommitHash = "SomeCommitHash"
             };
         }
 
@@ -56,7 +58,8 @@ namespace vcsparser.unittests
                 ChangesetFileRenames = new Dictionary<string, string>()
                 {
                     {oldFileName, newFileName }
-                }
+                },
+                CommitHash = "SomeCommitHash"
             };
         }
 
@@ -208,10 +211,13 @@ namespace vcsparser.unittests
         public void WhenProcessingBugDatabaseChangesetAndHasBugRegexesShouldEvaluateBugRegexes()
         {
             this.changesetProcessor = new ChangesetProcessor(@"gramolias+;bug+", this.loggerMock.Object);
+            this.changesetProcessor.WorkItemCache.Add("SomeCommitHash", new WorkItem());
+
             var c = CreateCommitWithAddedLines("file2", 10);
             c.ChangesetFileChanges[0].Deleted = 5;
             c.ChangesetMessage = "This is a comment a newline \n\r and a bug";
-            this.changesetProcessor.ProcessBugDatabaseChangeset(c);
+            this.changesetProcessor.ProcessChangeset(c);
+
             Assert.Equal(1, GetOutputFor("file2").BugDatabse.NumberOfChangesWithFixes);
             Assert.Equal(15, GetOutputFor("file2").BugDatabse.TotalLinesChanged);
         }
@@ -220,10 +226,13 @@ namespace vcsparser.unittests
         public void WhenProcessingBugDatabaseChangesetAndHasBugRegexesThatDoesnotMatchShouldNotCountAsBug()
         {
             this.changesetProcessor = new ChangesetProcessor(@"gramolias+;bug+", this.loggerMock.Object);
+            this.changesetProcessor.WorkItemCache.Add("SomeCommitHash", new WorkItem());
+
             var c = CreateCommitWithAddedLines("file2", 10);
             c.ChangesetFileChanges[0].Deleted = 5;
             c.ChangesetMessage = "This is a comment a newline new feature";
-            this.changesetProcessor.ProcessBugDatabaseChangeset(c);
+            this.changesetProcessor.ProcessChangeset(c);
+
             Assert.Equal(0, GetOutputFor("file2").BugDatabse.NumberOfChangesWithFixes);
             Assert.Equal(15, GetOutputFor("file2").BugDatabse.TotalLinesChanged);
         }
@@ -232,16 +241,17 @@ namespace vcsparser.unittests
         public void WhenProcessingBugDatabaseChangesetAndDailyCodeChurnContainsBugDatabaseThenAppenedExisting()
         {
             this.changesetProcessor = new ChangesetProcessor(@"gramolias+;bug+", this.loggerMock.Object);
+            this.changesetProcessor.WorkItemCache.Add("SomeCommitHash", new WorkItem());
+
             var c1 = CreateCommitWithAddedLines("file2", 10);
             c1.ChangesetFileChanges[0].Deleted = 5;
             c1.ChangesetMessage = "This is a comment a newline \n\r and a bug";
-            this.changesetProcessor.ProcessBugDatabaseChangeset(c1);
+            this.changesetProcessor.ProcessChangeset(c1);
 
             var c2 = CreateCommitWithAddedLines("file2", 10);
             c2.ChangesetFileChanges[0].Deleted = 5;
             c2.ChangesetMessage = "This is a comment a newline \n\r and a bug";
-            this.changesetProcessor.ProcessBugDatabaseChangeset(c2);
-
+            this.changesetProcessor.ProcessChangeset(c2);
 
             Assert.Equal(2, GetOutputFor("file2").BugDatabse.NumberOfChangesWithFixes);
             Assert.Equal(30, GetOutputFor("file2").BugDatabse.TotalLinesChanged);

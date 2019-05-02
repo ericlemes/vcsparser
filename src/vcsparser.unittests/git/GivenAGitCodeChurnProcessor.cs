@@ -104,7 +104,8 @@ namespace vcsparser.unittests.git
                             Deleted = 1,
                             FileName = "File2.cs"
                         }
-                    }
+                    },
+                    CommitHash = "SomeCommitHash"
                 },
                 new GitCommit()
                 {
@@ -118,7 +119,8 @@ namespace vcsparser.unittests.git
                             Deleted = 2,
                             FileName = "File1.cs"
                         }
-                    }
+                    },
+                    CommitHash = "SomeCommitHash"
                 }
             };
 

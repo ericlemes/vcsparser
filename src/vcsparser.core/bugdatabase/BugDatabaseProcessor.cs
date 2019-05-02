@@ -15,17 +15,15 @@ namespace vcsparser.core.bugdatabase
     public class BugDatabaseProcessor : IBugDatabaseProcessor
     {
         private readonly IBugDatabaseDllLoader bugDatabaseDllLoader;
-        private readonly IWorkItemConverter workItemConverter;
         private readonly IWebRequest webRequest;
 
         private readonly IFileSystem fileSystem;
         private readonly IJsonListParser<WorkItem> workItemParser;
         private readonly ILogger logger;
 
-        public BugDatabaseProcessor(IBugDatabaseDllLoader bugDatabaseDllLoader, IWorkItemConverter workItemConverter, IWebRequest webRequest, IFileSystem fileSystem, IJsonListParser<WorkItem> workItemParser, ILogger logger)
+        public BugDatabaseProcessor(IBugDatabaseDllLoader bugDatabaseDllLoader, IWebRequest webRequest, IFileSystem fileSystem, IJsonListParser<WorkItem> workItemParser, ILogger logger)
         {
             this.bugDatabaseDllLoader = bugDatabaseDllLoader;
-            this.workItemConverter = workItemConverter;
             this.webRequest = webRequest;
 
             this.fileSystem = fileSystem;
@@ -53,9 +51,10 @@ namespace vcsparser.core.bugdatabase
             {
                 logger.LogToConsole($"Processing {file.FileName}");
                 var workItemList = workItemParser.ParseFile(file.FileName);
-                var changesets = workItemConverter.Convert(workItemList);
-                foreach (var changeset in changesets)
-                    changesetProcessor.ProcessBugDatabaseChangeset(changeset);
+                foreach(var workitem in workItemList)
+                {
+                    changesetProcessor.WorkItemCache.Add(workitem.ChangesetId, workitem);
+                }
             }
         }
     }

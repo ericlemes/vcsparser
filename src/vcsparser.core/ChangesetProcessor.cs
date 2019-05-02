@@ -4,16 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using vcsparser.core.bugdatabase;
 
 namespace vcsparser.core
 {
     public interface IChangesetProcessor
     {
         Dictionary<DateTime, Dictionary<string, DailyCodeChurn>> Output { get; }
+        Dictionary<string, WorkItem> WorkItemCache { get; }
         int ChangesetsWithBugs { get; }
 
         void ProcessChangeset(IChangeset changeset);
-        void ProcessBugDatabaseChangeset(IChangeset changeset);
     }
 
     public class ChangesetProcessor : IChangesetProcessor
@@ -24,6 +25,11 @@ namespace vcsparser.core
         }
 
         private Dictionary<string, string> renameCache = new Dictionary<string, string>();
+
+        private Dictionary<string, WorkItem> workItemCache = new Dictionary<string, WorkItem>();
+        public Dictionary<string, WorkItem> WorkItemCache {
+            get { return workItemCache; }
+        }
 
         private List<Regex> bugRegexes;
 
@@ -59,6 +65,9 @@ namespace vcsparser.core
             foreach (var c in changeset.ChangesetFileChanges)
             {
                 ProcessFileChange(changeset, containsBugs, c);
+
+                if (workItemCache.ContainsKey(changeset.ChangesetIdentifier.ToString()))
+                    ProcessBugDatabaseFileChange(changeset, containsBugs, c);
             }
         }
 
@@ -73,19 +82,6 @@ namespace vcsparser.core
             if (containsBugs)
             {
                 ProcessChangesInFixes(c, dailyCodeChurn);
-            }
-        }
-
-        public void ProcessBugDatabaseChangeset(IChangeset changeset)
-        {
-            if (!dict.ContainsKey(changeset.ChangesetTimestamp.Date))
-                dict.Add(changeset.ChangesetTimestamp.Date, new Dictionary<string, DailyCodeChurn>());
-
-            bool containsBugs = CheckIfChangesetContainsBug(changeset);
-
-            foreach (var c in changeset.ChangesetFileChanges)
-            {
-                ProcessBugDatabaseFileChange(changeset, containsBugs, c);
             }
         }
 

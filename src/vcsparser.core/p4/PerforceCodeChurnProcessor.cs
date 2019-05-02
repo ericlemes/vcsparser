@@ -67,8 +67,10 @@ namespace vcsparser.core.p4
         {
             var changes = ParseChangeSets(args.P4ChangesCommandLine);
 
-            this.logger.LogToConsole(String.Format("Found {0} changesets to parse", changes.Count));            
-            
+            this.logger.LogToConsole(String.Format("Found {0} changesets to parse", changes.Count));
+
+            this.bugDatabaseProcessor.ProcessCache(args.BugDatabaseOutputFile, this.changesetProcessor);
+
             int i = 0;
             this.stopWatch.Restart();
             
@@ -82,8 +84,6 @@ namespace vcsparser.core.p4
                 i++;
             }
             this.stopWatch.Stop();
-
-            this.bugDatabaseProcessor.ProcessCache(args.BugDatabaseOutputFile, this.changesetProcessor);
 
             this.outputProcessor.ProcessOutput(args.OutputType, args.OutputFile, this.changesetProcessor.Output);
         }

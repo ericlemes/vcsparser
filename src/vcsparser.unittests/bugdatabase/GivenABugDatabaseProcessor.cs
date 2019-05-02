@@ -15,7 +15,6 @@ namespace vcsparser.unittests.bugdatabase
     {
         private Mock<IBugDatabaseProvider> bugDatabaseProviderMock;
         private Mock<IBugDatabaseDllLoader> bugDatabaseLoaderMock;
-        private Mock<IWorkItemConverter> workItemConverterMock;
         private Mock<IWebRequest> webRequest;
         private Mock<IFileSystem> fileSystemMock;
         private Mock<IJsonListParser<WorkItem>> workItemParser;
@@ -55,24 +54,29 @@ namespace vcsparser.unittests.bugdatabase
                 .Setup(b => b.Load(It.IsAny<string>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IWebRequest>()))
                 .Returns(bugDatabaseProviderMock.Object);
 
-            this.workItemConverterMock = new Mock<IWorkItemConverter>();
-            this.workItemConverterMock
-                .Setup((w) => w.Convert(It.IsAny<IEnumerable<WorkItem>>()))
-                .Returns(new List<IChangeset>());
-
             this.webRequest = new Mock<IWebRequest>();
 
             this.fileSystemMock = new Mock<IFileSystem>();
 
             this.workItemParser = new Mock<IJsonListParser<WorkItem>>();
+            this.workItemParser.Setup(w => w.ParseFile(It.IsAny<string>())).Returns(new List<WorkItem>()
+            {
+                new WorkItem
+                {
+                    ChangesetId = "SomeChangeSetId",
+                    ClosedDate =  new DateTime(2019, 04, 11),
+                    WorkItemId = "1"
+                }
+            });
 
             this.loggerMock = new Mock<ILogger>();
 
             this.changesetProcessorMock = new Mock<IChangesetProcessor>();
+            this.changesetProcessorMock.Setup(c => c.WorkItemCache).Returns(new Dictionary<string, WorkItem>());
 
             this.someDllPath = "some/path/to/dll";
             this.someDllArgs = new List<string>() { "--some", "dll", "-arguments" };
-            this.bugDatabaseProcessor = new BugDatabaseProcessor(this.bugDatabaseLoaderMock.Object, this.workItemConverterMock.Object, this.webRequest.Object, this.fileSystemMock.Object, this.workItemParser.Object, this.loggerMock.Object);
+            this.bugDatabaseProcessor = new BugDatabaseProcessor(this.bugDatabaseLoaderMock.Object, this.webRequest.Object, this.fileSystemMock.Object, this.workItemParser.Object, this.loggerMock.Object);
 
         }
 
@@ -117,7 +121,8 @@ namespace vcsparser.unittests.bugdatabase
         {
             this.bugDatabaseProcessor.ProcessCache("", null);
 
-            this.workItemConverterMock.Verify(b => b.Convert(It.IsAny<List<WorkItem>>()), Times.Never);
+            this.changesetProcessorMock.Verify(c => c.WorkItemCache, Times.Never);
+            Assert.Empty(this.changesetProcessorMock.Object.WorkItemCache);
         }
 
         [Fact]
@@ -125,7 +130,8 @@ namespace vcsparser.unittests.bugdatabase
         {
             this.bugDatabaseProcessor.ProcessCache(null, this.changesetProcessorMock.Object);
 
-            this.workItemConverterMock.Verify(b => b.Convert(It.IsAny<List<WorkItem>>()), Times.Never);
+            this.changesetProcessorMock.Verify(c => c.WorkItemCache, Times.Never);
+            Assert.Empty(this.changesetProcessorMock.Object.WorkItemCache);
         }
 
         [Fact]
@@ -151,6 +157,24 @@ namespace vcsparser.unittests.bugdatabase
                 .Setup(f => f.GetFiles(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(new List<IFile>() { fileMock.Object, fileMock.Object });
 
+            this.workItemParser.SetupSequence(w => w.ParseFile(It.IsAny<string>())).Returns(new List<WorkItem>()
+            {
+                new WorkItem
+                {
+                    ChangesetId = "SomeChangeSetId1",
+                    ClosedDate =  new DateTime(2019, 04, 11),
+                    WorkItemId = "1"
+                }
+            }).Returns(new List<WorkItem>()
+            {
+                new WorkItem
+                {
+                    ChangesetId = "SomeChangeSetId2",
+                    ClosedDate =  new DateTime(2019, 04, 11),
+                    WorkItemId = "2"
+                }
+            });
+
             this.bugDatabaseProcessor.ProcessCache("some\\path\\to\\cache", this.changesetProcessorMock.Object);
 
             this.loggerMock.Verify(l => l.LogToConsole($"Processing SomeFile.json"), Times.Once);
@@ -168,7 +192,7 @@ namespace vcsparser.unittests.bugdatabase
         }
 
         [Fact]
-        public void WhenProcessCacheFilesFoundShouldProcessChangesets()
+        public void WhenProcessCacheFilesFoundShouldAddToChangesetProcessor()
         {
             var fileMock = new Mock<IFile>();
             fileMock.Setup(f => f.FileName).Returns("SomeFile.json");
@@ -177,19 +201,14 @@ namespace vcsparser.unittests.bugdatabase
                 .Setup(f => f.GetFiles(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(new List<IFile>() { fileMock.Object });
 
-            var changesetMock = new Mock<IChangeset>();
-
-            this.workItemConverterMock
-                .Setup(w => w.Convert(It.IsAny<IEnumerable<WorkItem>>()))
-                .Returns(new List<IChangeset>() { changesetMock.Object });
-
             this.bugDatabaseProcessor.ProcessCache("some\\path\\to\\cache", this.changesetProcessorMock.Object);
-
-            this.changesetProcessorMock.Verify(c => c.ProcessBugDatabaseChangeset(changesetMock.Object), Times.Once);
+            
+            this.changesetProcessorMock.Verify(c => c.WorkItemCache, Times.Once);
+            Assert.Single(this.changesetProcessorMock.Object.WorkItemCache);
         }
 
         [Fact]
-        public void WhenProcessCacheFilesFoundNoChangesetsShouldNotProcessChangesets()
+        public void WhenProcessCacheFilesFoundNoChangesetsShouldAddToChangesetProcessor()
         {
             var fileMock = new Mock<IFile>();
             fileMock.Setup(f => f.FileName).Returns("SomeFile.json");
@@ -197,14 +216,13 @@ namespace vcsparser.unittests.bugdatabase
             this.fileSystemMock
                 .Setup(f => f.GetFiles(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(new List<IFile>() { fileMock.Object });
-            
-            this.workItemConverterMock
-                .Setup(w => w.Convert(It.IsAny<IEnumerable<WorkItem>>()))
-                .Returns(new List<IChangeset>());
+
+            this.workItemParser.Setup(w => w.ParseFile(It.IsAny<string>())).Returns(new List<WorkItem>());
 
             this.bugDatabaseProcessor.ProcessCache("some\\path\\to\\cache", this.changesetProcessorMock.Object);
 
-            this.changesetProcessorMock.Verify(c => c.ProcessBugDatabaseChangeset(It.IsAny<IChangeset>()), Times.Never);
+            this.changesetProcessorMock.Verify(c => c.WorkItemCache, Times.Never);
+            Assert.Empty(this.changesetProcessorMock.Object.WorkItemCache);
         }
     }
 }

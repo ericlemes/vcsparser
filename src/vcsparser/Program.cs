@@ -42,10 +42,9 @@ namespace vcsparser
             var bugDatabaseFactory = new BugDatabaseFactory();
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
-            var workItemConverter = new PerforceWorkItemConverter(commandLineParser, processWrapper, describeParser);
             var fileSystem = new FileSystem();
             var jsonParser = new JsonListParser<WorkItem>(new FileStreamFactory());
-            var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, workItemConverter, webRequest, fileSystem, jsonParser, logger);
+            var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, webRequest, fileSystem, jsonParser, logger);
             var processor = new PerforceCodeChurnProcessor(processWrapper, changesParser, describeParser, commandLineParser, bugDatabaseProcessor, logger, stopWatch, outputProcessor, a);
 
             processor.CollectBugDatabaseCache();
@@ -62,11 +61,10 @@ namespace vcsparser
             var outputProcessor = new OutputProcessor(new FileStreamFactory(), logger);
             var bugDatabaseFactory = new BugDatabaseFactory();
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
-            var workItemConverter = new GitWorkItemConverter(commandLineParser, processWrapper, gitLogParser);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
             var fileSystem = new FileSystem();
             var jsonParser = new JsonListParser<WorkItem>(new FileStreamFactory());
-            var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, workItemConverter, webRequest, fileSystem, jsonParser, logger);
+            var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, webRequest, fileSystem, jsonParser, logger);
             var processor = new GitCodeChurnProcessor(commandLineParser, processWrapper, gitLogParser, outputProcessor, bugDatabaseProcessor, logger, a);
 
             processor.CollectBugDatabaseCache();
