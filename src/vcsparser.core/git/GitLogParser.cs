@@ -115,7 +115,7 @@ namespace vcsparser.core.git
             FileChanges file = new FileChanges();
             file.Added = Convert.ToInt32(stats[0].Replace('-', '0'));
             file.Deleted = Convert.ToInt32(stats[1].Replace('-', '0'));
-            file.FileName = ProcessRenames(context, stats[2].Trim('"'));
+            file.FileName = ProcessRenames(context, stats[2]);
             context.CurrentCommit.ChangesetFileChanges.Add(file);
         }
 
@@ -131,8 +131,8 @@ namespace vcsparser.core.git
                 stringToReplace = fileName.Substring(fileName.IndexOf("{"), fileName.IndexOf("}") - fileName.IndexOf("{") + 1).Trim();
                 stringWithBothValues = stringToReplace.Substring(1, stringToReplace.Length - 2);
             }            
-            string oldFileName = stringWithBothValues.Substring(0, stringWithBothValues.IndexOf("=>")).Trim().Trim('"');
-            string newFileName = stringWithBothValues.Substring(stringWithBothValues.IndexOf("=>") + 2).Trim().Trim('"');
+            string oldFileName = stringWithBothValues.Substring(0, stringWithBothValues.IndexOf("=>")).Trim();
+            string newFileName = stringWithBothValues.Substring(stringWithBothValues.IndexOf("=>") + 2).Trim();
 
             oldFileName = fileName.Replace(stringToReplace, oldFileName).Replace("//", "/");
             newFileName = fileName.Replace(stringToReplace, newFileName).Replace("//", "/");
