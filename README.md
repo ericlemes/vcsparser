@@ -30,6 +30,8 @@ The main use case is:
 
 When exporting to SonarQube, it requires that the files referenced inside your .json file is found during the SonarQube analysis. That's what the `--fileprefixtoremove` is for. The same option `--fileprefixtoremove` is useless for Git, since it considers the root by default.
 
+When executing `gitextract`, if a commit contains accented characters then change `--gitlogcommand` to be something similar to `git -c core.quotepath=off log --pretty=fuller --date=iso --after=YYYY-MM-DD --numstat`.
+
 When supplying a bug database, make sure that the `--bugdatabase-output` location is a different location to the `--output` location. This is important when exporting to SonarQube that the wrong files wont get read.
 
 When supplying a bug database, `--bugdatabase-args` must be the last argument and must be appended with a double dash before dll arguments are specified.
@@ -78,7 +80,8 @@ The `p4extract` command is used to read data from perforce and save to a .json f
 The `gitextract` command is used to read data from Git repositores and save to a .json file.
 
 ```
---gitlogcommand              Required. Command line that will be invoked to get git log. Syntax should be similar to: git log --pretty=fuller --date=iso --after=YYYY-MM-DD --numstat
+--gitlogcommand              Required. Command line that will be invoked to get git log. Syntax should be similar to: git -c
+                             core.quotepath=off log --pretty=fuller --date=iso --after=YYYY-MM-DD --numstat
 
 --output                     Required. File path for single file or file prefix for multiple files.
 

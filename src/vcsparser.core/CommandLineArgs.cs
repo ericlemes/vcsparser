@@ -48,7 +48,7 @@ namespace vcsparser.core
     [Verb("gitextract", HelpText = "Extracts code coverage information from git log file and outputs to json")]
     public class GitExtractCommandLineArgs
     {
-        [Option("gitlogcommand", HelpText = "Command line that will be invoked to get git log. Syntax should be similar to: git log --pretty=fuller --date=iso --after=YYYY-MM-DD --numstat ", Required = true)]
+        [Option("gitlogcommand", HelpText = "Command line that will be invoked to get git log. Syntax should be similar to: git -c core.quotepath=off log --pretty=fuller --date=iso --after=YYYY-MM-DD --numstat ", Required = true)]
         public string GitLogCommand { get; set; }
 
         [Option("output", HelpText = "File path for single file or file prefix for multiple files.", Required = true)]
