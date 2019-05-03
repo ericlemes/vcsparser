@@ -78,6 +78,7 @@
     <Compile Include="git\GitLogParser.cs" />
     <Compile Include="git\GitLogParserContext.cs" />
     <Compile Include="git\IGitLogParser.cs" />
+    <Compile Include="IChangesetProcessor.cs" />
     <Compile Include="IMeasureAggregator.cs" />
     <Compile Include="JsonDateTimeCustomConverter.cs" />
     <Compile Include="MeasureAggregators\LinesChangedMeasureAggregator.cs" />

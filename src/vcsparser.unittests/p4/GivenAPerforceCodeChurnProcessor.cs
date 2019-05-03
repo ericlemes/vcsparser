@@ -283,6 +283,22 @@ namespace vcsparser.unittests
         }
 
         [Fact]
+        public void WhenCollectingBugDatabaseCacheAndbugDatabaseNotSetShouldThrow()
+        {
+            this.commandLineArgs = new P4ExtractCommandLineArgs()
+            {
+                BugDatabaseDLL = "some/path/to.dll",
+                BugDatabaseOutputFile = "some/path/to/output/files"
+            };
+
+            this.processor = new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, null, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object, commandLineArgs);
+
+            Action collect = () => processor.CollectBugDatabaseCache();
+
+            Assert.Throws<NullReferenceException>(collect);
+        }
+
+        [Fact]
         public void WhenCollectingBugDatabaseCacheAndDllIsEmptyShouldReturn()
         {
             this.commandLineArgs = new P4ExtractCommandLineArgs()

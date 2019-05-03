@@ -10,18 +10,18 @@ namespace vcsparser.core.MeasureAggregators
     {
         public int GetValueForExistingMeasure(DailyCodeChurn dailyCodeChurn, Measure<int> existingMeasure)
         {
-            return dailyCodeChurn.BugDatabse.TotalLinesChanged + existingMeasure.Value;
+            return dailyCodeChurn.BugDatabase.TotalLinesChanged + existingMeasure.Value;
         }
 
         public int GetValueForNewMeasure(DailyCodeChurn dailyCodeChurn)
         {
-            return dailyCodeChurn.BugDatabse.TotalLinesChanged;
+            return dailyCodeChurn.BugDatabase.TotalLinesChanged;
         }
 
         public bool HasValue(DailyCodeChurn dailyCodeChurn)
         {
-            if (dailyCodeChurn.BugDatabse == null) return false;
-            return dailyCodeChurn.BugDatabse.TotalLinesChanged > 0;
+            if (dailyCodeChurn.BugDatabase == null) return false;
+            return dailyCodeChurn.BugDatabase.TotalLinesChanged > 0;
         }
     }
 }

@@ -25,5 +25,12 @@ namespace vcsparser.unittests
             Assert.Single(files);
             Assert.Equal(this.GetType().Assembly.Location.ToLower(), files.First().FileName.ToLower());
         }
+
+        [Fact]
+        public void WhenGettingFullNameShouldReturnExpectedFullName()
+        {
+            var fullName = this.fileSystem.GetFullName(this.GetType().Assembly.Location);
+            Assert.Equal(new FileInfo(this.GetType().Assembly.Location).FullName, fullName);
+        }
     }
 }

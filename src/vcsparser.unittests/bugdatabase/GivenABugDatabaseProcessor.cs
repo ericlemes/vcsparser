@@ -135,16 +135,6 @@ namespace vcsparser.unittests.bugdatabase
         }
 
         [Fact]
-        public void WhenProcessCacheShouldGetParentDirectory()
-        {
-            var cwd = Directory.GetCurrentDirectory();
-
-            this.bugDatabaseProcessor.ProcessCache("some\\path\\to\\cache", this.changesetProcessorMock.Object);
-
-            this.fileSystemMock.Verify(f => f.GetFiles(cwd + "\\some\\path\\to", It.IsAny<string>()), Times.Once);
-        }
-
-        [Fact]
         public void WhenProcessCacheFilesFoundShouldProcessEachFile()
         {
             var fileMock = new Mock<IFile>();

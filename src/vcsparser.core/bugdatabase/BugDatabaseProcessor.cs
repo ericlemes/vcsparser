@@ -40,12 +40,10 @@ namespace vcsparser.core.bugdatabase
 
         public void ProcessCache(string cacheOutput, IChangesetProcessor changesetProcessor)
         {
-            if (changesetProcessor == null || string.IsNullOrEmpty(cacheOutput))
+            if (string.IsNullOrEmpty(cacheOutput))
                 return;
 
-            var cacheDirectory = Directory.GetParent(cacheOutput).FullName;
-
-            var files = fileSystem.GetFiles(cacheDirectory, "*.json");
+            var files = fileSystem.GetFiles(fileSystem.GetFullName(cacheOutput), "*.json");
 
             foreach (var file in files)
             {

@@ -14,5 +14,11 @@ namespace vcsparser.core
             var dir = new DirectoryInfo(directory);
             return dir.GetFiles(mask).Select(fi => new FileImpl(fi.FullName));            
         }
+
+        public string GetFullName(string directory)
+        {
+            var dir = new DirectoryInfo(directory);
+            return dir.FullName;
+        }
     }
 }

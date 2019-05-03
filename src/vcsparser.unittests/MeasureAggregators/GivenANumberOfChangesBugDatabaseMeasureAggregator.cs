@@ -37,7 +37,7 @@ namespace vcsparser.unittests.MeasureAggregators
             {
                 Timestamp = "2018/09/17 00:00:00",
                 FileName = "file1",
-                BugDatabse = new DailyCodeChurnBugDatabase
+                BugDatabase = new DailyCodeChurnBugDatabase
                 {
                     Added = 0,
                     Deleted = 0,
@@ -55,7 +55,7 @@ namespace vcsparser.unittests.MeasureAggregators
             {
                 Timestamp = "2018/09/17 00:00:00",
                 FileName = "file1",
-                BugDatabse = new DailyCodeChurnBugDatabase
+                BugDatabase = new DailyCodeChurnBugDatabase
                 {
                     Added = 0,
                     Deleted = 0,
@@ -73,7 +73,7 @@ namespace vcsparser.unittests.MeasureAggregators
             {
                 Timestamp = "2018/09/17 00:00:00",
                 FileName = "file1",
-                BugDatabse = new DailyCodeChurnBugDatabase
+                BugDatabase = new DailyCodeChurnBugDatabase
                 {
                     Added = 0,
                     Deleted = 0,
@@ -91,7 +91,7 @@ namespace vcsparser.unittests.MeasureAggregators
             {
                 Timestamp = "2018/09/17 00:00:00",
                 FileName = "file1",
-                BugDatabse = new DailyCodeChurnBugDatabase
+                BugDatabase = new DailyCodeChurnBugDatabase
                 {
                     Added = 0,
                     Deleted = 0,

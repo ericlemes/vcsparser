@@ -8,15 +8,6 @@ using vcsparser.core.bugdatabase;
 
 namespace vcsparser.core
 {
-    public interface IChangesetProcessor
-    {
-        Dictionary<DateTime, Dictionary<string, DailyCodeChurn>> Output { get; }
-        Dictionary<string, WorkItem> WorkItemCache { get; }
-        int ChangesetsWithBugs { get; }
-
-        void ProcessChangeset(IChangeset changeset);
-    }
-
     public class ChangesetProcessor : IChangesetProcessor
     {
         private Dictionary<DateTime, Dictionary<string, DailyCodeChurn>> dict = new Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>();
@@ -90,12 +81,12 @@ namespace vcsparser.core
             var fileName = GetFileNameConsideringRenames(c.FileName);
 
             DailyCodeChurn dailyCodeChurn = FindOrCreateDailyCodeChurnForFileAndDate(changeset, fileName);
-            if (dailyCodeChurn.BugDatabse == null)
-                dailyCodeChurn.BugDatabse = new DailyCodeChurnBugDatabase();
+            if (dailyCodeChurn.BugDatabase == null)
+                dailyCodeChurn.BugDatabase = new DailyCodeChurnBugDatabase();
 
             ProcessBugDatabaseChanges(c, dailyCodeChurn);
             if (containsBugs)
-                dailyCodeChurn.BugDatabse.NumberOfChangesWithFixes++;
+                dailyCodeChurn.BugDatabase.NumberOfChangesWithFixes++;
         }
 
         private DailyCodeChurn FindOrCreateDailyCodeChurnForFileAndDate(IChangeset changeset, string fileName)
@@ -120,11 +111,11 @@ namespace vcsparser.core
 
         private static void ProcessBugDatabaseChanges(FileChanges c, DailyCodeChurn dailyCodeChurn)
         {
-            dailyCodeChurn.BugDatabse.Added += c.Added;
-            dailyCodeChurn.BugDatabse.Deleted += c.Deleted;
-            dailyCodeChurn.BugDatabse.ChangesBefore += c.ChangedBefore;
-            dailyCodeChurn.BugDatabse.ChangesAfter += c.ChangedAfter;
-            dailyCodeChurn.BugDatabse.NumberOfChanges += 1;
+            dailyCodeChurn.BugDatabase.Added += c.Added;
+            dailyCodeChurn.BugDatabase.Deleted += c.Deleted;
+            dailyCodeChurn.BugDatabase.ChangesBefore += c.ChangedBefore;
+            dailyCodeChurn.BugDatabase.ChangesAfter += c.ChangedAfter;
+            dailyCodeChurn.BugDatabase.NumberOfChanges += 1;
         }
 
         private static void ProcessChangesInFixes(FileChanges c, DailyCodeChurn dailyCodeChurn)

@@ -30,7 +30,7 @@ namespace vcsparser.unittests.git
 
         private Mock<IProcessWrapper> processWrapperMock;
 
-        private Mock<IBugDatabaseProcessor> bugDatabseMock;
+        private Mock<IBugDatabaseProcessor> bugDatabaseMock;
 
         private Mock<ILogger> logger;
 
@@ -60,11 +60,11 @@ namespace vcsparser.unittests.git
             processWrapperMock = new Mock<IProcessWrapper>();
             processWrapperMock.Setup(m => m.Invoke("git", "log blah")).Returns(this.memoryStream);
 
-            bugDatabseMock = new Mock<IBugDatabaseProcessor>();
+            bugDatabaseMock = new Mock<IBugDatabaseProcessor>();
 
             this.logger = new Mock<ILogger>();
 
-            processor = new GitCodeChurnProcessor(this.commandLineParserMock.Object, this.processWrapperMock.Object, gitLogParserMock.Object, outputProcessorMock.Object, bugDatabseMock.Object, logger.Object, args);
+            processor = new GitCodeChurnProcessor(this.commandLineParserMock.Object, this.processWrapperMock.Object, gitLogParserMock.Object, outputProcessorMock.Object, bugDatabaseMock.Object, logger.Object, args);
         }
 
         [Fact]
@@ -141,11 +141,28 @@ namespace vcsparser.unittests.git
                 OutputFile = "outputfile"
             };
             processor = new GitCodeChurnProcessor(this.commandLineParserMock.Object, this.processWrapperMock.Object,
-                this.gitLogParserMock.Object, this.outputProcessorMock.Object, this.bugDatabseMock.Object, this.logger.Object, args);
+                this.gitLogParserMock.Object, this.outputProcessorMock.Object, this.bugDatabaseMock.Object, this.logger.Object, args);
 
             processor.Extract();
 
             this.logger.Verify(m => m.LogToConsole("Changesets with bugs: 0/0"));
+        }
+
+        [Fact]
+        public void WhenCollectingBugDatabaseCacheAndbugDatabaseNotSetShouldThrow()
+        {
+            this.args = new GitExtractCommandLineArgs()
+            {
+                BugDatabaseDLL = "some/path/to.dll",
+                BugDatabaseOutputFile = "some/path/to/output/files"
+            };
+
+            this.processor = new GitCodeChurnProcessor(this.commandLineParserMock.Object, this.processWrapperMock.Object,
+                this.gitLogParserMock.Object, this.outputProcessorMock.Object, null, this.logger.Object, args);
+
+            Action collect = () => processor.CollectBugDatabaseCache();
+
+            Assert.Throws<NullReferenceException>(collect);
         }
 
         [Fact]
@@ -157,11 +174,11 @@ namespace vcsparser.unittests.git
             };
 
             processor = new GitCodeChurnProcessor(this.commandLineParserMock.Object, this.processWrapperMock.Object,
-               this.gitLogParserMock.Object, this.outputProcessorMock.Object, this.bugDatabseMock.Object, this.logger.Object, args);
+               this.gitLogParserMock.Object, this.outputProcessorMock.Object, this.bugDatabaseMock.Object, this.logger.Object, args);
 
             processor.CollectBugDatabaseCache();
 
-            this.bugDatabseMock.Verify(b => b.ProcessBugDatabase(It.IsAny<string>(), It.IsAny<IEnumerable<string>>()), Times.Never);
+            this.bugDatabaseMock.Verify(b => b.ProcessBugDatabase(It.IsAny<string>(), It.IsAny<IEnumerable<string>>()), Times.Never);
         }
 
         [Fact]
@@ -173,7 +190,7 @@ namespace vcsparser.unittests.git
             };
 
             processor = new GitCodeChurnProcessor(this.commandLineParserMock.Object, this.processWrapperMock.Object,
-               this.gitLogParserMock.Object, this.outputProcessorMock.Object, this.bugDatabseMock.Object, this.logger.Object, args);
+               this.gitLogParserMock.Object, this.outputProcessorMock.Object, this.bugDatabaseMock.Object, this.logger.Object, args);
 
             Action collect = () => processor.CollectBugDatabaseCache();
 
@@ -190,12 +207,12 @@ namespace vcsparser.unittests.git
                 BugDatabaseOutputFile = "some/path/to/output/files"
             };
 
-            this.bugDatabseMock
+            this.bugDatabaseMock
                 .Setup(b => b.ProcessBugDatabase(It.IsAny<string>(), It.IsAny<IEnumerable<string>>()))
                 .Returns(new Dictionary<DateTime, Dictionary<string, WorkItem>>());
 
             processor = new GitCodeChurnProcessor(this.commandLineParserMock.Object, this.processWrapperMock.Object,
-               this.gitLogParserMock.Object, this.outputProcessorMock.Object, this.bugDatabseMock.Object, this.logger.Object, args);
+               this.gitLogParserMock.Object, this.outputProcessorMock.Object, this.bugDatabaseMock.Object, this.logger.Object, args);
 
             processor.CollectBugDatabaseCache();
 

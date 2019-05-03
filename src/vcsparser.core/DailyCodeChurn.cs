@@ -60,7 +60,7 @@ namespace vcsparser.core
         }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public DailyCodeChurnBugDatabase BugDatabse { get; set; }
+        public DailyCodeChurnBugDatabase BugDatabase { get; set; }
 
         public int NumberOfChanges { get; set; }
 
