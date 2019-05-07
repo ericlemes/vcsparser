@@ -62,6 +62,7 @@
     <Compile Include="git\GitLogParserContext.cs" />
     <Compile Include="git\IGitLogParser.cs" />
     <Compile Include="IMeasureAggregator.cs" />
+    <Compile Include="JsonOutputData.cs" />
     <Compile Include="MeasureAggregators\LinesChangedMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\LinesChangedWithFixesMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\LinesFixedOverChangedMetricsMeasureAggregator.cs" />

@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core
 {
-    public interface IDailyCodeChurnParser
+    public class JsonOutputData
     {
-        IList<DailyCodeChurn> ParseFile(string fileName);
+        public int SchemaVersion { get; set; }
+        public IList<DailyCodeChurn> Data { get; set; }
     }
 }

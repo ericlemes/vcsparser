@@ -56,7 +56,7 @@ namespace vcsparser.unittests
                                     {
                                         Author = "author2",
                                         NumberOfChanges = 2
-                                    }                                    
+                                    }
                                 }
                             }
                         }
@@ -68,7 +68,8 @@ namespace vcsparser.unittests
             var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.ToArray());
             Assert.NotEmpty(resultString);
             Assert.Equal(
-                "[{" +
+                "{\"SchemaVersion\":" + OutputProcessor.SchemaVersion + "," +
+                "\"Data\":[{" +
                 "\"Timestamp\":\"2018/08/30 00:00:00\"," +
                 "\"FileName\":\"abc\"," +
                 "\"Extension\":\"\"," +
@@ -84,7 +85,7 @@ namespace vcsparser.unittests
                 "\"TotalLinesChangedWithFixes\":0," +
                 "\"NumberOfChanges\":0," +
                 "\"NumberOfChangesWithFixes\":0," +
-                "\"Authors\":[{\"Author\":\"author1\",\"NumberOfChanges\":1},{\"Author\":\"author2\",\"NumberOfChanges\":2}]}]", resultString);
+                "\"Authors\":[{\"Author\":\"author1\",\"NumberOfChanges\":1},{\"Author\":\"author2\",\"NumberOfChanges\":2}]}]}", resultString);
         }
 
         [Fact]
@@ -101,7 +102,7 @@ namespace vcsparser.unittests
 
             this.outputProcessor.ProcessOutputSingleFile("filename", dict);
             var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.ToArray());
-            Assert.Equal("[]", resultString);            
+            Assert.Equal($"{{\"SchemaVersion\":{OutputProcessor.SchemaVersion},\"Data\":[]}}", resultString);
         }
 
         [Fact]
@@ -118,7 +119,7 @@ namespace vcsparser.unittests
 
             this.outputProcessor.ProcessOutput(OutputType.MultipleFile, "filename", dict);
             var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.GetBuffer());
-            Assert.Empty(resultString);            
+            Assert.Empty(resultString);
         }
 
         [Fact]
@@ -126,7 +127,8 @@ namespace vcsparser.unittests
         {
             var dict = new Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>();
             dict.Add(new DateTime(2018, 08, 30), new Dictionary<string, DailyCodeChurn>());
-            dict[new DateTime(2018, 08, 30)].Add("abc", new DailyCodeChurn() {
+            dict[new DateTime(2018, 08, 30)].Add("abc", new DailyCodeChurn()
+            {
                 Added = 1,
                 ChangesBefore = 2,
                 ChangesAfter = 3,
@@ -143,7 +145,7 @@ namespace vcsparser.unittests
                 Deleted = 4,
                 FileName = "abc",
                 Timestamp = "2018/08/31 00:00:00"
-            });            
+            });
 
             var output1 = new MemoryStream();
             var output2 = new MemoryStream();
@@ -155,7 +157,7 @@ namespace vcsparser.unittests
 
             var resultString1 = UTF8Encoding.UTF8.GetString(output1.ToArray());
             var resultString2 = UTF8Encoding.UTF8.GetString(output2.ToArray());
-            
+
             Assert.NotEmpty(resultString1);
             Assert.NotEmpty(resultString2);
         }

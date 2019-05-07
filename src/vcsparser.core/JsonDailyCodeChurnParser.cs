@@ -17,16 +17,19 @@ namespace vcsparser.core
             this.streamFactory = streamFactory;
         }
 
-        public List<DailyCodeChurn> ParseFile(string fileName)
+        public IList<DailyCodeChurn> ParseFile(string fileName)
         {
             var stream = streamFactory.readFile(fileName);
-            
+
             var serializer = JsonSerializer.Create();
-            var jsonReader = new JsonTextReader(new StreamReader(stream));            
+            var jsonReader = new JsonTextReader(new StreamReader(stream));
 
             using (stream)
             {
-                return serializer.Deserialize<List<DailyCodeChurn>>(jsonReader);
+                var content = serializer.Deserialize<JsonOutputData>(jsonReader);
+                if (content.SchemaVersion == OutputProcessor.SchemaVersion)
+                    return content.Data;
+               throw new Exception($"Version mismatch. Expecting {OutputProcessor.SchemaVersion} found {content.SchemaVersion}");
             }
         }
     }
