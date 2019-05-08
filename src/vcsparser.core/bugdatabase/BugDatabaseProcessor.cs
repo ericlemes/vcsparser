@@ -33,7 +33,7 @@ namespace vcsparser.core.bugdatabase
 
         public Dictionary<DateTime, Dictionary<string, WorkItem>> ProcessBugDatabase(string dllPath, IEnumerable<string> dllArgs)
         {
-            string path = Path.GetFullPath(dllPath);
+            string path = fileSystem.GetFullPath(dllPath);
             IBugDatabaseProvider databaseProvider = bugDatabaseDllLoader.Load(path, dllArgs, webRequest);
             return databaseProvider.Process();
         }
@@ -43,7 +43,7 @@ namespace vcsparser.core.bugdatabase
             if (string.IsNullOrEmpty(cacheOutput))
                 return;
 
-            var files = fileSystem.GetFiles(fileSystem.GetFullName(cacheOutput), "*.json");
+            var files = fileSystem.GetFiles(fileSystem.GetParentFullName(cacheOutput), "*.json");
 
             foreach (var file in files)
             {

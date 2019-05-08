@@ -15,10 +15,15 @@ namespace vcsparser.core
             return dir.GetFiles(mask).Select(fi => new FileImpl(fi.FullName));            
         }
 
-        public string GetFullName(string directory)
+        public string GetFullPath(string directory)
+        {
+            return Path.GetFullPath(directory);
+        }
+
+        public string GetParentFullName(string directory)
         {
             var dir = new DirectoryInfo(directory);
-            return dir.FullName;
+            return dir.Parent.FullName;
         }
     }
 }

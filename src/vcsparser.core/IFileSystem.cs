@@ -10,6 +10,7 @@ namespace vcsparser.core
     {
         IEnumerable<IFile> GetFiles(string directory, string mask);
 
-        string GetFullName(string directory);
+        string GetFullPath(string directory);
+        string GetParentFullName(string directory);
     }
 }

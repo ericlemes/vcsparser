@@ -83,10 +83,10 @@ namespace vcsparser.unittests.bugdatabase
         [Fact]
         public void WhenProcessBugDatabaseNoDllPathProcessortShouldExit()
         {
+            this.fileSystemMock.Setup(f => f.GetFullPath(It.IsAny<string>())).Throws<ArgumentNullException>();
             Action action = () => this.bugDatabaseProcessor.ProcessBugDatabase(null, someDllArgs);
 
-            var exception = Assert.Throws<ArgumentNullException>(action);
-            Assert.StartsWith("Value cannot be null.", exception.Message);
+            Assert.Throws<ArgumentNullException>(action);
             this.bugDatabaseLoaderMock.Verify(b => b.Load(It.IsAny<string>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IWebRequest>()), Times.Never);
         }
 

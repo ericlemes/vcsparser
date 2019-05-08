@@ -27,10 +27,17 @@ namespace vcsparser.unittests
         }
 
         [Fact]
-        public void WhenGettingFullNameShouldReturnExpectedFullName()
+        public void WhenGettingFullPathShouldReturnExpectedFullPath()
         {
-            var fullName = this.fileSystem.GetFullName(this.GetType().Assembly.Location);
+            var fullName = this.fileSystem.GetFullPath(this.GetType().Assembly.Location);
             Assert.Equal(new FileInfo(this.GetType().Assembly.Location).FullName, fullName);
+        }
+
+        [Fact]
+        public void WhenGettingParentFullNameShouldReturnExpectedFullName()
+        {
+            var fullName = this.fileSystem.GetParentFullName(this.GetType().Assembly.Location);
+            Assert.Equal(new FileInfo(this.GetType().Assembly.Location).Directory.FullName, fullName);
         }
     }
 }
