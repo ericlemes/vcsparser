@@ -208,7 +208,7 @@ namespace vcsparser.unittests
         }
 
         [Fact]
-        public void WhenProcessingBugDatabaseChangesetAndHasBugRegexesShouldEvaluateBugRegexes()
+        public void WhenProcessingBugDatabaseChangesetAndMatchesBugRegexesShouldIncrementBugDatabaseCodeChurn()
         {
             this.changesetProcessor = new ChangesetProcessor(@"gramolias+;bug+", this.loggerMock.Object);
             this.changesetProcessor.WorkItemCache.Add("SomeCommitHash", new WorkItem());
@@ -218,12 +218,12 @@ namespace vcsparser.unittests
             c.ChangesetMessage = "This is a comment a newline \n\r and a bug";
             this.changesetProcessor.ProcessChangeset(c);
 
-            Assert.Equal(1, GetOutputFor("file2").BugDatabase.NumberOfChangesWithFixes);
-            Assert.Equal(15, GetOutputFor("file2").BugDatabase.TotalLinesChanged);
+            Assert.Equal(1, GetOutputFor("file2").BugDatabase.NumberOfChangesInFixes);
+            Assert.Equal(15, GetOutputFor("file2").BugDatabase.TotalLinesChangedInFixes);
         }
 
         [Fact]
-        public void WhenProcessingBugDatabaseChangesetAndHasBugRegexesThatDoesnotMatchShouldNotCountAsBug()
+        public void WhenProcessingBugDatabaseChangesetAndDoesntMatchBugRegexesThatDoesntMatchShouldIncrementBugDatabaseCodeChurn()
         {
             this.changesetProcessor = new ChangesetProcessor(@"gramolias+;bug+", this.loggerMock.Object);
             this.changesetProcessor.WorkItemCache.Add("SomeCommitHash", new WorkItem());
@@ -233,8 +233,8 @@ namespace vcsparser.unittests
             c.ChangesetMessage = "This is a comment a newline new feature";
             this.changesetProcessor.ProcessChangeset(c);
 
-            Assert.Equal(0, GetOutputFor("file2").BugDatabase.NumberOfChangesWithFixes);
-            Assert.Equal(15, GetOutputFor("file2").BugDatabase.TotalLinesChanged);
+            Assert.Equal(1, GetOutputFor("file2").BugDatabase.NumberOfChangesInFixes);
+            Assert.Equal(15, GetOutputFor("file2").BugDatabase.TotalLinesChangedInFixes);
         }
 
         [Fact]
@@ -253,8 +253,8 @@ namespace vcsparser.unittests
             c2.ChangesetMessage = "This is a comment a newline \n\r and a bug";
             this.changesetProcessor.ProcessChangeset(c2);
 
-            Assert.Equal(2, GetOutputFor("file2").BugDatabase.NumberOfChangesWithFixes);
-            Assert.Equal(30, GetOutputFor("file2").BugDatabase.TotalLinesChanged);
+            Assert.Equal(2, GetOutputFor("file2").BugDatabase.NumberOfChangesInFixes);
+            Assert.Equal(30, GetOutputFor("file2").BugDatabase.TotalLinesChangedInFixes);
         }
     }
 }

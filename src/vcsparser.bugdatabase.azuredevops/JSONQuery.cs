@@ -6,13 +6,6 @@ using System.Threading.Tasks;
 
 namespace vcsparser.bugdatabase.azuredevops
 {
-    //public class JSONQueryColumn
-    //{
-    //    public string ReferenceName { get; set; }
-    //    public string Name { get; set; }
-    //    public string Url { get; set; }
-    //}
-
     public class JSONQueryItem
     {
         public string Id { get; set; }
@@ -21,10 +14,6 @@ namespace vcsparser.bugdatabase.azuredevops
 
     public class JSONQuery
     {
-        //public string QueryType { get; set; }
-        //public string QueryResultType { get; set; }
-        //public string AsOf { get; set; }
-        //public JSONQueryColumn[] Columns { get; set; }
         public JSONQueryItem[] WorkItems { get; set; }
     }
 }

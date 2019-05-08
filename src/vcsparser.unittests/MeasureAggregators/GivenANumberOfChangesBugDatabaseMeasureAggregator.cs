@@ -11,11 +11,11 @@ namespace vcsparser.unittests.MeasureAggregators
 {
     public class GivenANumberOfChangesBugDatabaseMeasureAggregator
     {
-        private NumberOfChangesBugDatabaseMeasureAggregator measureAggregator;
+        private NumberOfChangesInFixesBugDatabaseMeasureAggregator measureAggregator;
 
         public GivenANumberOfChangesBugDatabaseMeasureAggregator()
         {
-            this.measureAggregator = new NumberOfChangesBugDatabaseMeasureAggregator();
+            this.measureAggregator = new NumberOfChangesInFixesBugDatabaseMeasureAggregator();
         }
 
         [Fact]
@@ -39,9 +39,9 @@ namespace vcsparser.unittests.MeasureAggregators
                 FileName = "file1",
                 BugDatabase = new DailyCodeChurnBugDatabase
                 {
-                    Added = 0,
-                    Deleted = 0,
-                    NumberOfChanges = 0
+                    AddedInFixes = 0,
+                    DeletedInFixes = 0,
+                    NumberOfChangesInFixes = 0
                 }
             };
 
@@ -57,9 +57,9 @@ namespace vcsparser.unittests.MeasureAggregators
                 FileName = "file1",
                 BugDatabase = new DailyCodeChurnBugDatabase
                 {
-                    Added = 0,
-                    Deleted = 0,
-                    NumberOfChanges = 1
+                    AddedInFixes = 0,
+                    DeletedInFixes = 0,
+                    NumberOfChangesInFixes = 1
                 }
             };
 
@@ -75,9 +75,9 @@ namespace vcsparser.unittests.MeasureAggregators
                 FileName = "file1",
                 BugDatabase = new DailyCodeChurnBugDatabase
                 {
-                    Added = 0,
-                    Deleted = 0,
-                    NumberOfChanges = 5
+                    AddedInFixes = 0,
+                    DeletedInFixes = 0,
+                    NumberOfChangesInFixes = 5
                 }
             };
 
@@ -93,9 +93,9 @@ namespace vcsparser.unittests.MeasureAggregators
                 FileName = "file1",
                 BugDatabase = new DailyCodeChurnBugDatabase
                 {
-                    Added = 0,
-                    Deleted = 0,
-                    NumberOfChanges = 5
+                    AddedInFixes = 0,
+                    DeletedInFixes = 0,
+                    NumberOfChangesInFixes = 5
                 }
             };
             var measure = new Measure<int>();

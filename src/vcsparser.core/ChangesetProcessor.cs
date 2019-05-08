@@ -58,7 +58,7 @@ namespace vcsparser.core
                 ProcessFileChange(changeset, containsBugs, c);
 
                 if (workItemCache.ContainsKey(changeset.ChangesetIdentifier.ToString()))
-                    ProcessBugDatabaseFileChange(changeset, containsBugs, c);
+                    ProcessBugDatabaseFileChange(changeset, c);
             }
         }
 
@@ -76,7 +76,7 @@ namespace vcsparser.core
             }
         }
 
-        private void ProcessBugDatabaseFileChange(IChangeset changeset, bool containsBugs, FileChanges c)
+        private void ProcessBugDatabaseFileChange(IChangeset changeset, FileChanges c)
         {
             var fileName = GetFileNameConsideringRenames(c.FileName);
 
@@ -85,8 +85,6 @@ namespace vcsparser.core
                 dailyCodeChurn.BugDatabase = new DailyCodeChurnBugDatabase();
 
             ProcessBugDatabaseChanges(c, dailyCodeChurn);
-            if (containsBugs)
-                dailyCodeChurn.BugDatabase.NumberOfChangesWithFixes++;
         }
 
         private DailyCodeChurn FindOrCreateDailyCodeChurnForFileAndDate(IChangeset changeset, string fileName)
@@ -111,11 +109,11 @@ namespace vcsparser.core
 
         private static void ProcessBugDatabaseChanges(FileChanges c, DailyCodeChurn dailyCodeChurn)
         {
-            dailyCodeChurn.BugDatabase.Added += c.Added;
-            dailyCodeChurn.BugDatabase.Deleted += c.Deleted;
-            dailyCodeChurn.BugDatabase.ChangesBefore += c.ChangedBefore;
-            dailyCodeChurn.BugDatabase.ChangesAfter += c.ChangedAfter;
-            dailyCodeChurn.BugDatabase.NumberOfChanges += 1;
+            dailyCodeChurn.BugDatabase.NumberOfChangesInFixes++;
+            dailyCodeChurn.BugDatabase.AddedInFixes += c.Added;
+            dailyCodeChurn.BugDatabase.DeletedInFixes += c.Deleted;
+            dailyCodeChurn.BugDatabase.ChangesBeforeInFixes += c.ChangedBefore;
+            dailyCodeChurn.BugDatabase.ChangesAfterInFixes += c.ChangedAfter;
         }
 
         private static void ProcessChangesInFixes(FileChanges c, DailyCodeChurn dailyCodeChurn)

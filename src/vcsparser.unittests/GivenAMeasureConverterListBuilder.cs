@@ -77,9 +77,9 @@ namespace vcsparser.unittests
                 startDate, endDate);
             AssertMeasureConverter<LinesFixedOverChangedMetricsMeasureAggregator, double>(converters, MeasureConverterListBuilder.LINES_FIXED_OVER_CHANGED_METRIC_KEY + metricKeySuffix,
                 startDate, endDate);
-            AssertMeasureConverter<NumberOfChangesBugDatabaseMeasureAggregator, int>(converters, MeasureConverterListBuilder.BUG_DATABASE_CHANGES_METRIC_KEY + metricKeySuffix,
+            AssertMeasureConverter<NumberOfChangesInFixesBugDatabaseMeasureAggregator, int>(converters, MeasureConverterListBuilder.BUG_DATABASE_CHANGES_METRIC_KEY + metricKeySuffix,
                 startDate, endDate);
-            AssertMeasureConverter<LinesChangedBugDatabaseMeasureAggregator, int>(converters, MeasureConverterListBuilder.BUG_DATABASE_LINES_CHANGED_METRIC_KEY + metricKeySuffix,
+            AssertMeasureConverter<LinesChangedInFixesBugDatabaseMeasureAggregator, int>(converters, MeasureConverterListBuilder.BUG_DATABASE_LINES_CHANGED_METRIC_KEY + metricKeySuffix,
                 startDate, endDate);
         }
 

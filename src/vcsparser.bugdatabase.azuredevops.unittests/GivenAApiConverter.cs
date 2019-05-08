@@ -54,7 +54,7 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
 
             WorkItem workItem = apiConverter.ConvertToWorkItem(fullItem.ToObject<object>());
 
-            Assert.Null(workItem.ChangesetId);
+            Assert.Empty(workItem.ChangesetId);
         }
 
         [Fact]

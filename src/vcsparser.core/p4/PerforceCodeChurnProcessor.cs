@@ -47,7 +47,7 @@ namespace vcsparser.core.p4
             return this.changesParser.Parse(stdOutStream);
         }
 
-        public void CollectBugDatabaseCache()
+        public void QueryBugDatabase()
         {
             if (string.IsNullOrWhiteSpace(args.BugDatabaseDLL))
                 return;

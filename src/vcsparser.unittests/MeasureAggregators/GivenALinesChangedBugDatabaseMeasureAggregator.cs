@@ -11,11 +11,11 @@ namespace vcsparser.unittests.MeasureAggregators
 {
     public class GivenALinesChangedBugDatabaseMeasureAggregator
     {
-        private LinesChangedBugDatabaseMeasureAggregator measureAggregator;
+        private LinesChangedInFixesBugDatabaseMeasureAggregator measureAggregator;
 
         public GivenALinesChangedBugDatabaseMeasureAggregator()
         {
-            this.measureAggregator = new LinesChangedBugDatabaseMeasureAggregator();
+            this.measureAggregator = new LinesChangedInFixesBugDatabaseMeasureAggregator();
         }
 
         [Fact]
@@ -39,8 +39,8 @@ namespace vcsparser.unittests.MeasureAggregators
                 FileName = "file1",
                 BugDatabase = new DailyCodeChurnBugDatabase
                 {
-                    Added = 0,
-                    Deleted = 0
+                    AddedInFixes = 0,
+                    DeletedInFixes = 0
                 }
             };
 
@@ -56,8 +56,8 @@ namespace vcsparser.unittests.MeasureAggregators
                 FileName = "file1",
                 BugDatabase = new DailyCodeChurnBugDatabase
                 {
-                    Added = 6,
-                    Deleted = 1
+                    AddedInFixes = 6,
+                    DeletedInFixes = 1
                 }
             };
 
@@ -73,8 +73,8 @@ namespace vcsparser.unittests.MeasureAggregators
                 FileName = "file1",
                 BugDatabase = new DailyCodeChurnBugDatabase
                 {
-                    Added = 6,
-                    Deleted = 1
+                    AddedInFixes = 6,
+                    DeletedInFixes = 1
                 }
             };
 
@@ -90,8 +90,8 @@ namespace vcsparser.unittests.MeasureAggregators
                 FileName = "file1",
                 BugDatabase = new DailyCodeChurnBugDatabase
                 {
-                    Added = 6,
-                    Deleted = 1
+                    AddedInFixes = 6,
+                    DeletedInFixes = 1
                 }
             };
 

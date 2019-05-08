@@ -293,7 +293,7 @@ namespace vcsparser.unittests
 
             this.processor = new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, null, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object, commandLineArgs);
 
-            Action collect = () => processor.CollectBugDatabaseCache();
+            Action collect = () => processor.QueryBugDatabase();
 
             Assert.Throws<NullReferenceException>(collect);
         }
@@ -308,7 +308,7 @@ namespace vcsparser.unittests
 
             this.processor = new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, bugDatabseMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object, commandLineArgs);
 
-            processor.CollectBugDatabaseCache();
+            processor.QueryBugDatabase();
 
             this.bugDatabseMock.Verify(b => b.ProcessBugDatabase(It.IsAny<string>(), It.IsAny<IEnumerable<string>>()), Times.Never);
         }
@@ -323,7 +323,7 @@ namespace vcsparser.unittests
 
             this.processor = new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, bugDatabseMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object, commandLineArgs);
 
-            Action collect = () => processor.CollectBugDatabaseCache();
+            Action collect = () => processor.QueryBugDatabase();
 
             var exception = Assert.Throws<Exception>(collect);
             Assert.Equal("Dll specified without known output file", exception.Message);
@@ -344,7 +344,7 @@ namespace vcsparser.unittests
 
             this.processor = new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, bugDatabseMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object, commandLineArgs);
 
-            processor.CollectBugDatabaseCache();
+            processor.QueryBugDatabase();
 
             this.loggerMock.Verify(l => l.LogToConsole(It.IsAny<string>()), Times.Never);
         }
@@ -364,7 +364,7 @@ namespace vcsparser.unittests
 
             this.processor = new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, bugDatabseMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object, commandLineArgs);
 
-            processor.CollectBugDatabaseCache();
+            processor.QueryBugDatabase();
 
             this.outputProcessorMock
                 .Verify(o => o.ProcessOutput(this.commandLineArgs.BugDatabaseOutputType, this.commandLineArgs.BugDatabaseOutputFile, It.IsAny<Dictionary<DateTime, Dictionary<string, WorkItem>>>()),

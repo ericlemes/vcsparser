@@ -8,21 +8,19 @@ namespace vcsparser.core
 {
     public class DailyCodeChurnBugDatabase
     {
-        public int NumberOfChanges { get; set; }
+        public int NumberOfChangesInFixes { get; set; }
 
-        public int NumberOfChangesWithFixes { get; set; }
+        public int AddedInFixes { get; set; }
 
-        public int Added { get; set; }
+        public int DeletedInFixes { get; set; }
 
-        public int Deleted { get; set; }
+        public int ChangesBeforeInFixes { get; set; }
 
-        public int ChangesBefore { get; set; }
+        public int ChangesAfterInFixes { get; set; }
 
-        public int ChangesAfter { get; set; }
-
-        public int TotalLinesChanged {
+        public int TotalLinesChangedInFixes {
             get {
-                return Added + Deleted + ChangesAfter + ChangesBefore;
+                return AddedInFixes + DeletedInFixes + ChangesAfterInFixes + ChangesBeforeInFixes;
             }
         }
     }

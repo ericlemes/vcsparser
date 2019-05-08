@@ -160,7 +160,7 @@ namespace vcsparser.unittests.git
             this.processor = new GitCodeChurnProcessor(this.commandLineParserMock.Object, this.processWrapperMock.Object,
                 this.gitLogParserMock.Object, this.outputProcessorMock.Object, null, this.logger.Object, args);
 
-            Action collect = () => processor.CollectBugDatabaseCache();
+            Action collect = () => processor.QueryBugDatabase();
 
             Assert.Throws<NullReferenceException>(collect);
         }
@@ -176,7 +176,7 @@ namespace vcsparser.unittests.git
             processor = new GitCodeChurnProcessor(this.commandLineParserMock.Object, this.processWrapperMock.Object,
                this.gitLogParserMock.Object, this.outputProcessorMock.Object, this.bugDatabaseMock.Object, this.logger.Object, args);
 
-            processor.CollectBugDatabaseCache();
+            processor.QueryBugDatabase();
 
             this.bugDatabaseMock.Verify(b => b.ProcessBugDatabase(It.IsAny<string>(), It.IsAny<IEnumerable<string>>()), Times.Never);
         }
@@ -192,7 +192,7 @@ namespace vcsparser.unittests.git
             processor = new GitCodeChurnProcessor(this.commandLineParserMock.Object, this.processWrapperMock.Object,
                this.gitLogParserMock.Object, this.outputProcessorMock.Object, this.bugDatabaseMock.Object, this.logger.Object, args);
 
-            Action collect = () => processor.CollectBugDatabaseCache();
+            Action collect = () => processor.QueryBugDatabase();
 
             var exception = Assert.Throws<Exception>(collect);
             Assert.Equal("Dll specified without known output file", exception.Message);
@@ -214,7 +214,7 @@ namespace vcsparser.unittests.git
             processor = new GitCodeChurnProcessor(this.commandLineParserMock.Object, this.processWrapperMock.Object,
                this.gitLogParserMock.Object, this.outputProcessorMock.Object, this.bugDatabaseMock.Object, this.logger.Object, args);
 
-            processor.CollectBugDatabaseCache();
+            processor.QueryBugDatabase();
 
             this.outputProcessorMock
                 .Verify(o => o.ProcessOutput(args.BugDatabaseOutputType, args.BugDatabaseOutputFile, It.IsAny<Dictionary<DateTime, Dictionary<string, WorkItem>>>()),
