@@ -12,8 +12,6 @@ namespace vcsparser.core
 {
     public class OutputProcessor : IOutputProcessor
     {
-        public static readonly int SchemaVersion = 1;
-
         private IStreamFactory streamFactory;
         private ILogger logger;
 
@@ -34,9 +32,9 @@ namespace vcsparser.core
             {
                 logger.LogToConsole("Writing json to " + fileName);
 
-                var output = new JsonOutputData
+                var output = new JsonOutputData<T>
                 {
-                    SchemaVersion = SchemaVersion,
+                    SchemaVersion = JsonOutputData<T>.CurrentVersion,
                     Data = result
                 };
 

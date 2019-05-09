@@ -76,7 +76,7 @@ namespace vcsparser.unittests
 
             Action result = () => this.jsonDailyCodeChurnParser.ParseFile("filename");
             var ex = Assert.Throws<Exception>(result);
-            Assert.Equal($"Version mismatch. Expecting {OutputProcessor.SchemaVersion} found {-1}", ex.Message);
+            Assert.Equal($"Version mismatch. Expecting {JsonOutputData<DailyCodeChurn>.CurrentVersion} found {-1} in filename", ex.Message);
         }
     }
 }
