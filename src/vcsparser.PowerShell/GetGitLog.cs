@@ -21,7 +21,7 @@ namespace vcsparser.PowerShell
         private ICmdlet cmdlet;
 
         [Parameter(HelpMessage = "Git log command line. For example: git log " +
-                     "--pretty = fuller--date = iso--after = YYYY - MM - DD--numstat ", Mandatory = true)]
+                     "--pretty=fuller --date=iso --after=YYYY-MM-DD --numstat ", Mandatory = true)]
         public string GitLogCommand
         {
             get;

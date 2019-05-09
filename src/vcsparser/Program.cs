@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using vcsparser.core.bugdatabase;
 
 namespace vcsparser
 {
@@ -15,7 +16,12 @@ namespace vcsparser
     {
         static int Main(string[] args)
         {
-            var result = Parser.Default.ParseArguments<P4ExtractCommandLineArgs, GitExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
+            var parser = new Parser(config =>
+            {
+                config.HelpWriter = Console.Error;
+                config.EnableDashDash = true;
+            });
+            var result = parser.ParseArguments<P4ExtractCommandLineArgs, GitExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
                 .MapResult(
                     (P4ExtractCommandLineArgs a) => RunPerforceCodeChurnProcessor(a),
                     (GitExtractCommandLineArgs a) => RunGitCodeChurnProcessor(a),
@@ -33,15 +39,35 @@ namespace vcsparser
             var logger = new ConsoleLogger();
             var stopWatch = new StopWatchWrapper();
             var outputProcessor = new OutputProcessor(new FileStreamFactory(), logger);
-            var processor = new PerforceCodeChurnProcessor(processWrapper, changesParser, describeParser, commandLineParser, logger, stopWatch, outputProcessor, a.BugRegexes);
+            var bugDatabaseFactory = new BugDatabaseFactory();
+            var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
+            var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
+            var fileSystem = new FileSystem();
+            var jsonParser = new JsonListParser<WorkItem>(new FileStreamFactory());
+            var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, webRequest, fileSystem, jsonParser, logger);
+            var processor = new PerforceCodeChurnProcessor(processWrapper, changesParser, describeParser, commandLineParser, bugDatabaseProcessor, logger, stopWatch, outputProcessor, a);
 
-            processor.Extract(a.OutputType, a.OutputFile, a.P4ChangesCommandLine, a.P4DescribeCommandLine);
-                return 0;
+            processor.QueryBugDatabase();
+            processor.Extract();
+            return 0;
         }
 
         private static int RunGitCodeChurnProcessor(GitExtractCommandLineArgs a)
-        {            
-            var processor = new GitCodeChurnProcessor(new CommandLineParser(), new ProcessWrapper(), new GitLogParser(), new OutputProcessor(new FileStreamFactory(), new ConsoleLogger()), new ConsoleLogger(), a);
+        {
+            var processWrapper = new ProcessWrapper();
+            var commandLineParser = new CommandLineParser();
+            var gitLogParser = new GitLogParser();
+            var logger = new ConsoleLogger();
+            var outputProcessor = new OutputProcessor(new FileStreamFactory(), logger);
+            var bugDatabaseFactory = new BugDatabaseFactory();
+            var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
+            var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
+            var fileSystem = new FileSystem();
+            var jsonParser = new JsonListParser<WorkItem>(new FileStreamFactory());
+            var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, webRequest, fileSystem, jsonParser, logger);
+            var processor = new GitCodeChurnProcessor(commandLineParser, processWrapper, gitLogParser, outputProcessor, bugDatabaseProcessor, logger, a);
+
+            processor.QueryBugDatabase();
             processor.Extract();
             return 0;
         }
@@ -49,7 +75,7 @@ namespace vcsparser
         private static int RunSonarGenericMetrics(SonarGenericMetricsCommandLineArgs a)
         {
             var fileSystem = new FileSystem();
-            var jsonParser = new JsonDailyCodeChurnParser(new FileStreamFactory());
+            var jsonParser = new JsonListParser<DailyCodeChurn>(new FileStreamFactory());
             var converters = new MeasureConverterListBuilder(new EnvironmentImpl()).Build(a);
             var jsonExporter = new JsonExporter(new FileStreamFactory());
 
@@ -58,7 +84,5 @@ namespace vcsparser
 
             return 0;
         }
-
-
     }
 }

@@ -44,6 +44,7 @@
     <Reference Include="Moq, Version=4.8.0.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\packages\Moq.4.8.3\lib\net45\Moq.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
@@ -82,17 +83,27 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="bugdatabase\GivenABugDatabaseDllLoader.cs" />
+    <Compile Include="bugdatabase\GivenABugDatabaseProcessor.cs" />
+    <Compile Include="bugdatabase\GivenAHttpClientWrapperFactory.cs" />
+    <Compile Include="bugdatabase\GivenATimeKeeper.cs" />
+    <Compile Include="bugdatabase\GivenAWebRequest.cs" />
+    <Compile Include="bugdatabase\GivenAWorkItem.cs" />
     <Compile Include="git\GivenAGitCodeChurnProcessor.cs" />
     <Compile Include="git\GivenAGitLogParser.cs" />
     <Compile Include="GivenAChangesetProcessor.cs" />
     <Compile Include="git\GivenAGitCommit.cs" />
+    <Compile Include="GivenAJsonDateTimeCustomConverter.cs" />
+    <Compile Include="GivenAJsonWorkItemParser.cs" />
     <Compile Include="GivenARegex.cs" />
     <Compile Include="GivenASonarMeasuresJson.cs" />
     <Compile Include="MeasureAggregators\GivenALinesChangedInFixesMeasureAggregator.cs" />
+    <Compile Include="MeasureAggregators\GivenALinesChangedBugDatabaseMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\GivenALinesChangedMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\GivenALinesFixedOverChangedMetricsMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\GivenANumberOfAuthorsMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\GivenANumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator.cs" />
+    <Compile Include="MeasureAggregators\GivenANumberOfChangesBugDatabaseMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\GivenANumberOfChangesMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\GivenANumberOfChangesWithFixesMeasureAggregator.cs" />
     <Compile Include="p4\GivenAPerforceChangeset.cs" />

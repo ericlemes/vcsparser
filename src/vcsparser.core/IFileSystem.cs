@@ -9,5 +9,8 @@ namespace vcsparser.core
     public interface IFileSystem
     {
         IEnumerable<IFile> GetFiles(string directory, string mask);
+
+        string GetFullPath(string directory);
+        string GetParentFullName(string directory);
     }
 }

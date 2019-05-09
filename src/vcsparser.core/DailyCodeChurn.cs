@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core
 {
-    public class DailyCodeChurn : IComparable
+    public class DailyCodeChurn : IComparable, IOutputJson
     {
         public DailyCodeChurn()
         {
@@ -18,18 +19,15 @@ namespace vcsparser.core
         public static readonly string DATE_FORMAT = "yyyy/MM/dd HH:mm:ss";
 
         private string timestamp = "";
-        public string Timestamp
-        {
+        public string Timestamp {
             get { return timestamp; }
             set { this.timestamp = value; }
         }
 
         public string FileName { get; set; }
 
-        public string Extension
-        {
-            get
-            {
+        public string Extension {
+            get {
                 return Path.GetExtension(FileName);
             }
         }
@@ -50,20 +48,19 @@ namespace vcsparser.core
 
         public int ChangesAfterWithFixes { get; set; }
 
-        public int TotalLinesChanged
-        {
-            get
-            {
+        public int TotalLinesChanged {
+            get {
                 return Added + Deleted + ChangesAfter + ChangesBefore;
             }
-        }        
-        public int TotalLinesChangedWithFixes
-        {
-            get
-            {
+        }
+        public int TotalLinesChangedWithFixes {
+            get {
                 return AddedWithFixes + DeletedWithFixes + ChangesAfterWithFixes + ChangesBeforeWithFixes;
             }
         }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public DailyCodeChurnBugDatabase BugDatabase { get; set; }
 
         public int NumberOfChanges { get; set; }
 
@@ -81,11 +78,11 @@ namespace vcsparser.core
             if (dates != 0)
                 return dates;
             else
-                return this.FileName.CompareTo(dest.FileName);                    
+                return this.FileName.CompareTo(dest.FileName);
         }
 
         public DateTime GetDateTimeAsDateTime()
-        {            
+        {
             return DateTime.ParseExact(this.Timestamp, DATE_FORMAT, CultureInfo.InvariantCulture);
         }
 

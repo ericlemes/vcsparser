@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core
 {
-    public interface IDailyCodeChurnParser
+    public interface IJsonListParser<T> where T : IOutputJson
     {
-        List<DailyCodeChurn> ParseFile(string fileName);
+        List<T> ParseFile(string fileName);
     }
 }

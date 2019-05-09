@@ -32,6 +32,14 @@ When exporting to SonarQube, it requires that the files referenced inside your .
 
 When executing `gitextract`, if a commit contains accented characters then change `--gitlogcommand` to be something similar to `git -c core.quotepath=off log --pretty=fuller --date=iso --after=YYYY-MM-DD --numstat`.
 
+When supplying a bug database, make sure that the `--bugdatabase-output` location is a different location to the `--output` location. This is important when exporting to SonarQube that the wrong files wont get read.
+
+When supplying a bug database, `--bugdatabase-args` must be the last argument and must be appended with a double dash before dll arguments are specified.
+Example:
+
+```
+vcsparser gitextract gitextractArguments --bugdatabase-args -- dllArguments
+```
 
 # Usage
 
@@ -48,32 +56,51 @@ sonargenericmetrics    Process json files and outputs to Sonar Generic Metrics J
 The `p4extract` command is used to read data from perforce and save to a .json file.
 
 ```
---changes     Required. p4 changes command line to get changesets. Usually "p4 changes -s submitted
-              //path/to/your/depot/...@YYYY/MM/DD,YYYY/MM/DD" or something similar
+--changes                    Required. p4 changes command line to get changesets. Usually "p4 changes -s submitted
+                             //path/to/your/depot/...@YYYY/MM/DD,YYYY/MM/DD" or something similar
   
---describe    Required. p4 describe command line to describe every changeset. Usually "p4 describe -ds {0}" should
-              work. {0} will be substituted by the change number during execution
+--describe                   Required. p4 describe command line to describe every changeset. Usually "p4 describe -ds {0}" should
+                             work. {0} will be substituted by the change number during execution
   
---output      path to dump json output
-  
---help        Display this help screen.
-  
---version     Display version information.
+--output                     path to dump json output
+
+--bugdatabase-output         BugDatabase: File path for single file or file prefix for multiple files.
+
+--bugdatabase-output-type    BugDatabase: SingleFile or MultipleFile. MultipleFile dumps one file per date.
+
+--bugdatabase-dll            BugDatabase: File path to the dll to load
+
+--bugdatabase-args           BugDatabase: Options for the dll
+
+--help                       Display this help screen.
+
+--version                    Display version information.
 ```
 
 The `gitextract` command is used to read data from Git repositores and save to a .json file.
 
 ```
---gitlogcommand    Required. Command line that will be invoked to get git log. Syntax should be similar to: git -c
-                   core.quotepath=off log --pretty=fuller --date=iso --after=YYYY-MM-DD --numstat
+--gitlogcommand              Required. Command line that will be invoked to get git log. Syntax should be similar to: git -c
+                             core.quotepath=off log --pretty=fuller --date=iso --after=YYYY-MM-DD --numstat
 
---output           Required. File path for single file or file prefix for multiple files.
+--output                     Required. File path for single file or file prefix for multiple files.
 
---output-type      Required. SingleFile or MultipleFile. MultipleFile dumps one file per date.
+--bugregexes                 Regexes, separated by semi colon (;) to identify if this changeset is a bug fix
 
---help             Display this help screen.
+--output-type                Required. SingleFile or MultipleFile. MultipleFile dumps one file per date.
 
---version          Display version information.
+--bugdatabase-output         BugDatabase: File path for single file or file prefix for multiple files.
+
+--bugdatabase-output-type    BugDatabase: SingleFile or MultipleFile. MultipleFile dumps one file per date.
+
+--bugdatabase-dll            BugDatabase: File path to the dll to load
+
+--bugdatabase-args           BugDatabase: Options for the dll
+
+--help                       Display this help screen.
+
+--version                    Display version information.
+
 ```
 
 ***It is very important to use the order provided by Git by default (newer commits in the beginning). This is necessary to handle renames properly.***
