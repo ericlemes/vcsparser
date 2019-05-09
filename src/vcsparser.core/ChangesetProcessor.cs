@@ -4,25 +4,29 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using vcsparser.core.bugdatabase;
 
 namespace vcsparser.core
 {
-    public class ChangesetProcessor
+    public class ChangesetProcessor : IChangesetProcessor
     {
         private Dictionary<DateTime, Dictionary<string, DailyCodeChurn>> dict = new Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>();
-        public Dictionary<DateTime, Dictionary<string, DailyCodeChurn>> Output
-        {
+        public Dictionary<DateTime, Dictionary<string, DailyCodeChurn>> Output {
             get { return dict; }
         }
 
         private Dictionary<string, string> renameCache = new Dictionary<string, string>();
 
-        private List<Regex> bugRegexes;        
+        private Dictionary<string, WorkItem> workItemCache = new Dictionary<string, WorkItem>();
+        public Dictionary<string, WorkItem> WorkItemCache {
+            get { return workItemCache; }
+        }
+
+        private List<Regex> bugRegexes;
 
         private ILogger logger;
 
-        public int ChangesetsWithBugs
-        {
+        public int ChangesetsWithBugs {
             get; private set;
         }
 
@@ -33,7 +37,7 @@ namespace vcsparser.core
             {
                 foreach (var r in bugRegexes.Split(';'))
                     this.bugRegexes.Add(new Regex(r));
-            }            
+            }
             this.logger = logger;
         }
 
@@ -47,11 +51,14 @@ namespace vcsparser.core
             if (!dict.ContainsKey(changeset.ChangesetTimestamp.Date))
                 dict.Add(changeset.ChangesetTimestamp.Date, new Dictionary<string, DailyCodeChurn>());
 
-            bool containsBugs = CheckAndIncrementIfChangesetContainsBug(changeset);            
+            bool containsBugs = CheckAndIncrementIfChangesetContainsBug(changeset);
 
             foreach (var c in changeset.ChangesetFileChanges)
             {
                 ProcessFileChange(changeset, containsBugs, c);
+
+                if (workItemCache.ContainsKey(changeset.ChangesetIdentifier.ToString()))
+                    ProcessBugDatabaseFileChange(changeset, c);
             }
         }
 
@@ -67,6 +74,17 @@ namespace vcsparser.core
             {
                 ProcessChangesInFixes(c, dailyCodeChurn);
             }
+        }
+
+        private void ProcessBugDatabaseFileChange(IChangeset changeset, FileChanges c)
+        {
+            var fileName = GetFileNameConsideringRenames(c.FileName);
+
+            DailyCodeChurn dailyCodeChurn = FindOrCreateDailyCodeChurnForFileAndDate(changeset, fileName);
+            if (dailyCodeChurn.BugDatabase == null)
+                dailyCodeChurn.BugDatabase = new DailyCodeChurnBugDatabase();
+
+            ProcessBugDatabaseChanges(c, dailyCodeChurn);
         }
 
         private DailyCodeChurn FindOrCreateDailyCodeChurnForFileAndDate(IChangeset changeset, string fileName)
@@ -89,6 +107,15 @@ namespace vcsparser.core
             dailyCodeChurn.NumberOfChanges += 1;
         }
 
+        private static void ProcessBugDatabaseChanges(FileChanges c, DailyCodeChurn dailyCodeChurn)
+        {
+            dailyCodeChurn.BugDatabase.NumberOfChangesInFixes++;
+            dailyCodeChurn.BugDatabase.AddedInFixes += c.Added;
+            dailyCodeChurn.BugDatabase.DeletedInFixes += c.Deleted;
+            dailyCodeChurn.BugDatabase.ChangesBeforeInFixes += c.ChangedBefore;
+            dailyCodeChurn.BugDatabase.ChangesAfterInFixes += c.ChangedAfter;
+        }
+
         private static void ProcessChangesInFixes(FileChanges c, DailyCodeChurn dailyCodeChurn)
         {
             dailyCodeChurn.NumberOfChangesWithFixes++;
@@ -103,7 +130,7 @@ namespace vcsparser.core
             var author = dailyCodeChurn.Authors.Where(a => a.Author.ToUpper() == changeset.ChangesetAuthor.ToUpper()).FirstOrDefault();
             if (author != null)
                 author.NumberOfChanges++;
-            else            
+            else
                 dailyCodeChurn.Authors.Add(new DailyCodeChurnAuthor()
                 {
                     Author = changeset.ChangesetAuthor,
@@ -111,29 +138,38 @@ namespace vcsparser.core
                 });
         }
 
-        private bool CheckAndIncrementIfChangesetContainsBug(IChangeset changeset)
+        private bool CheckIfChangesetContainsBug(IChangeset changeset)
         {
-            if (String.IsNullOrEmpty(changeset.ChangesetMessage)) 
+            if (String.IsNullOrEmpty(changeset.ChangesetMessage))
                 return false;
 
             foreach (var regex in this.bugRegexes)
                 if (regex.IsMatch(changeset.ChangesetMessage))
-                {
-                    ChangesetsWithBugs++;
                     return true;
-                }
+
+            return false;
+        }
+
+        private bool CheckAndIncrementIfChangesetContainsBug(IChangeset changeset)
+        {
+            if (CheckIfChangesetContainsBug(changeset))
+            {
+                ChangesetsWithBugs++;
+                return true;
+            }
             return false;
         }
 
         private void UpdateRenameCache(IChangeset changeset)
-        {            
-            foreach (var pair in changeset.ChangesetFileRenames) {
+        {
+            foreach (var pair in changeset.ChangesetFileRenames)
+            {
                 string value = GetDestinationFileFollowingRenames(pair.Value);
 
-                if (!renameCache.ContainsKey(pair.Key)) 
-                    renameCache.Add(pair.Key, value);                
-                else                
-                    renameCache[pair.Key] = value;                
+                if (!renameCache.ContainsKey(pair.Key))
+                    renameCache.Add(pair.Key, value);
+                else
+                    renameCache[pair.Key] = value;
             }
         }
 
@@ -146,13 +182,13 @@ namespace vcsparser.core
                 return GetDestinationFileFollowingRenames(renameCache[fileName], fileName);
             else
                 return fileName;
-                        
+
         }
 
         private string GetFileNameConsideringRenames(string fileName)
         {
-            if (renameCache.ContainsKey(fileName))            
-                return renameCache[fileName];            
+            if (renameCache.ContainsKey(fileName))
+                return renameCache[fileName];
 
             return fileName;
         }

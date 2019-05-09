@@ -8,7 +8,7 @@ namespace vcsparser.core
     {
         private IFileSystem fileSystem;
 
-        private IDailyCodeChurnParser dailyCodeChurnParser;
+        private IJsonListParser<DailyCodeChurn> dailyCodeChurnParser;
 
         private List<IMeasureConverter> measureConverters;
 
@@ -16,7 +16,7 @@ namespace vcsparser.core
 
         private ILogger logger;
 
-        public SonarGenericMetricsProcessor(IFileSystem fileSystem, IDailyCodeChurnParser dailyCodeChurnParser, List<IMeasureConverter> measureConverters,
+        public SonarGenericMetricsProcessor(IFileSystem fileSystem, IJsonListParser<DailyCodeChurn> dailyCodeChurnParser, List<IMeasureConverter> measureConverters,
             IJsonExporter jsonExporter, ILogger logger)
         {
             this.fileSystem = fileSystem;

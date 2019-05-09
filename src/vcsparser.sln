@@ -1,17 +1,24 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2043
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vcsparser.core", "vcsparser.core\vcsparser.core.csproj", "{C2035FFB-3ACD-4BED-9B67-75C824A6743A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vcsparser.unittests", "vcsparser.unittests\vcsparser.unittests.csproj", "{62E4086E-1602-4D38-89DA-6A81A9EE55B8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vcsparser", "vcsparser\vcsparser.csproj", "{E7289043-D131-46E0-A20B-04CDC648F592}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C8937BF0-C4CA-4868-BDCA-2DDE9DDBFCB4} = {C8937BF0-C4CA-4868-BDCA-2DDE9DDBFCB4}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vcsparser.PowerShell", "vcsparser.PowerShell\vcsparser.PowerShell.csproj", "{53147A90-F990-403E-9D79-158C9C311D4A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vcsparser.PowerShell.unittests", "vcsparser.PowerShell.unittests\vcsparser.PowerShell.unittests.csproj", "{D0B758E8-34CF-46D1-9E0E-C20D5DC8029B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vcsparser.bugdatabase.azuredevops", "vcsparser.bugdatabase.azuredevops\vcsparser.bugdatabase.azuredevops.csproj", "{C8937BF0-C4CA-4868-BDCA-2DDE9DDBFCB4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vcsparser.bugdatabase.azuredevops.unittests", "vcsparser.bugdatabase.azuredevops.unittests\vcsparser.bugdatabase.azuredevops.unittests.csproj", "{B6B10D40-2E90-43B5-BB42-B58246083482}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +46,14 @@ Global
 		{D0B758E8-34CF-46D1-9E0E-C20D5DC8029B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0B758E8-34CF-46D1-9E0E-C20D5DC8029B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0B758E8-34CF-46D1-9E0E-C20D5DC8029B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8937BF0-C4CA-4868-BDCA-2DDE9DDBFCB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8937BF0-C4CA-4868-BDCA-2DDE9DDBFCB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8937BF0-C4CA-4868-BDCA-2DDE9DDBFCB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8937BF0-C4CA-4868-BDCA-2DDE9DDBFCB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6B10D40-2E90-43B5-BB42-B58246083482}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6B10D40-2E90-43B5-BB42-B58246083482}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6B10D40-2E90-43B5-BB42-B58246083482}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6B10D40-2E90-43B5-BB42-B58246083482}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
