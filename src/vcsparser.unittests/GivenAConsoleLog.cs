@@ -13,7 +13,7 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenLoggingToConsoleShouldNotThrow()
         {
-            var logger = new ConsoleLogger();
+            var logger = new ConsoleLoggerWithTimestamp();
             logger.LogToConsole("blah");
         }
     }

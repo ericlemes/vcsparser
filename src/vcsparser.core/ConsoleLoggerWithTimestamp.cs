@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core
 {
-    public class ConsoleLogger : ILogger
+    public class ConsoleLoggerWithTimestamp : ILogger
     {
         public void LogToConsole(string message)
         {
