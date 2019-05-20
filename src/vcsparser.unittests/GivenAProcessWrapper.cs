@@ -37,5 +37,12 @@ namespace vcsparser.unittests
             Assert.Equal(0, processWrapper.Invoke("cmd", "/c dir", "C:\\", (l) => { lineCount++; }));
             Assert.True(lineCount > 0);
         }
+
+        [Fact]
+        public void WhenInvokingWithWorkingDirAndCallbackShouldReturn0()
+        {            
+            var processWrapper = new ProcessWrapper();
+            Assert.Equal(0, processWrapper.Invoke("cmd", "/c dir", "C:\\", null));            
+        }
     }
 }
