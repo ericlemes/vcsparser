@@ -96,6 +96,7 @@
     <Compile Include="GivenAJsonDateTimeCustomConverter.cs" />
     <Compile Include="GivenAJsonOutputData.cs" />
     <Compile Include="GivenAJsonWorkItemParser.cs" />
+    <Compile Include="GivenARawConsoleLogger.cs" />
     <Compile Include="GivenARegex.cs" />
     <Compile Include="GivenASonarMeasuresJson.cs" />
     <Compile Include="MeasureAggregators\GivenALinesChangedInFixesMeasureAggregator.cs" />
@@ -112,7 +113,7 @@
     <Compile Include="p4\GivenAPerforceCodeChurnProcessor.cs" />
     <Compile Include="GivenACommandLineArgs.cs" />
     <Compile Include="GivenACommandLineParser.cs" />
-    <Compile Include="GivenAConsoleLog.cs" />
+    <Compile Include="GivenAConsoleLoggerWithTimestamp.cs" />
     <Compile Include="GivenAJsonDailyCodeChurnParser.cs" />
     <Compile Include="GivenADailyCodeChurn.cs" />
     <Compile Include="p4\GivenADescribeParser.cs" />

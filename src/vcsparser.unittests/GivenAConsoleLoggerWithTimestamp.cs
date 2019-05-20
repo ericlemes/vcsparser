@@ -8,7 +8,7 @@ using Xunit;
 
 namespace vcsparser.unittests
 {
-    public class GivenAConsoleLog
+    public class GivenAConsoleLoggerWithTimestamp
     {
         [Fact]
         public void WhenLoggingToConsoleShouldNotThrow()

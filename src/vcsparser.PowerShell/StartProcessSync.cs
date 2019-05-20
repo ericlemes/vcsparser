@@ -49,15 +49,16 @@ namespace vcsparser.PowerShell
 
         protected override void ProcessRecord()
         {
-            this.DoProcessRecord();
-        }
-
-        public void DoProcessRecord()
-        {
+            base.ProcessRecord();
             logger.LogToConsole("Executing command line: " + this.CommandLine);
 
             var cmdLine = this.commandLineParser.ParseCommandLine(this.CommandLine);
             this.cmdLet.WriteObject(this.processWrapper.Invoke(cmdLine.Item1, cmdLine.Item2, this.WorkingDirectory, (l) => { this.logger.LogToConsole(l); }));            
+        }
+
+        public void DoProcessRecord()
+        {
+            this.ProcessRecord();
         }
     }
 }
