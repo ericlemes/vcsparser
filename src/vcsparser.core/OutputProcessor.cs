@@ -31,7 +31,14 @@ namespace vcsparser.core
             using (sw)
             {
                 logger.LogToConsole("Writing json to " + fileName);
-                jsonSerializer.Serialize(sw, result);
+
+                var output = new JsonOutputData<T>
+                {
+                    SchemaVersion = JsonOutputData<T>.CurrentVersion,
+                    Data = result
+                };
+
+                jsonSerializer.Serialize(sw, output);
                 sw.Flush();
             }
         }

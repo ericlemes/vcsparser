@@ -21,7 +21,7 @@ namespace vcsparser.core
             this.streamFactory = streamFactory;
         }
 
-        public List<T> ParseFile(string fileName)
+        public IList<T> ParseFile(string fileName)
         {
             var stream = streamFactory.readFile(fileName);
 
@@ -31,7 +31,10 @@ namespace vcsparser.core
 
             using (stream)
             {
-                return serializer.Deserialize<List<T>>(jsonReader);
+                var content = serializer.Deserialize<JsonOutputData<T>>(jsonReader);
+                if (content.SchemaVersion == JsonOutputData<T>.CurrentVersion)
+                    return content.Data;
+                throw new Exception($"Version mismatch. Expecting {JsonOutputData<T>.CurrentVersion} found {content.SchemaVersion} in {fileName}");
             }
         }
     }

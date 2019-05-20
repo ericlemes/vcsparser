@@ -69,7 +69,8 @@ namespace vcsparser.unittests
             var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.ToArray());
             Assert.NotEmpty(resultString);
             Assert.Equal(
-                "[{" +
+                "{\"SchemaVersion\":" + JsonOutputData<DailyCodeChurn>.CurrentVersion + "," +
+                "\"Data\":[{" +
                 "\"Timestamp\":\"2018/08/30 00:00:00\"," +
                 "\"FileName\":\"abc\"," +
                 "\"Extension\":\"\"," +
@@ -85,7 +86,7 @@ namespace vcsparser.unittests
                 "\"TotalLinesChangedWithFixes\":0," +
                 "\"NumberOfChanges\":0," +
                 "\"NumberOfChangesWithFixes\":0," +
-                "\"Authors\":[{\"Author\":\"author1\",\"NumberOfChanges\":1},{\"Author\":\"author2\",\"NumberOfChanges\":2}]}]", resultString);
+                "\"Authors\":[{\"Author\":\"author1\",\"NumberOfChanges\":1},{\"Author\":\"author2\",\"NumberOfChanges\":2}]}]}", resultString);
         }
 
         [Fact]
@@ -102,7 +103,7 @@ namespace vcsparser.unittests
 
             this.outputProcessor.ProcessOutputSingleFile("filename", dict);
             var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.ToArray());
-            Assert.Equal("[]", resultString);
+            Assert.Equal($"{{\"SchemaVersion\":{JsonOutputData<DailyCodeChurn>.CurrentVersion},\"Data\":[]}}", resultString);
         }
 
         [Fact]
@@ -186,11 +187,12 @@ namespace vcsparser.unittests
             var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.ToArray());
             Assert.NotEmpty(resultString);
             Assert.Equal(
-                "[{" +
+                "{\"SchemaVersion\":" + JsonOutputData<DailyCodeChurn>.CurrentVersion + "," +
+                "\"Data\":[{" +
                 "\"ClosedDate\":\"2018/08/30 00:00:00\"," +
                 "\"WorkItemId\":\"Some Work Item Id\"," +
                 "\"ChangesetId\":\"Some Change Set Id\"" +
-                "}]", resultString);
+                "}]}", resultString);
         }
 
         [Fact]
@@ -207,7 +209,9 @@ namespace vcsparser.unittests
 
             this.outputProcessor.ProcessOutputSingleFile("filename", dict);
             var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.ToArray());
-            Assert.Equal("[]", resultString);
+            Assert.Equal(
+                "{\"SchemaVersion\":" + JsonOutputData<DailyCodeChurn>.CurrentVersion + "," +
+                "\"Data\":[]}", resultString);
         }
 
         [Fact]
@@ -275,7 +279,9 @@ namespace vcsparser.unittests
 
             this.outputProcessor.ProcessOutputSingleFile("filename", dict);
             var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.ToArray());
-            Assert.Equal("[]", resultString);
+            Assert.Equal(
+                "{\"SchemaVersion\":" + JsonOutputData<SomeUnimplementedClass>.CurrentVersion + "," +
+                "\"Data\":[]}", resultString);
         }
 
         [Fact]

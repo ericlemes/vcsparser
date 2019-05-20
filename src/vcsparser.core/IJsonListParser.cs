@@ -8,6 +8,6 @@ namespace vcsparser.core
 {
     public interface IJsonListParser<T> where T : IOutputJson
     {
-        List<T> ParseFile(string fileName);
+        IList<T> ParseFile(string fileName);
     }
 }
