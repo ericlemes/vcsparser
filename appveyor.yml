@@ -60,6 +60,9 @@ artifacts:
 
   # pushing entire folder as a zip archive
   - path: src\vcsparser\bin\Release
+    name: vcsparser-exe
+  - path: src\vcsparser.PowerShell\bin\Release
+    name: vcsparser-PowerShell
 
 notifications:  
   - provider: Email
