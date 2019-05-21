@@ -50,6 +50,7 @@
     <Compile Include="GetPerforceChangeset.cs" />
     <Compile Include="ICmdlet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StartProcessSync.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

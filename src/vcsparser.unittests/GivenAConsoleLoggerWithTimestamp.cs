@@ -8,12 +8,12 @@ using Xunit;
 
 namespace vcsparser.unittests
 {
-    public class GivenAConsoleLog
+    public class GivenAConsoleLoggerWithTimestamp
     {
         [Fact]
         public void WhenLoggingToConsoleShouldNotThrow()
         {
-            var logger = new ConsoleLogger();
+            var logger = new ConsoleLoggerWithTimestamp();
             logger.LogToConsole("blah");
         }
     }

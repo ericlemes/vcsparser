@@ -36,7 +36,7 @@ namespace vcsparser
             var changesParser = new ChangesParser();
             var describeParser = new DescribeParser();
             var commandLineParser = new CommandLineParser();
-            var logger = new ConsoleLogger();
+            var logger = new ConsoleLoggerWithTimestamp();
             var stopWatch = new StopWatchWrapper();
             var outputProcessor = new OutputProcessor(new FileStreamFactory(), logger);
             var bugDatabaseFactory = new BugDatabaseFactory();
@@ -57,7 +57,7 @@ namespace vcsparser
             var processWrapper = new ProcessWrapper();
             var commandLineParser = new CommandLineParser();
             var gitLogParser = new GitLogParser();
-            var logger = new ConsoleLogger();
+            var logger = new ConsoleLoggerWithTimestamp();
             var outputProcessor = new OutputProcessor(new FileStreamFactory(), logger);
             var bugDatabaseFactory = new BugDatabaseFactory();
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
@@ -79,7 +79,7 @@ namespace vcsparser
             var converters = new MeasureConverterListBuilder(new EnvironmentImpl()).Build(a);
             var jsonExporter = new JsonExporter(new FileStreamFactory());
 
-            var processor = new SonarGenericMetricsProcessor(fileSystem, jsonParser, converters, jsonExporter, new ConsoleLogger());
+            var processor = new SonarGenericMetricsProcessor(fileSystem, jsonParser, converters, jsonExporter, new ConsoleLoggerWithTimestamp());
             processor.Process(a);
 
             return 0;

@@ -78,6 +78,7 @@
     <Compile Include="GivenAGetGitLog.cs" />
     <Compile Include="GivenAGetPerforceChanges.cs" />
     <Compile Include="GivenAGetPerforceChangeset.cs" />
+    <Compile Include="GivenAStartProcessSync.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
