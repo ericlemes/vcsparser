@@ -17,8 +17,8 @@ namespace vcsparser.core
 
         private Dictionary<string, string> renameCache = new Dictionary<string, string>();
 
-        private Dictionary<string, WorkItem> workItemCache = new Dictionary<string, WorkItem>();
-        public Dictionary<string, WorkItem> WorkItemCache {
+        private Dictionary<string, List<WorkItem>> workItemCache = new Dictionary<string, List<WorkItem>>();
+        public Dictionary<string, List<WorkItem>> WorkItemCache {
             get { return workItemCache; }
         }
 

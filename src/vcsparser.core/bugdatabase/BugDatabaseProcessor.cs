@@ -51,7 +51,10 @@ namespace vcsparser.core.bugdatabase
                 var workItemList = workItemParser.ParseFile(file.FileName);
                 foreach(var workitem in workItemList)
                 {
-                    changesetProcessor.WorkItemCache.Add(workitem.ChangesetId, workitem);
+                    if (!changesetProcessor.WorkItemCache.ContainsKey(workitem.ChangesetId))
+                        changesetProcessor.WorkItemCache.Add(workitem.ChangesetId, new List<WorkItem>());
+
+                    changesetProcessor.WorkItemCache[workitem.ChangesetId].Add(workitem);
                 }
             }
         }

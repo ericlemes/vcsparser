@@ -10,7 +10,7 @@ namespace vcsparser.core
     public interface IChangesetProcessor
     {
         Dictionary<DateTime, Dictionary<string, DailyCodeChurn>> Output { get; }
-        Dictionary<string, WorkItem> WorkItemCache { get; }
+        Dictionary<string, List<WorkItem>> WorkItemCache { get; }
         int ChangesetsWithBugs { get; }
 
         void ProcessChangeset(IChangeset changeset);
