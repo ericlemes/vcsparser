@@ -43,12 +43,14 @@ namespace vcsparser.bugdatabase.azuredevops
 
                 lock (_lock)
                 {
+                    if (string.IsNullOrWhiteSpace(workItem.ChangesetId) || workItem.ChangesetId.ToLower().Equals("<none>"))
+                        return;
+
                     var date = workItem.ClosedDate.Date;
                     if (!workItems.ContainsKey(date))
                         workItems.Add(date, new Dictionary<string, WorkItem>());
 
-                    if (!string.IsNullOrWhiteSpace(workItem.ChangesetId) && !workItem.ChangesetId.ToLower().Equals("<none>"))
-                        workItems[date].Add(workItem.ChangesetId, workItem);
+                    workItems[date].Add(workItem.ChangesetId, workItem);
                 }
             }
             catch (Exception e)
@@ -63,7 +65,7 @@ namespace vcsparser.bugdatabase.azuredevops
             int finished = 0;
             timeKeeper.IntervalAction = () => logger.LogToConsole($"Finished processing {finished}/{items.Length} Work Items. {workItems.Count} valid Work Items");
             timeKeeper.Start();
-            
+
             Parallel.ForEach(items, item =>
             {
                 ProcessWorkItem(workItems, item);
