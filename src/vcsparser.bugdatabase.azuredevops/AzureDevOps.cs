@@ -41,11 +41,11 @@ namespace vcsparser.bugdatabase.azuredevops
                 var fullWorkItem = request.GetFullWorkItem(item.Url).Result;
                 WorkItem workItem = apiConverter.ConvertToWorkItem(fullWorkItem);
 
+                if (string.IsNullOrWhiteSpace(workItem.ChangesetId) || workItem.ChangesetId.ToLower().Equals("<none>"))
+                    return;
+
                 lock (_lock)
                 {
-                    if (string.IsNullOrWhiteSpace(workItem.ChangesetId) || workItem.ChangesetId.ToLower().Equals("<none>"))
-                        return;
-
                     var date = workItem.ClosedDate.Date;
                     if (!workItems.ContainsKey(date))
                         workItems.Add(date, new Dictionary<string, WorkItem>());
