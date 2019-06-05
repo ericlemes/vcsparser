@@ -82,6 +82,54 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
         }
 
         [Fact]
+        public void WhenProcessWorkItemChangeSetEmptyThenReturnEmpty()
+        {
+            this.requestMock.Setup(r => r.GetWorkItemList()).Returns(Task.Run(() => new JSONQuery
+            {
+                WorkItems = new JSONQueryItem[] { new JSONQueryItem {
+                    Id = "Some Id",
+                    Url = new Uri("http://some/url")
+                }}
+            }));
+            this.requestMock.Setup(r => r.GetFullWorkItem(It.IsAny<Uri>())).Returns(Task.Run(() => (dynamic)null));
+            var someDate = new DateTime(2019, 04, 15);
+            this.apiConverterMock.Setup(a => a.ConvertToWorkItem(It.IsAny<object>())).Returns(new WorkItem
+            {
+                ChangesetId = string.Empty,
+                ClosedDate = someDate,
+                WorkItemId = "Some Work Item Id"
+            });
+
+            var dict = this.azureDevOps.GetWorkItems();
+
+            Assert.Empty(dict);
+        }
+
+        [Fact]
+        public void WhenProcessWorkItemChangeSetNoneThenReturnEmpty()
+        {
+            this.requestMock.Setup(r => r.GetWorkItemList()).Returns(Task.Run(() => new JSONQuery
+            {
+                WorkItems = new JSONQueryItem[] { new JSONQueryItem {
+                    Id = "Some Id",
+                    Url = new Uri("http://some/url")
+                }}
+            }));
+            this.requestMock.Setup(r => r.GetFullWorkItem(It.IsAny<Uri>())).Returns(Task.Run(() => (dynamic)null));
+            var someDate = new DateTime(2019, 04, 15);
+            this.apiConverterMock.Setup(a => a.ConvertToWorkItem(It.IsAny<object>())).Returns(new WorkItem
+            {
+                ChangesetId = "<None>",
+                ClosedDate = someDate,
+                WorkItemId = "Some Work Item Id"
+            });
+
+            var dict = this.azureDevOps.GetWorkItems();
+
+            Assert.Empty(dict);
+        }
+
+        [Fact]
         public void WhenProcessWorkItemWithItemAndExcptionThenReturnSingleWorkItem()
         {
             this.requestMock.Setup(r => r.GetWorkItemList()).Returns(Task.Run(() => new JSONQuery

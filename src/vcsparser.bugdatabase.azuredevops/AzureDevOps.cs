@@ -41,6 +41,9 @@ namespace vcsparser.bugdatabase.azuredevops
                 var fullWorkItem = request.GetFullWorkItem(item.Url).Result;
                 WorkItem workItem = apiConverter.ConvertToWorkItem(fullWorkItem);
 
+                if (string.IsNullOrWhiteSpace(workItem.ChangesetId) || workItem.ChangesetId.ToLower().Equals("<none>"))
+                    return;
+
                 lock (_lock)
                 {
                     var date = workItem.ClosedDate.Date;
@@ -59,15 +62,16 @@ namespace vcsparser.bugdatabase.azuredevops
         private Dictionary<DateTime, Dictionary<string, WorkItem>> ProcessWorkItemList(JSONQueryItem[] items)
         {
             var workItems = new Dictionary<DateTime, Dictionary<string, WorkItem>>();
-            timeKeeper.IntervalAction = () => logger.LogToConsole($"Finished processing {workItems.Count}/{items.Length} Work Items");
+            int finished = 0;
+            timeKeeper.IntervalAction = () => logger.LogToConsole($"Finished processing {finished}/{items.Length} Work Items. {workItems.Count} valid Work Items");
             timeKeeper.Start();
-            var workItemsTasks = items.Select(
-                item => Task.Run(
-                    () => ProcessWorkItem(workItems, item)
-                )
-            );
 
-            Task.WaitAll(workItemsTasks.ToArray());
+            Parallel.ForEach(items, item =>
+            {
+                ProcessWorkItem(workItems, item);
+                finished++;
+            });
+
             timeKeeper.Cancel();
             return workItems;
         }
@@ -76,6 +80,7 @@ namespace vcsparser.bugdatabase.azuredevops
         {
             logger.LogToConsole($"AzureDevOps BugDatabase");
             var json = request.GetWorkItemList().Result;
+            logger.LogToConsole($"Found {json.WorkItems.Length} Work Items");
             return ProcessWorkItemList(json.WorkItems);
         }
     }
