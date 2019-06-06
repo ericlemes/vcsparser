@@ -211,7 +211,7 @@ namespace vcsparser.unittests
         public void WhenProcessingBugDatabaseChangesetAndMatchesBugRegexesShouldIncrementBugDatabaseCodeChurn()
         {
             this.changesetProcessor = new ChangesetProcessor(@"gramolias+;bug+", this.loggerMock.Object);
-            this.changesetProcessor.WorkItemCache.Add("SomeCommitHash", new WorkItem());
+            this.changesetProcessor.WorkItemCache.Add("SomeCommitHash", new List<WorkItem>());
 
             var c = CreateCommitWithAddedLines("file2", 10);
             c.ChangesetFileChanges[0].Deleted = 5;
@@ -226,7 +226,7 @@ namespace vcsparser.unittests
         public void WhenProcessingBugDatabaseChangesetAndDoesntMatchBugRegexesThatDoesntMatchShouldIncrementBugDatabaseCodeChurn()
         {
             this.changesetProcessor = new ChangesetProcessor(@"gramolias+;bug+", this.loggerMock.Object);
-            this.changesetProcessor.WorkItemCache.Add("SomeCommitHash", new WorkItem());
+            this.changesetProcessor.WorkItemCache.Add("SomeCommitHash", new List<WorkItem>());
 
             var c = CreateCommitWithAddedLines("file2", 10);
             c.ChangesetFileChanges[0].Deleted = 5;
@@ -241,7 +241,7 @@ namespace vcsparser.unittests
         public void WhenProcessingBugDatabaseChangesetAndDailyCodeChurnContainsBugDatabaseThenAppenedExisting()
         {
             this.changesetProcessor = new ChangesetProcessor(@"gramolias+;bug+", this.loggerMock.Object);
-            this.changesetProcessor.WorkItemCache.Add("SomeCommitHash", new WorkItem());
+            this.changesetProcessor.WorkItemCache.Add("SomeCommitHash", new List<WorkItem>());
 
             var c1 = CreateCommitWithAddedLines("file2", 10);
             c1.ChangesetFileChanges[0].Deleted = 5;

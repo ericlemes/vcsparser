@@ -72,7 +72,7 @@ namespace vcsparser.unittests.bugdatabase
             this.loggerMock = new Mock<ILogger>();
 
             this.changesetProcessorMock = new Mock<IChangesetProcessor>();
-            this.changesetProcessorMock.Setup(c => c.WorkItemCache).Returns(new Dictionary<string, WorkItem>());
+            this.changesetProcessorMock.Setup(c => c.WorkItemCache).Returns(new Dictionary<string, List<WorkItem>>());
 
             this.someDllPath = "some/path/to/dll";
             this.someDllArgs = new List<string>() { "--some", "dll", "-arguments" };
@@ -192,9 +192,42 @@ namespace vcsparser.unittests.bugdatabase
                 .Returns(new List<IFile>() { fileMock.Object });
 
             this.bugDatabaseProcessor.ProcessCache("some\\path\\to\\cache", this.changesetProcessorMock.Object);
-            
-            this.changesetProcessorMock.Verify(c => c.WorkItemCache, Times.Once);
-            Assert.Single(this.changesetProcessorMock.Object.WorkItemCache);
+
+            this.changesetProcessorMock.Verify(c => c.WorkItemCache, Times.Exactly(3));
+            var list = Assert.Single(this.changesetProcessorMock.Object.WorkItemCache).Value;
+            Assert.Single(list);
+        }
+
+        [Fact]
+        public void WhenProcessCacheFilesFoundSameChangesetShouldAddToChangesetProcessor()
+        {
+            var fileMock = new Mock<IFile>();
+            fileMock.Setup(f => f.FileName).Returns("SomeFile.json");
+
+            this.fileSystemMock
+                .Setup(f => f.GetFiles(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(new List<IFile>() { fileMock.Object });
+
+            this.workItemParser.Setup(w => w.ParseFile(It.IsAny<string>())).Returns(new List<WorkItem>()
+            {
+                new WorkItem
+                {
+                    ChangesetId = "SameChangeSetId",
+                    ClosedDate =  new DateTime(2019, 04, 11),
+                    WorkItemId = "1"
+                },
+                new WorkItem
+                {
+                    ChangesetId = "SameChangeSetId",
+                    ClosedDate =  new DateTime(2019, 04, 11),
+                    WorkItemId = "2"
+                }
+            });
+
+            this.bugDatabaseProcessor.ProcessCache("some\\path\\to\\cache", this.changesetProcessorMock.Object);
+
+            var list = Assert.Single(this.changesetProcessorMock.Object.WorkItemCache).Value;
+            Assert.Equal(2, list.Count);
         }
 
         [Fact]
