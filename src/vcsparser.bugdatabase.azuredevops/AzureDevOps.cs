@@ -20,42 +20,34 @@ namespace vcsparser.bugdatabase.azuredevops
         private readonly ILogger logger;
         private readonly IAzureDevOpsRequest request;
         private readonly IApiConverter apiConverter;
-        private readonly ITimeKeeper timeKeeper;
-
-        private object _lock;
+        private readonly ITimeKeeper timeKeeper;        
 
         public AzureDevOps(ILogger logger, IAzureDevOpsRequest request, IApiConverter apiConverter, ITimeKeeper timeKeeper)
         {
             this.logger = logger;
             this.request = request;
             this.apiConverter = apiConverter;
-            this.timeKeeper = timeKeeper;
-
-            this._lock = new object();
+            this.timeKeeper = timeKeeper;            
         }
 
         private void ProcessWorkItem(Dictionary<DateTime, Dictionary<string, WorkItem>> workItems, JSONQueryItem item)
         {
-            try
+            var fullWorkItem = request.GetFullWorkItem(item.Url).Result;
+            WorkItem workItem = apiConverter.ConvertToWorkItem(fullWorkItem);
+
+            if (string.IsNullOrWhiteSpace(workItem.ChangesetId) || workItem.ChangesetId.ToLower().Equals("<none>"))
+                return;
+
+            lock (workItems)
             {
-                var fullWorkItem = request.GetFullWorkItem(item.Url).Result;
-                WorkItem workItem = apiConverter.ConvertToWorkItem(fullWorkItem);
+                var date = workItem.ClosedDate.Date;
+                if (!workItems.ContainsKey(date))
+                    workItems.Add(date, new Dictionary<string, WorkItem>());
 
-                if (string.IsNullOrWhiteSpace(workItem.ChangesetId) || workItem.ChangesetId.ToLower().Equals("<none>"))
-                    return;
-
-                lock (_lock)
+                if (!workItems[date].ContainsKey(workItem.ChangesetId))
                 {
-                    var date = workItem.ClosedDate.Date;
-                    if (!workItems.ContainsKey(date))
-                        workItems.Add(date, new Dictionary<string, WorkItem>());
-
                     workItems[date].Add(workItem.ChangesetId, workItem);
                 }
-            }
-            catch (Exception e)
-            {
-                logger.LogToConsole($"Error Processing Work Item '{item.Id}': {(e.InnerException == null ? e.Message : e.InnerException.Message)}");
             }
         }
 

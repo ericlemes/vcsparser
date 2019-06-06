@@ -130,37 +130,6 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
         }
 
         [Fact]
-        public void WhenProcessWorkItemWithItemAndExcptionThenReturnSingleWorkItem()
-        {
-            this.requestMock.Setup(r => r.GetWorkItemList()).Returns(Task.Run(() => new JSONQuery
-            {
-                WorkItems = new JSONQueryItem[] {
-                    new JSONQueryItem {
-                        Id = "Some Id 1",
-                        Url = new Uri("http://some/url/1")
-                    },
-                    new JSONQueryItem {
-                        Id = "Some Id 2",
-                        Url = new Uri("http://some/url/2")
-                    }
-                }
-            }));
-            this.requestMock.Setup(r => r.GetFullWorkItem(It.IsAny<Uri>())).Returns(Task.Run(() => (dynamic)null));
-            this.apiConverterMock.SetupSequence(a => a.ConvertToWorkItem(It.IsAny<object>())).Returns(new WorkItem
-            {
-                ChangesetId = "Some Changeset Id",
-                ClosedDate = new DateTime(2019, 04, 15),
-                WorkItemId = "Some Work Item Id"
-            }).Throws(new Exception("Some Exception!"));
-
-            var dict = this.azureDevOps.GetWorkItems();
-
-            var byDate = Assert.Single(dict.Values);
-            Assert.Single(byDate.Values);
-            this.loggerMock.Verify(l => l.LogToConsole(It.IsRegex(@"Error Processing Work Item 'Some Id \d+': Some Exception!")), Times.Once);
-        }
-
-        [Fact]
         public void WhenProcessWorkItemsWithSameDateThenReturnWorkItem()
         {
             this.requestMock.Setup(r => r.GetWorkItemList()).Returns(Task.Run(() => new JSONQuery
