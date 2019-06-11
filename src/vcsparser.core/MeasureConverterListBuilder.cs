@@ -21,8 +21,6 @@ namespace vcsparser.core
 
         public static readonly string NUM_AUTHORS_10_PERC = "vcsparser_numauthors10perc";
 
-        public static readonly string LINES_FIXED_OVER_CHANGED_METRIC_KEY = "vcsparser_linesfixedoverchanged";
-
         public static readonly string BUG_DATABASE_CHANGES_METRIC_KEY = "vcsparser_bugdatabase_numchanges";
 
         public static readonly string BUG_DATABASE_LINES_CHANGED_METRIC_KEY = "vcsparser_bugdatabase_lineschanged";
@@ -88,8 +86,6 @@ namespace vcsparser.core
                 "Number of authors (" + suffixLongDescription + ")", "Number of authors (" + suffixLongDescription + ")");
             var metricNumAuthors10Perc = CreateMetric(NUM_AUTHORS_10_PERC + metricKeySuffix,
                 "Number of authors over 10% contrib (" + suffixLongDescription + ")", "Number of authors with over 10% of changes (" + suffixLongDescription + ")");
-            var metricLineFixedOverChanges = CreateMetric(LINES_FIXED_OVER_CHANGED_METRIC_KEY + metricKeySuffix,
-                "Percentage of lines fixed over changed (" + suffixLongDescription + ")", "Percentage of lines fixed over changed (" + suffixLongDescription + ")", "PERCENT");
             var metricChangesBugDatabase = CreateMetric(BUG_DATABASE_CHANGES_METRIC_KEY + metricKeySuffix,
               "Number of changes in bug fixes (" + suffixLongDescription + ")", "Number of changes in bug fixes (" + suffixLongDescription + ")");
             var metricChangesWithFixesBugDatabase = CreateMetric(BUG_DATABASE_LINES_CHANGED_METRIC_KEY + metricKeySuffix,
@@ -101,7 +97,6 @@ namespace vcsparser.core
             result.Add(new MeasureConverter<int>(startDate, endDate, metricLinesChangedWithFixes, new LinesChangedWithFixesMeasureAggregator(), a.FilePrefixToRemove));
             result.Add(new MeasureConverter<int>(startDate, endDate, metricNumAuthors, new NumberOfAuthorsMeasureAggregator(), a.FilePrefixToRemove));
             result.Add(new MeasureConverter<int>(startDate, endDate, metricNumAuthors10Perc, new NumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter<double>(startDate, endDate, metricLineFixedOverChanges, new LinesFixedOverChangedMetricsMeasureAggregator(), a.FilePrefixToRemove));
             result.Add(new MeasureConverter<int>(startDate, endDate, metricChangesBugDatabase, new NumberOfChangesInFixesBugDatabaseMeasureAggregator(), a.FilePrefixToRemove));
             result.Add(new MeasureConverter<int>(startDate, endDate, metricChangesWithFixesBugDatabase, new LinesChangedInFixesBugDatabaseMeasureAggregator(), a.FilePrefixToRemove));
         }
