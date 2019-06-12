@@ -102,7 +102,6 @@
     <Compile Include="MeasureAggregators\GivenALinesChangedInFixesMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\GivenALinesChangedBugDatabaseMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\GivenALinesChangedMeasureAggregator.cs" />
-    <Compile Include="MeasureAggregators\GivenALinesFixedOverChangedMetricsMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\GivenANumberOfAuthorsMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\GivenANumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\GivenANumberOfChangesBugDatabaseMeasureAggregator.cs" />
