@@ -9,20 +9,6 @@ namespace vcsparser.core.p4
 {
     public class ChangesParser : IChangesParser
     {
-        public List<int> Parse(Stream ms)
-        {
-            var result = new List<int>();
-
-            var sr = new StreamReader(ms);
-            while (!sr.EndOfStream)
-            {
-                var line = sr.ReadLine();
-                result.Add(ParseLine(line));
-            }
-
-            return result;            
-        }
-
         public List<int> Parse(List<string> lines)
         {
             var result = new List<int>();

@@ -17,22 +17,6 @@ namespace vcsparser.core.git
         public readonly String COMMIT_DATE_PREFIX = "CommitDate: ";
         public readonly String MERGE_PREFIX = "Merge: ";
 
-        public List<GitCommit> Parse(Stream stream)
-        {
-            GitLogParserContext context = new GitLogParserContext();
-            var reader = new StreamReader(stream);
-            using (stream)
-            {
-                var line = reader.ReadLine();
-                while (line != null)
-                {
-                    ParseLine(context, line);
-                    line = reader.ReadLine();
-                }
-            }
-            return context.Commits;                
-        }
-
         public List<GitCommit> Parse(List<string> lines)
         {
             GitLogParserContext context = new GitLogParserContext();

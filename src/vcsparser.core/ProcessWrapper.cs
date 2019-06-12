@@ -22,27 +22,8 @@ namespace vcsparser.core
             return process;
         }
 
-        public Stream Invoke(string executable, string args)
+        private void StartProcess(Process process, OutputLineDelegate outputLineCallback)
         {
-            var process = CreateProcessWithBaseParams(executable, args);
-
-            process.Start();                        
-            return process.StandardOutput.BaseStream;
-        }        
-
-        public Stream Invoke(string executable, string args, string workingDir)
-        {
-            var process = CreateProcessWithBaseParams(executable, args);
-            process.StartInfo.WorkingDirectory = workingDir;
-
-            process.Start();
-            return process.StandardOutput.BaseStream;
-        }
-
-        public int Invoke(string executable, string arguments, OutputLineDelegate outputLineCallback)
-        {
-            var process = CreateProcessWithBaseParams(executable, arguments);
-
             process.Start();
 
             var sr = new StreamReader(process.StandardOutput.BaseStream);
@@ -52,7 +33,12 @@ namespace vcsparser.core
                 if (outputLineCallback != null)
                     outputLineCallback(line);
             }
+        }
 
+        public int Invoke(string executable, string arguments, OutputLineDelegate outputLineCallback)
+        {
+            var process = CreateProcessWithBaseParams(executable, arguments);
+            StartProcess(process, outputLineCallback);
             return process.ExitCode;
         }
 
@@ -60,17 +46,7 @@ namespace vcsparser.core
         {
             var process = CreateProcessWithBaseParams(executable, arguments);
             process.StartInfo.WorkingDirectory = workingDir;
-
-            process.Start();            
-
-            var sr = new StreamReader(process.StandardOutput.BaseStream);
-            while (!sr.EndOfStream)
-            {
-                var line = sr.ReadLine();
-                if (outputLineCallback != null)
-                    outputLineCallback(line);                    
-            }
-
+            StartProcess(process, outputLineCallback);
             return process.ExitCode;
         }
     }

@@ -55,8 +55,12 @@ namespace vcsparser.PowerShell
         protected override void ProcessRecord()
         {
             var parsedCommand = this.commandLineParser.ParseCommandLine(this.GitLogCommand);
-            var stream = this.processWrapper.Invoke(parsedCommand.Item1, parsedCommand.Item2, WorkingDirectory);
-            var commits = this.gitLogParser.Parse(stream);
+            var lines = new List<string>();
+            var exitCode = this.processWrapper.Invoke(parsedCommand.Item1, parsedCommand.Item2, WorkingDirectory, (l) => { lines.Add(l); } );
+            if (exitCode != 0)
+                this.ThrowTerminatingError(new ErrorRecord(new Exception(string.Join(Environment.NewLine, lines)), $"Non zero return code: {exitCode}", ErrorCategory.OperationStopped, null));
+
+            var commits = this.gitLogParser.Parse(lines);
             this.cmdlet.WriteObject(commits);
         }
 

@@ -49,8 +49,12 @@ namespace vcsparser.PowerShell
             base.ProcessRecord();
 
             var commandLine = this.commandLineParser.ParseCommandLine(this.ChangesCommand);
-            var stream = this.processWrapper.Invoke(commandLine.Item1, commandLine.Item2);
-            var changes = this.changesParser.Parse(stream);
+            var lines = new List<string>();
+            var exitCode = this.processWrapper.Invoke(commandLine.Item1, commandLine.Item2, (l) => { lines.Add(l); });
+            if (exitCode != 0)
+                this.ThrowTerminatingError(new ErrorRecord(new Exception(string.Join(Environment.NewLine, lines)), $"Non zero return code: {exitCode}", ErrorCategory.OperationStopped, null));
+
+            var changes = this.changesParser.Parse(lines);
             this.cmdlet.WriteObject(changes);
         }
 
