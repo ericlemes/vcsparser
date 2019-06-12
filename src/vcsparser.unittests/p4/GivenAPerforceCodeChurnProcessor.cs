@@ -88,6 +88,19 @@ namespace vcsparser.unittests
         }
 
         [Fact]
+        public void WhenProcessingAndChangesNonZeroShouldReturnExitCode()
+        {
+            var invokeLines = new List<string>();
+
+            this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(new Tuple<int, List<string>>(1, invokeLines));
+
+            var exitCode = this.processor.Extract();
+
+            this.processWrapperMock.Verify(m => m.Invoke(It.IsAny<string>(), It.IsAny<string>()), Times.Never());
+            Assert.Equal(1, exitCode);
+        }
+
+        [Fact]
         public void WhenProcessingShouldInvokeDescribeParserForEachChange()
         {
             var invokeLines = new List<string>();
@@ -102,6 +115,22 @@ namespace vcsparser.unittests
             this.processor.Extract();
             this.processWrapperMock.Verify(m => m.Invoke("describe", "1"), Times.Once());
             this.processWrapperMock.Verify(m => m.Invoke("describe", "2"), Times.Once());
+        }
+
+        [Fact]
+        public void WhenProcessingAndeDescribeNonZeroShouldExitCode()
+        {
+            var invokeLines = new List<string>();
+            var describeLines = new List<string>();
+
+            this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(new Tuple<int, List<string>>(0, invokeLines));
+            this.processWrapperMock.Setup(m => m.Invoke("describe", "1")).Returns(new Tuple<int, List<string>>(1, describeLines));
+            this.changesParserMock.Setup(m => m.Parse(invokeLines)).Returns(new List<int>() { 1 });
+
+            var exitCode = this.processor.Extract();
+
+            this.processWrapperMock.Verify(m => m.Invoke("describe", "1"), Times.Never());
+            Assert.Equal(1, exitCode);
         }
 
         [Fact]
