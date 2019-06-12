@@ -48,8 +48,7 @@ namespace vcsparser
             var processor = new PerforceCodeChurnProcessor(processWrapper, changesParser, describeParser, commandLineParser, bugDatabaseProcessor, logger, stopWatch, outputProcessor, a);
 
             processor.QueryBugDatabase();
-            processor.Extract();
-            return 0;
+            return processor.Extract();
         }
 
         private static int RunGitCodeChurnProcessor(GitExtractCommandLineArgs a)
@@ -68,8 +67,7 @@ namespace vcsparser
             var processor = new GitCodeChurnProcessor(commandLineParser, processWrapper, gitLogParser, outputProcessor, bugDatabaseProcessor, logger, a);
 
             processor.QueryBugDatabase();
-            processor.Extract();
-            return 0;
+            return processor.Extract();
         }
 
         private static int RunSonarGenericMetrics(SonarGenericMetricsCommandLineArgs a)

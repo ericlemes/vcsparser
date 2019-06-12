@@ -10,5 +10,6 @@ namespace vcsparser.core.git
     public interface IGitLogParser
     {
         List<GitCommit> Parse(Stream stream);
+        List<GitCommit> Parse(List<string> lines);
     }
 }

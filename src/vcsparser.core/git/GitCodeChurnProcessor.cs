@@ -52,13 +52,18 @@ namespace vcsparser.core.git
             this.outputProcessor.ProcessOutput(args.BugDatabaseOutputType, args.BugDatabaseOutputFile, bugCache);
         }
 
-        public void Extract()
+        public int Extract()
         {
             logger.LogToConsole("Invoking " + args.GitLogCommand);
             var parsedCommand = this.commandLineParser.ParseCommandLine(args.GitLogCommand);
-            var stream = this.processWrapper.Invoke(parsedCommand.Item1, parsedCommand.Item2);
-            var changesets = gitLogParser.Parse(stream);
-            logger.LogToConsole("Found " + changesets.Count + " changesets");
+
+            var lines = new List<string>();
+            var exitCode = this.processWrapper.Invoke(parsedCommand.Item1, parsedCommand.Item2, (l) => { lines.Add(l); });
+            if (exitCode != 0)
+                return exitCode;
+
+            var changesets = gitLogParser.Parse(lines);
+            logger.LogToConsole($"Found {changesets.Count} changesets to parse");
 
             this.bugDatabaseProcessor.ProcessCache(args.BugDatabaseOutputFile, this.changesetProcessor);
 
@@ -70,6 +75,7 @@ namespace vcsparser.core.git
             logger.LogToConsole(this.changesetProcessor.Output.Count + " dates to output");
 
             this.outputProcessor.ProcessOutput(args.OutputType, args.OutputFile, this.changesetProcessor.Output);
+            return 0;
         }
     }
 }

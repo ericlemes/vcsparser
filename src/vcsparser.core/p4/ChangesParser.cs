@@ -23,6 +23,17 @@ namespace vcsparser.core.p4
             return result;            
         }
 
+        public List<int> Parse(List<string> lines)
+        {
+            var result = new List<int>();
+            foreach (var line in lines)
+            {
+                result.Add(ParseLine(line));
+            }
+
+            return result;
+        }
+
         private int ParseLine(string line)
         {
             var splittedString = line.Split(' ');

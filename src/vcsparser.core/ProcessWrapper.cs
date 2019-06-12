@@ -39,6 +39,23 @@ namespace vcsparser.core
             return process.StandardOutput.BaseStream;
         }
 
+        public int Invoke(string executable, string arguments, OutputLineDelegate outputLineCallback)
+        {
+            var process = CreateProcessWithBaseParams(executable, arguments);
+
+            process.Start();
+
+            var sr = new StreamReader(process.StandardOutput.BaseStream);
+            while (!sr.EndOfStream)
+            {
+                var line = sr.ReadLine();
+                if (outputLineCallback != null)
+                    outputLineCallback(line);
+            }
+
+            return process.ExitCode;
+        }
+
         public int Invoke(string executable, string arguments, string workingDir, OutputLineDelegate outputLineCallback)
         {
             var process = CreateProcessWithBaseParams(executable, arguments);

@@ -24,6 +24,19 @@ namespace vcsparser.core.p4
             return result;
         }
 
+        public PerforceChangeset Parse(List<string> lines)
+        {
+            var result = new PerforceChangeset();
+            FileChanges currentFileChanges = null;
+
+            foreach (var line in lines)
+            {
+                ParseLine(ref currentFileChanges, line, result);
+            }
+
+            return result;
+        }
+
         private void ParseLine(ref FileChanges currentFileChanges, string line, PerforceChangeset changeset)
         {            
             if (line.StartsWith("Change "))

@@ -24,5 +24,6 @@ namespace vcsparser.core
         /// <param name="outputLineCallback"></param>
         /// <returns></returns>
         int Invoke(string executable, string arguments, string workingDir, OutputLineDelegate outputLineCallback);
+        int Invoke(string executable, string arguments, OutputLineDelegate outputLineCallback);
     }
 }

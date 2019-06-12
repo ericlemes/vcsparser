@@ -33,6 +33,16 @@ namespace vcsparser.core.git
             return context.Commits;                
         }
 
+        public List<GitCommit> Parse(List<string> lines)
+        {
+            GitLogParserContext context = new GitLogParserContext();
+            foreach (var line in lines)
+            {
+                ParseLine(context, line);
+            }
+            return context.Commits;
+        }
+
         private void ParseLine(GitLogParserContext context, String line)
         {
             if (line.StartsWith(COMMIT_PREFIX))
