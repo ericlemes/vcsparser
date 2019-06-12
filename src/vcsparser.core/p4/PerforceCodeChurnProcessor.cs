@@ -59,12 +59,11 @@ namespace vcsparser.core.p4
             logger.LogToConsole("Invoking: " + args.P4ChangesCommandLine);
             var parsedCommand = this.commandLineParser.ParseCommandLine(args.P4ChangesCommandLine);
 
-            var lines = new List<string>();
-            var exitCode = this.processWrapper.Invoke(parsedCommand.Item1, parsedCommand.Item2, (l) => { lines.Add(l); });
-            if (exitCode != 0)
-                return exitCode;
+            var invoke = this.processWrapper.Invoke(parsedCommand.Item1, parsedCommand.Item2);
+            if (invoke.Item1 != 0)
+                return invoke.Item1;
 
-            var changes = changesParser.Parse(lines);
+            var changes = changesParser.Parse(invoke.Item2);
             logger.LogToConsole($"Found {changes.Count} changesets to parse");
 
             this.bugDatabaseProcessor.ProcessCache(args.BugDatabaseOutputFile, this.changesetProcessor);
@@ -78,12 +77,14 @@ namespace vcsparser.core.p4
 
                 var cmd = commandLineParser.ParseCommandLine(String.Format(args.P4DescribeCommandLine, change));
 
-                var describeLines = new List<string>();
-                var describeExitCode = this.processWrapper.Invoke(cmd.Item1, cmd.Item2, (l) => { lines.Add(l); });
-                if (describeExitCode != 0)
-                    return describeExitCode;
+                var describeInvoke= this.processWrapper.Invoke(cmd.Item1, cmd.Item2);
+                if (describeInvoke.Item1 != 0)
+                {
+                    this.stopWatch.Stop();
+                    return describeInvoke.Item1;
+                }
 
-                changesetProcessor.ProcessChangeset(describeParser.Parse(describeLines));
+                changesetProcessor.ProcessChangeset(describeParser.Parse(describeInvoke.Item2));
 
                 i++;
             }

@@ -15,18 +15,16 @@ namespace vcsparser.unittests
         public void WhenInvokingShouldCallProcessAndRedirectStdOut()
         {
             var processWrapper = new ProcessWrapper();
-            var rd = new StreamReader(processWrapper.Invoke("cmd", "/c dir"));
-            string output = rd.ReadToEnd();
-            Assert.NotEmpty(output);            
+            var invoke = processWrapper.Invoke("cmd", "/c dir");
+            Assert.NotEmpty(invoke.Item2);            
         }
 
         [Fact]
         public void WhenInvokingWithWorkingDirShouldCallProcessAndRedirectStdOut()
         {
             var processWrapper = new ProcessWrapper();
-            var rd = new StreamReader(processWrapper.Invoke("cmd", "/c dir", "C:\\"));
-            string output = rd.ReadToEnd();
-            Assert.NotEmpty(output);
+            var invoke = processWrapper.Invoke("cmd", "/c dir", "C:\\");
+            Assert.NotEmpty(invoke.Item2);
         }
 
         [Fact]

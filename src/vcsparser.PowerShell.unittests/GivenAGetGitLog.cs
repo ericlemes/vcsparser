@@ -20,9 +20,10 @@ namespace vcsparser.PowerShell.unittests
         private Mock<ICommandLineParser> mockCommandLineParser;
 
         private Mock<IProcessWrapper> mockProcessWrapper;
-        private MemoryStream memoryStream;
 
         private Mock<IGitLogParser> mockGitLogParser;
+
+        private List<string> invokeLines;
 
         public GivenAGetGitLog()
         {
@@ -31,11 +32,11 @@ namespace vcsparser.PowerShell.unittests
             mockCommandLineParser.Setup(m => m.ParseCommandLine("git log")).Returns(new Tuple<string, string>("git", "log"));
 
             this.mockProcessWrapper = new Mock<IProcessWrapper>();
-            memoryStream = new MemoryStream();
-            mockProcessWrapper.Setup(m => m.Invoke("git", "log", "workingdir")).Returns(memoryStream);
+            invokeLines = new List<string>();
+            mockProcessWrapper.Setup(m => m.Invoke("git", "log", "workingdir")).Returns(new Tuple<int, List<string>>(0, invokeLines));
 
             this.mockGitLogParser = new Mock<IGitLogParser>();
-            mockGitLogParser.Setup(m => m.Parse(this.memoryStream)).Returns(new List<GitCommit>());
+            mockGitLogParser.Setup(m => m.Parse(invokeLines)).Returns(new List<GitCommit>());
 
             this.cmdlet = new GetGitLog();
             this.cmdlet.GitLogCommand = "git log";
@@ -59,17 +60,25 @@ namespace vcsparser.PowerShell.unittests
         }
 
         [Fact]
+        public void WhenProcessingInvokeGitLogNotZeroShouldThrow()
+        {
+            mockProcessWrapper.Setup(m => m.Invoke("git", "log", "workingdir")).Returns(new Tuple<int, List<string>>(1, invokeLines));
+            Action processRecord = () => this.cmdlet.DoProcessRecord();
+            Assert.Throws<Exception>(processRecord);
+        }
+
+        [Fact]
         public void WhenProcessingShouldParseChanges()
         {
             this.cmdlet.DoProcessRecord();
-            mockGitLogParser.Verify(m => m.Parse(memoryStream), Times.Once());
+            mockGitLogParser.Verify(m => m.Parse(invokeLines), Times.Once());
         }
 
         [Fact]
         public void WhenProcessingShouldWriteOutput()
         {
             var gitLog = new List<GitCommit>();
-            mockGitLogParser.Setup(m => m.Parse(memoryStream)).Returns(gitLog);
+            mockGitLogParser.Setup(m => m.Parse(invokeLines)).Returns(gitLog);
 
             this.cmdlet.DoProcessRecord();
             mockCmdlet.Verify(m => m.WriteObject(gitLog), Times.Once());

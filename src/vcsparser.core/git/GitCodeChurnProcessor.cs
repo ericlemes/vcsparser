@@ -57,12 +57,11 @@ namespace vcsparser.core.git
             logger.LogToConsole("Invoking " + args.GitLogCommand);
             var parsedCommand = this.commandLineParser.ParseCommandLine(args.GitLogCommand);
 
-            var lines = new List<string>();
-            var exitCode = this.processWrapper.Invoke(parsedCommand.Item1, parsedCommand.Item2, (l) => { lines.Add(l); });
-            if (exitCode != 0)
-                return exitCode;
+            var invoke = this.processWrapper.Invoke(parsedCommand.Item1, parsedCommand.Item2);
+            if (invoke.Item1 != 0)
+                return invoke.Item1;
 
-            var changesets = gitLogParser.Parse(lines);
+            var changesets = gitLogParser.Parse(invoke.Item2);
             logger.LogToConsole($"Found {changesets.Count} changesets to parse");
 
             this.bugDatabaseProcessor.ProcessCache(args.BugDatabaseOutputFile, this.changesetProcessor);

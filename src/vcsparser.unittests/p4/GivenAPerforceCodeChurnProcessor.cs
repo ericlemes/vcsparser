@@ -28,13 +28,12 @@ namespace vcsparser.unittests
 
         public GivenAPerforceCodeChurnProcessor()
         {
-            var changesMemoryStream = new MemoryStream();
-
+            var invokeLines = new List<string>();
             this.processWrapperMock = new Mock<IProcessWrapper>();
-            this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(changesMemoryStream);
+            this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(new Tuple<int, List<string>>(0, invokeLines));
 
             this.changesParserMock = new Mock<IChangesParser>();
-            this.changesParserMock.Setup(m => m.Parse(changesMemoryStream)).Returns(new List<int>());
+            this.changesParserMock.Setup(m => m.Parse(invokeLines)).Returns(new List<int>());
 
             this.describeParserMock = new Mock<IDescribeParser>();
             this.commandLineParserMock = new Mock<ICommandLineParser>();
@@ -78,23 +77,27 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenProcessingShouldParseChanges()
         {
-            var ms = new MemoryStream();
+            var invokeLines = new List<string>();
 
-            this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(ms);
-            this.changesParserMock.Setup(m => m.Parse(ms)).Returns(new List<int>());
+            this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(new Tuple<int, List<string>>(0, invokeLines));
+            this.changesParserMock.Setup(m => m.Parse(invokeLines)).Returns(new List<int>());
 
             this.processor.Extract();
 
-            this.changesParserMock.Verify(m => m.Parse(ms), Times.Once());
+            this.changesParserMock.Verify(m => m.Parse(invokeLines), Times.Once());
         }
 
         [Fact]
         public void WhenProcessingShouldInvokeDescribeParserForEachChange()
         {
-            var changesMemoryStream = new MemoryStream();
+            var invokeLines = new List<string>();
+            var describeLines1 = new List<string>();
+            var describeLines2 = new List<string>();
 
-            this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(changesMemoryStream);
-            this.changesParserMock.Setup(m => m.Parse(changesMemoryStream)).Returns(new List<int>() { 1, 2 });
+            this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(new Tuple<int, List<string>>(0, invokeLines));
+            this.processWrapperMock.Setup(m => m.Invoke("describe", "1")).Returns(new Tuple<int, List<string>>(0, describeLines1));
+            this.processWrapperMock.Setup(m => m.Invoke("describe", "2")).Returns(new Tuple<int, List<string>>(0, describeLines2));
+            this.changesParserMock.Setup(m => m.Parse(invokeLines)).Returns(new List<int>() { 1, 2 });
 
             this.processor.Extract();
             this.processWrapperMock.Verify(m => m.Invoke("describe", "1"), Times.Once());
@@ -104,33 +107,33 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenProcessingShouldParseDescribes()
         {
-            var changesMemoryStream = new MemoryStream();
-            var describeMemoryStream1 = new MemoryStream();
-            var describeMemoryStream2 = new MemoryStream();
+            var changesLines = new List<string>();
+            var describeLines1 = new List<string>() { "describe 1" };
+            var describeLines2 = new List<string>() { "describe 2" };
 
             var changeset1 = new PerforceChangeset();
             var changeset2 = new PerforceChangeset();
 
-            this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(changesMemoryStream);
-            this.processWrapperMock.Setup(m => m.Invoke("describe", "1")).Returns(describeMemoryStream1);
-            this.processWrapperMock.Setup(m => m.Invoke("describe", "2")).Returns(describeMemoryStream2);
-            this.changesParserMock.Setup(m => m.Parse(changesMemoryStream)).Returns(new List<int>() { 1, 2 });
-            this.describeParserMock.Setup(m => m.Parse(describeMemoryStream1)).Returns(changeset1);
-            this.describeParserMock.Setup(m => m.Parse(describeMemoryStream2)).Returns(changeset2);
+            this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(new Tuple<int, List<string>>(0, changesLines));
+            this.processWrapperMock.Setup(m => m.Invoke("describe", "1")).Returns(new Tuple<int, List<string>>(0, describeLines1));
+            this.processWrapperMock.Setup(m => m.Invoke("describe", "2")).Returns(new Tuple<int, List<string>>(0, describeLines2));
+            this.changesParserMock.Setup(m => m.Parse(changesLines)).Returns(new List<int>() { 1, 2 });
+            this.describeParserMock.Setup(m => m.Parse(describeLines1)).Returns(changeset1);
+            this.describeParserMock.Setup(m => m.Parse(describeLines2)).Returns(changeset2);
 
             this.processor.Extract();
 
-            this.describeParserMock.Verify(m => m.Parse(describeMemoryStream1), Times.Once());
-            this.describeParserMock.Verify(m => m.Parse(describeMemoryStream2), Times.Once());
+            this.describeParserMock.Verify(m => m.Parse(describeLines1), Times.Once());
+            this.describeParserMock.Verify(m => m.Parse(describeLines2), Times.Once());
         }
 
         [Fact]
         public void WhenProcessingShouldSaveOutputWithExpectedResults()
         {
-            var changesMemoryStream = new MemoryStream();
-            var describeMemoryStream1 = new MemoryStream();
-            var describeMemoryStream2 = new MemoryStream();
-            var describeMemoryStream3 = new MemoryStream();
+            var changesLines = new List<string>();
+            var describeLines1 = new List<string>() { "describe 1" };
+            var describeLines2 = new List<string>() { "describe 2" };
+            var describeLines3 = new List<string>() { "describe 3" };
 
             var changeset1 = new PerforceChangeset()
             {
@@ -191,14 +194,14 @@ namespace vcsparser.unittests
                 }
             };
 
-            this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(changesMemoryStream);
-            this.processWrapperMock.Setup(m => m.Invoke("describe", "1")).Returns(describeMemoryStream1);
-            this.processWrapperMock.Setup(m => m.Invoke("describe", "2")).Returns(describeMemoryStream2);
-            this.processWrapperMock.Setup(m => m.Invoke("describe", "3")).Returns(describeMemoryStream3);
-            this.changesParserMock.Setup(m => m.Parse(changesMemoryStream)).Returns(new List<int>() { 1, 2, 3 });
-            this.describeParserMock.Setup(m => m.Parse(describeMemoryStream1)).Returns(changeset1);
-            this.describeParserMock.Setup(m => m.Parse(describeMemoryStream2)).Returns(changeset2);
-            this.describeParserMock.Setup(m => m.Parse(describeMemoryStream3)).Returns(changeset3);
+            this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(new Tuple<int, List<string>>(0, changesLines));
+            this.processWrapperMock.Setup(m => m.Invoke("describe", "1")).Returns(new Tuple<int, List<string>>(0, describeLines1));
+            this.processWrapperMock.Setup(m => m.Invoke("describe", "2")).Returns(new Tuple<int, List<string>>(0, describeLines2));
+            this.processWrapperMock.Setup(m => m.Invoke("describe", "3")).Returns(new Tuple<int, List<string>>(0, describeLines3));
+            this.changesParserMock.Setup(m => m.Parse(changesLines)).Returns(new List<int>() { 1, 2, 3 });
+            this.describeParserMock.Setup(m => m.Parse(describeLines1)).Returns(changeset1);
+            this.describeParserMock.Setup(m => m.Parse(describeLines2)).Returns(changeset2);
+            this.describeParserMock.Setup(m => m.Parse(describeLines3)).Returns(changeset3);
 
             this.processor.Extract();
             var result = this.output;
@@ -239,19 +242,19 @@ namespace vcsparser.unittests
         public void WhenProcessingWithMultipleFilesShouldProcessOutputForMultipleFiles()
         {
             commandLineArgs.OutputType = OutputType.MultipleFile;
-            var changesMemoryStream = new MemoryStream();
-            var describeMemoryStream1 = new MemoryStream();
-            var describeMemoryStream2 = new MemoryStream();
+            var changesLines = new List<string>();
+            var describeLines1 = new List<string>();
+            var describeLines2 = new List<string>();
 
             var changeset1 = new PerforceChangeset();
             var changeset2 = new PerforceChangeset();
 
-            this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(changesMemoryStream);
-            this.processWrapperMock.Setup(m => m.Invoke("describe", "1")).Returns(describeMemoryStream1);
-            this.processWrapperMock.Setup(m => m.Invoke("describe", "2")).Returns(describeMemoryStream2);
-            this.changesParserMock.Setup(m => m.Parse(changesMemoryStream)).Returns(new List<int>() { 1, 2 });
-            this.describeParserMock.Setup(m => m.Parse(describeMemoryStream1)).Returns(changeset1);
-            this.describeParserMock.Setup(m => m.Parse(describeMemoryStream2)).Returns(changeset2);
+            this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(new Tuple<int, List<string>>(0, changesLines));
+            this.processWrapperMock.Setup(m => m.Invoke("describe", "1")).Returns(new Tuple<int, List<string>>(0, describeLines1));
+            this.processWrapperMock.Setup(m => m.Invoke("describe", "2")).Returns(new Tuple<int, List<string>>(0, describeLines2));
+            this.changesParserMock.Setup(m => m.Parse(changesLines)).Returns(new List<int>() { 1, 2 });
+            this.describeParserMock.Setup(m => m.Parse(describeLines1)).Returns(changeset1);
+            this.describeParserMock.Setup(m => m.Parse(describeLines2)).Returns(changeset2);
 
             this.processor.Extract();
 
@@ -261,19 +264,19 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenProcessingShouldLogProgressEvery60Seconds()
         {
-            var changesMemoryStream = new MemoryStream();
-            var describeMemoryStream1 = new MemoryStream();
-            var describeMemoryStream2 = new MemoryStream();
+            var changesLines = new List<string>();
+            var describeLines1 = new List<string>();
+            var describeLines2 = new List<string>();
 
             var changeset1 = new PerforceChangeset();
             var changeset2 = new PerforceChangeset();
 
-            this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(changesMemoryStream);
-            this.processWrapperMock.Setup(m => m.Invoke("describe", "1")).Returns(describeMemoryStream1);
-            this.processWrapperMock.Setup(m => m.Invoke("describe", "2")).Returns(describeMemoryStream2);
-            this.changesParserMock.Setup(m => m.Parse(changesMemoryStream)).Returns(new List<int>() { 1, 2 });
-            this.describeParserMock.Setup(m => m.Parse(describeMemoryStream1)).Returns(changeset1);
-            this.describeParserMock.Setup(m => m.Parse(describeMemoryStream2)).Returns(changeset2);
+            this.processWrapperMock.Setup(m => m.Invoke("changes", "commandline")).Returns(new Tuple<int, List<string>>(0, changesLines));
+            this.processWrapperMock.Setup(m => m.Invoke("describe", "1")).Returns(new Tuple<int, List<string>>(0, describeLines1));
+            this.processWrapperMock.Setup(m => m.Invoke("describe", "2")).Returns(new Tuple<int, List<string>>(0, describeLines2));
+            this.changesParserMock.Setup(m => m.Parse(changesLines)).Returns(new List<int>() { 1, 2 });
+            this.describeParserMock.Setup(m => m.Parse(describeLines1)).Returns(changeset1);
+            this.describeParserMock.Setup(m => m.Parse(describeLines2)).Returns(changeset2);
 
             this.stopWatchMock.SetupSequence(m => m.TotalSecondsElapsed()).Returns(10).Returns(70);
 

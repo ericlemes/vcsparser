@@ -18,19 +18,17 @@ namespace vcsparser.unittests.git
             parser = new GitLogParser();
         }
 
-        private MemoryStream GetStreamWithContent(string content)
+        private List<string> GetListWithContent(string content)
         {
-            var ms = new MemoryStream();
-            var sw = new StreamWriter(ms);
-            sw.Write(content);
-            sw.Flush();
-            ms.Seek(0, SeekOrigin.Begin);
-            return ms;
+            return new List<string>(content.Split(
+                new[] { "\n", Environment.NewLine },
+                StringSplitOptions.None
+            ));
         }
 
         [Fact]
         public void WhenConvertingIsoDateStringToDateShouldReturnExpectedValue()
-        {            
+        {
             var dateTime = parser.Iso8601StringToDateTime("2018-09-19T14:19:14+01:00");
             Assert.Equal(new DateTime(2018, 09, 19, 14, 19, 14), dateTime);
         }
@@ -38,17 +36,17 @@ namespace vcsparser.unittests.git
         [Fact]
         public void WhenParsingShouldReturnExpectedResult()
         {
-            var stream = GetStreamWithContent(Resources.GitExample1);
-            var changesets = parser.Parse(stream);
+            var list = GetListWithContent(Resources.GitExample1);
+            var changesets = parser.Parse(list);
 
             Assert.Equal(2, changesets.Count);
         }
 
         [Fact]
         public void WhenParsingCommitWithDescriptionShouldReturnExpectedValues() {
-            var stream = GetStreamWithContent(Resources.GitExample1);            
+            var list = GetListWithContent(Resources.GitExample1);
 
-            GitCommit commit = this.parser.Parse(stream)[0];
+            GitCommit commit = this.parser.Parse(list)[0];
             Assert.Equal("82419fcdc1fca1f8b14905366159837bfe8a1be4", commit.CommitHash);
             Assert.Equal("Author Name <author@email.com>", commit.Author);
             Assert.Equal(new DateTime(2018, 09, 19, 14, 19, 14), commit.AuthorDate);
@@ -59,9 +57,9 @@ namespace vcsparser.unittests.git
 
         [Fact]
         public void WhenParsingCommitWithoutDescriptionShouldReturnExpectedValues(){
-            var stream = GetStreamWithContent(Resources.GitExample1);
+            var list = GetListWithContent(Resources.GitExample1);
 
-            GitCommit commit = this.parser.Parse(stream)[1];            
+            GitCommit commit = this.parser.Parse(list)[1];
             Assert.Equal("31b45b8417418c3562d19eab8830ed786ac40f40", commit.CommitHash);
             Assert.Equal("Author Name <author@email.com>", commit.Author);
             Assert.Equal(new DateTime(2018, 09, 18, 16, 48, 22), commit.AuthorDate);
@@ -69,12 +67,12 @@ namespace vcsparser.unittests.git
             Assert.Equal(new DateTime(2018, 09, 18, 16, 48, 22), commit.CommiterDate);
             Assert.Equal("This one only has the commit message. No long description\r\n", commit.ChangesetMessage);
         }
-        
+
         [Fact]
         public void WhenParsingCommitShouldParseStatsCorrectly(){
-            var stream = GetStreamWithContent(Resources.GitExample1);
+            var list = GetListWithContent(Resources.GitExample1);
 
-            GitCommit commit = this.parser.Parse(stream)[0];
+            GitCommit commit = this.parser.Parse(list)[0];
             Assert.Equal(3, commit.ChangesetFileChanges.Count);
             Assert.Equal(1, commit.ChangesetFileChanges[0].Added);
             Assert.Equal(1, commit.ChangesetFileChanges[0].Deleted);
@@ -91,9 +89,9 @@ namespace vcsparser.unittests.git
 
         [Fact]
         public void WhenParsingSubsequentCommitsShouldParseStatsCorrectly() {
-            var stream = GetStreamWithContent(Resources.GitExample1);
+            var list = GetListWithContent(Resources.GitExample1);
 
-            GitCommit commit = this.parser.Parse(stream)[1];
+            GitCommit commit = this.parser.Parse(list)[1];
             Assert.Equal(2, commit.ChangesetFileChanges.Count);
 
             Assert.Equal(4, commit.ChangesetFileChanges[1].Added);
@@ -104,9 +102,9 @@ namespace vcsparser.unittests.git
         [Fact]
         public void WhenParsingCommitWithBinaryFilesShouldGetResultsCorrectly()
         {
-            var stream = GetStreamWithContent(Resources.GitExample2);
+            var list = GetListWithContent(Resources.GitExample2);
 
-            GitCommit commit = this.parser.Parse(stream)[0];
+            GitCommit commit = this.parser.Parse(list)[0];
             Assert.Single(commit.ChangesetFileChanges);
             Assert.Equal("src/dir-with-dashes/File1.cs", commit.ChangesetFileChanges[0].FileName);
             Assert.Equal(0, commit.ChangesetFileChanges[0].Added);
@@ -116,8 +114,8 @@ namespace vcsparser.unittests.git
         [Fact]
         public void WhenParsingLogWithRenameHistoryShouldReturnExpectedValues()
         {
-            var stream = GetStreamWithContent(Resources.GitExample3);
-            var commits = this.parser.Parse(stream);
+            var list = GetListWithContent(Resources.GitExample3);
+            var commits = this.parser.Parse(list);
 
             Assert.Equal(3, commits.Count);
             Assert.Equal(3, commits[0].ChangesetFileChanges[0].Added);
@@ -161,11 +159,11 @@ namespace vcsparser.unittests.git
         [Fact]
         public void WhenParsingMergeShouldNotThrow()
         {
-            var stream = GetStreamWithContent(Resources.GitExample4);
+            var list = GetListWithContent(Resources.GitExample4);
 
-            this.parser.Parse(stream);
+            this.parser.Parse(list);
         }
 
-        
+
 }
 }

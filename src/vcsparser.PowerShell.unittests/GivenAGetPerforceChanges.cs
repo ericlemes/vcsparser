@@ -23,7 +23,7 @@ namespace vcsparser.PowerShell.unittests
 
         private Mock<ICmdlet> mockCmdlet;
 
-        private MemoryStream memoryStream;
+        private List<string> invokeLines;
 
         public GivenAGetPerforceChanges()
         {
@@ -31,8 +31,8 @@ namespace vcsparser.PowerShell.unittests
             mockCommandLineParser.Setup(m => m.ParseCommandLine("p4 command")).Returns(new Tuple<string, string>("p4", "command"));
 
             this.mockProcessWrapper = new Mock<IProcessWrapper>();
-            memoryStream = new MemoryStream();
-            mockProcessWrapper.Setup(m => m.Invoke("p4", "command")).Returns(memoryStream);
+            invokeLines = new List<string>();
+            mockProcessWrapper.Setup(m => m.Invoke("p4", "command")).Returns(new Tuple<int, List<string>>(0, invokeLines));
 
             this.mockChangesParser = new Mock<IChangesParser>();
             this.mockCmdlet = new Mock<ICmdlet>();
@@ -60,17 +60,25 @@ namespace vcsparser.PowerShell.unittests
         }
 
         [Fact]
+        public void WhenProcessingInvokeP4NotZeroShouldThrow()
+        {
+            mockProcessWrapper.Setup(m => m.Invoke("p4", "command")).Returns(new Tuple<int, List<string>>(1, invokeLines));
+            Action processRecord = () => this.cmdlet.DoProcessRecord();
+            Assert.Throws<Exception>(processRecord);
+        }
+
+        [Fact]
         public void WhenProcessingShouldParseChanges()
         {
             this.cmdlet.DoProcessRecord();
-            mockChangesParser.Verify(m => m.Parse(memoryStream), Times.Once());
+            mockChangesParser.Verify(m => m.Parse(invokeLines), Times.Once());
         }
 
         [Fact]
         public void WhenProcessingShouldWriteOutput()
         {
             var changes = new List<int>();
-            mockChangesParser.Setup(m => m.Parse(memoryStream)).Returns(changes);
+            mockChangesParser.Setup(m => m.Parse(invokeLines)).Returns(changes);
 
             this.cmdlet.DoProcessRecord();
             mockCmdlet.Verify(m => m.WriteObject(changes), Times.Once());

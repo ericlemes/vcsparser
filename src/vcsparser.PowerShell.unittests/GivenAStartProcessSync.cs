@@ -33,7 +33,7 @@ namespace vcsparser.PowerShell.unittests
             startProcess.InjectDependencies(mockCmdlet.Object, mockProcessWrapper.Object, mockCommandLineParser.Object, mockLogger.Object);
 
             mockCommandLineParser.Setup(m => m.ParseCommandLine("cmd args")).Returns(new Tuple<string, string>("cmd", "args"));
-            mockProcessWrapper.Setup(m => m.Invoke("cmd", "args")).Returns(memoryStream);
+            mockProcessWrapper.Setup(m => m.Invoke("cmd", "args", It.IsAny<OutputLineDelegate>())).Returns(0);
         }
 
         [Fact]

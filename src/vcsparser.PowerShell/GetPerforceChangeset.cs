@@ -55,12 +55,11 @@ namespace vcsparser.PowerShell
         protected override void ProcessRecord()
         {
             var parsedCommandLine = commandLineParser.ParseCommandLine(String.Format(DescribeCommand, Changeset));
-            var lines = new List<string>();
-            var exitCode = this.processWrapper.Invoke(parsedCommandLine.Item1, parsedCommandLine.Item2, (l) => { lines.Add(l); });
-            if (exitCode != 0)
-                this.ThrowTerminatingError(new ErrorRecord(new Exception(string.Join(Environment.NewLine, lines)), $"Non zero return code: {exitCode}", ErrorCategory.OperationStopped, null));
+            var invoke = this.processWrapper.Invoke(parsedCommandLine.Item1, parsedCommandLine.Item2);
+            if (invoke.Item1 != 0)
+                this.ThrowTerminatingError(new ErrorRecord(new Exception(string.Join(Environment.NewLine, invoke.Item2)), $"Non zero return code: {invoke.Item1}", ErrorCategory.OperationStopped, this));
 
-            var changeset = describeParser.Parse(lines);
+            var changeset = describeParser.Parse(invoke.Item2);
             this.cmdlet.WriteObject(changeset);
         }        
 

@@ -49,5 +49,22 @@ namespace vcsparser.core
             StartProcess(process, outputLineCallback);
             return process.ExitCode;
         }
+
+        public Tuple<int, List<string>> Invoke(string executable, string arguments)
+        {
+            var process = CreateProcessWithBaseParams(executable, arguments);
+            var lines = new List<string>();
+            StartProcess(process, (l) => { lines.Add(l); });
+            return new Tuple<int, List<string>>(process.ExitCode, lines);
+        }
+
+        public Tuple<int, List<string>> Invoke(string executable, string arguments, string workingDir)
+        {
+            var process = CreateProcessWithBaseParams(executable, arguments);
+            process.StartInfo.WorkingDirectory = workingDir;
+            var lines = new List<string>();
+            StartProcess(process, (l) => { lines.Add(l); });
+            return new Tuple<int, List<string>>(process.ExitCode, lines);
+        }
     }
 }
