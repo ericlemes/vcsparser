@@ -17,8 +17,7 @@ namespace vcsparser.core
         }
 
         [JsonProperty("file-measures")]
-        public List<IMeasure> Measures
-        {
+        public List<IMeasure> Measures {
             get; set;
         }
 
@@ -27,8 +26,14 @@ namespace vcsparser.core
             get; set;
         }
 
+        [JsonProperty("raw-measures")]
+        public List<IMeasure> MeasuresRaw {
+            get => measureRawIndex.SelectMany(m => m.Value.Select(f => f.Value)).ToList();
+        }
+
         private Dictionary<string, Dictionary<string, IMeasure>> measureFileIndex = new Dictionary<string, Dictionary<string, IMeasure>>();
         private Dictionary<string, IMeasure> measureProjectIndex = new Dictionary<string, IMeasure>();
+        private Dictionary<string, Dictionary<string, IMeasure>> measureRawIndex = new Dictionary<string, Dictionary<string, IMeasure>>();
 
         [JsonProperty("metrics")]
         public List<Metric> Metrics { get; set; }
@@ -39,7 +44,7 @@ namespace vcsparser.core
                 return null;
             if (!measureFileIndex[metricKey].ContainsKey(fileName))
                 return null;
-            return measureFileIndex[metricKey][fileName];            
+            return measureFileIndex[metricKey][fileName];
         }
 
         public void AddFileMeasure(IMeasure measure)
@@ -68,6 +73,26 @@ namespace vcsparser.core
 
             if (!measureProjectIndex.ContainsKey(measure.MetricKey))
                 measureProjectIndex.Add(measure.MetricKey, measure);
+            else
+                throw new Exception("Measure already exists.");
+        }
+
+        public IMeasure FindRawMeasure(string metricKey, string fileName)
+        {
+            if (!measureRawIndex.ContainsKey(metricKey))
+                return null;
+            if (!measureRawIndex[metricKey].ContainsKey(fileName))
+                return null;
+            return measureRawIndex[metricKey][fileName];
+        }
+
+        public void AddRawMeasure(IMeasure measure)
+        {
+            if (!measureRawIndex.ContainsKey(measure.MetricKey))
+                measureRawIndex.Add(measure.MetricKey, new Dictionary<string, IMeasure>());
+
+            if (!measureRawIndex[measure.MetricKey].ContainsKey(measure.File))
+                measureRawIndex[measure.MetricKey].Add(measure.File, measure);
             else
                 throw new Exception("Measure already exists.");
         }

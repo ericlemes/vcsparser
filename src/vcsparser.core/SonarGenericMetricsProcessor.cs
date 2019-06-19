@@ -29,18 +29,18 @@ namespace vcsparser.core
         public void Process(SonarGenericMetricsCommandLineArgs a)
         {
             var files = fileSystem.GetFiles(a.InputDir, "*.json");
-            SonarMeasuresJson outputJson = new SonarMeasuresJson();            
+            SonarMeasuresJson outputJson = new SonarMeasuresJson();
 
-            foreach(var file in files)
+            foreach (var file in files)
             {
                 this.logger.LogToConsole(String.Format("Processing {0}", file.FileName));
                 var codeChurnList = this.dailyCodeChurnParser.ParseFile(file.FileName);
-                foreach(var converter in measureConverters)
-                {
+
+                foreach (var converter in measureConverters) {
+                    converter.ProcessProjectMeasure(outputJson);
+
                     foreach (var codeChurn in codeChurnList)
                         converter.ProcessFileMeasure(codeChurn, outputJson);
-                    
-                    converter.ProcessProjectMeasure(outputJson);
                 }
             }
 

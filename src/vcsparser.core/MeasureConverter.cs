@@ -9,12 +9,13 @@ namespace vcsparser.core
 {
     public class MeasureConverter<T> : IMeasureConverter
     {
-        private DateTime startDate;
-        private DateTime endDate;
-        private Metric metric;
-        private bool processedMetric = false;
+        protected readonly DateTime startDate;
+        protected readonly DateTime endDate;
+        protected readonly Metric metric;
+        protected string filePrefixToRemove;
+        protected readonly bool projectMeasure;
 
-        private readonly bool projectMeasure;
+        protected bool processedMetric = false;
 
         public Metric Metric {
             get { return metric; }
@@ -28,13 +29,11 @@ namespace vcsparser.core
             get { return endDate; }
         }
 
-        private IMeasureAggregator<T> measureAggregator;
+        protected IMeasureAggregator<T> measureAggregator;
 
         public IMeasureAggregator<T> MeasureAggregator {
             get { return this.measureAggregator; }
         }
-
-        private string filePrefixToRemove;
 
         public MeasureConverter(DateTime startDate, DateTime endDate, Metric metric, IMeasureAggregator<T> measureAggregator, string filePrefixToRemove)
         {
@@ -46,7 +45,7 @@ namespace vcsparser.core
             this.projectMeasure = measureAggregator is IMeasureAggregatorProject<T>;
         }
 
-        public void ProcessFileMeasure(DailyCodeChurn dailyCodeChurn, SonarMeasuresJson sonarMeasuresJson)
+        public virtual void ProcessFileMeasure(DailyCodeChurn dailyCodeChurn, SonarMeasuresJson sonarMeasuresJson)
         {
             if (!ValidDailyCodeChurn(dailyCodeChurn))
                 return;
@@ -72,7 +71,7 @@ namespace vcsparser.core
             }
         }
 
-        public void ProcessProjectMeasure(SonarMeasuresJson sonarMeasuresJson)
+        public virtual void ProcessProjectMeasure(SonarMeasuresJson sonarMeasuresJson)
         {
             if (!projectMeasure)
                 return;
@@ -96,7 +95,7 @@ namespace vcsparser.core
             }
         }
 
-        private bool ValidDailyCodeChurn(DailyCodeChurn dailyCodeChurn)
+        protected virtual bool ValidDailyCodeChurn(DailyCodeChurn dailyCodeChurn)
         {
             if (dailyCodeChurn.GetDateTimeAsDateTime() < startDate || dailyCodeChurn.GetDateTimeAsDateTime() > endDate)
                 return false;
@@ -107,7 +106,7 @@ namespace vcsparser.core
             return true;
         }
 
-        private string ProcessFileName(string fileName, string filePrefixToRemove)
+        protected string ProcessFileName(string fileName, string filePrefixToRemove)
         {
             if (filePrefixToRemove == null)
                 return fileName;
@@ -118,7 +117,7 @@ namespace vcsparser.core
             return fileName;
         }
 
-        private void ProcessMetric(SonarMeasuresJson sonarMeasuresJson)
+        protected void ProcessMetric(SonarMeasuresJson sonarMeasuresJson)
         {
             if (processedMetric)
                 return;
