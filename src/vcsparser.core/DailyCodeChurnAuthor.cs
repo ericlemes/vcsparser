@@ -9,13 +9,11 @@ namespace vcsparser.core
 {
     public class DailyCodeChurnAuthor
     {
-        [JsonProperty("author")]
         public string Author
         {
             get; set;
         }
 
-        [JsonProperty("number_of_changes")]
         public int NumberOfChanges
         {
             get;

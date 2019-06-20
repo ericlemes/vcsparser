@@ -37,7 +37,7 @@ namespace vcsparser.unittests
             args.Generate7Days = "true";            
             
             var converters = builder.Build(args);
-            Assert.Equal(36, converters.Count);
+            Assert.Equal(37, converters.Count);
         }
 
         [Fact]
@@ -62,7 +62,7 @@ namespace vcsparser.unittests
 
         private void AssertAllMeasureConverters(List<IMeasureConverter> converters, string metricKeySuffix, DateTime startDate, DateTime endDate)
         {
-            Assert.Equal(6, converters.Count);
+            Assert.Equal(7, converters.Count);
             AssertMeasureConverter<NumberOfChangesMeasureAggregator, int>(converters, MeasureConverterListBuilder.CHANGES_METRIC_KEY + metricKeySuffix,
                 startDate, endDate);
             AssertMeasureConverter<LinesChangedMeasureAggregator, int>(converters, MeasureConverterListBuilder.LINES_CHANGED_METRIC_KEY + metricKeySuffix,
@@ -75,6 +75,8 @@ namespace vcsparser.unittests
                 startDate, endDate);
             AssertMeasureConverter<LinesChangedInFixesBugDatabaseMeasureAggregator, int>(converters, MeasureConverterListBuilder.BUG_DATABASE_LINES_CHANGED_METRIC_KEY + metricKeySuffix,
                 startDate, endDate);
+            AssertMeasureConverter<AuthorsDataAggregator, List<AuthorsData>>(converters, MeasureConverterListBuilder.AUTHORS_DATA,
+                DateTime.Today, DateTime.Today);
         }
 
         [Fact]

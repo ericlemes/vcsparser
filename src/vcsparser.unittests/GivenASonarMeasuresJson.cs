@@ -81,5 +81,39 @@ namespace vcsparser.unittests
                 });
             });
         }
+
+        [Fact]
+        public void WhenInexistentRawMeasureShouldReturnNull()
+        {
+            Assert.Null(this.sonarMeasuresJson.FindRawMeasure("key", "file1"));
+        }
+
+        [Fact]
+        public void WhenFindingRawMeasureForExistingMetricAndInexistentFileShouldReturnNull()
+        {
+            this.sonarMeasuresJson.AddRawMeasure(new Measure<int>()
+            {
+                MetricKey = "key",
+                File = "file2"
+            });
+            Assert.Null(this.sonarMeasuresJson.FindRawMeasure("key", "file1"));
+        }
+
+        [Fact]
+        public void WhenAddingExistingRawMeasureShouldThrow()
+        {
+            this.sonarMeasuresJson.AddRawMeasure(new Measure<int>()
+            {
+                MetricKey = "key",
+                File = "file2"
+            });
+            Assert.Throws<Exception>(() => {
+                this.sonarMeasuresJson.AddRawMeasure(new Measure<int>()
+                {
+                    MetricKey = "key",
+                    File = "file2"
+                });
+            });
+        }
     }
 }
