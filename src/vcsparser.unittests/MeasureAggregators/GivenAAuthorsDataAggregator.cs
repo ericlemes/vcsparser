@@ -67,7 +67,7 @@ namespace vcsparser.unittests.MeasureAggregators
 
             var list = this.measureAggregator.GetValueForNewMeasure(dailyCodeChurn);
             var authorData = Assert.Single(list);
-            Assert.Equal("2019/06/20", authorData.Date);
+            Assert.Equal("2019/06/20 00:00:00", authorData.Timestamp);
             Assert.Equal(author, Assert.Single(authorData.Authors));
         }
 

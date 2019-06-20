@@ -33,7 +33,7 @@ namespace vcsparser.core.MeasureAggregators
             return new AuthorsData
             {
                 Authors = dailyCodeChurn.Authors,
-                Timestamp = dailyCodeChurn.GetDateTimeAsDateTime()
+                Timestamp = dailyCodeChurn.Timestamp
             };
         }
     }
