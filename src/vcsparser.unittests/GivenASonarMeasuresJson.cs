@@ -115,5 +115,23 @@ namespace vcsparser.unittests
                 });
             });
         }
+
+        [Fact]
+        public void WhenMeasuresFileShouldAddMeasuresAndMeasuresRaw()
+        {
+            this.sonarMeasuresJson.AddFileMeasure(new Measure<int>()
+            {
+                MetricKey = "key1",
+                File = "file1"
+            });
+            this.sonarMeasuresJson.AddRawMeasure(new Measure<int>()
+            {
+                MetricKey = "key2",
+                File = "file2"
+            });
+
+            List<IMeasure> measures = this.sonarMeasuresJson.MeasuresFile;
+            Assert.Equal(2, measures.Count);
+        }
     }
 }

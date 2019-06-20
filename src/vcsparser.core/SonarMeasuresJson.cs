@@ -17,6 +17,16 @@ namespace vcsparser.core
         }
 
         [JsonProperty("file-measures")]
+        public List<IMeasure> MeasuresFile {
+            get {
+                var fileMeasures = new List<IMeasure>(Measures.Count + MeasuresRaw.Count);
+                fileMeasures.AddRange(Measures);
+                fileMeasures.AddRange(MeasuresRaw);
+                return fileMeasures;
+            }
+        }
+
+        [JsonIgnore]
         public List<IMeasure> Measures {
             get; set;
         }
@@ -26,7 +36,7 @@ namespace vcsparser.core
             get; set;
         }
 
-        [JsonProperty("raw-measures")]
+        [JsonIgnore]
         public List<IMeasure> MeasuresRaw {
             get => measureRawIndex.SelectMany(m => m.Value.Select(f => f.Value)).ToList();
         }
