@@ -60,6 +60,12 @@ namespace vcsparser.unittests
             Assert.Equal(endDate, measureConverter.EndDate);
         }
 
+        private void AssertMeasureConverterRaw<MeasureAggregatorType, T>(List<IMeasureConverter> converters, string metricKey)
+        {
+            var measureConverter = (MeasureConverterRaw<T>)converters.Where(c => c is MeasureConverterRaw<T> && ((MeasureConverterRaw<T>)c).Metric.MetricKey == metricKey).First();
+            Assert.IsType<MeasureAggregatorType>(measureConverter.MeasureAggregator);
+        }
+
         private void AssertAllMeasureConverters(List<IMeasureConverter> converters, string metricKeySuffix, DateTime startDate, DateTime endDate)
         {
             Assert.Equal(7, converters.Count);
@@ -75,8 +81,7 @@ namespace vcsparser.unittests
                 startDate, endDate);
             AssertMeasureConverter<LinesChangedInFixesBugDatabaseMeasureAggregator, int>(converters, MeasureConverterListBuilder.BUG_DATABASE_LINES_CHANGED_METRIC_KEY + metricKeySuffix,
                 startDate, endDate);
-            AssertMeasureConverter<AuthorsDataAggregator, List<AuthorsData>>(converters, MeasureConverterListBuilder.AUTHORS_DATA,
-                DateTime.Today, DateTime.Today);
+            AssertMeasureConverterRaw<AuthorsDataAggregator, List<AuthorsData>>(converters, MeasureConverterListBuilder.AUTHORS_DATA);
         }
 
         [Fact]

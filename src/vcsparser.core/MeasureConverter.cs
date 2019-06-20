@@ -9,13 +9,13 @@ namespace vcsparser.core
 {
     public class MeasureConverter<T> : IMeasureConverter
     {
-        protected readonly DateTime startDate;
-        protected readonly DateTime endDate;
-        protected readonly Metric metric;
-        protected string filePrefixToRemove;
-        protected readonly bool projectMeasure;
+        private readonly DateTime startDate;
+        private readonly DateTime endDate;
+        private readonly Metric metric;
+        private string filePrefixToRemove;
+        private readonly bool projectMeasure;
 
-        protected bool processedMetric = false;
+        private bool processedMetric = false;
 
         public Metric Metric {
             get { return metric; }
@@ -45,7 +45,7 @@ namespace vcsparser.core
             this.projectMeasure = measureAggregator is IMeasureAggregatorProject<T>;
         }
 
-        public virtual void ProcessFileMeasure(DailyCodeChurn dailyCodeChurn, SonarMeasuresJson sonarMeasuresJson)
+        public void ProcessFileMeasure(DailyCodeChurn dailyCodeChurn, SonarMeasuresJson sonarMeasuresJson)
         {
             if (!ValidDailyCodeChurn(dailyCodeChurn))
                 return;
@@ -71,7 +71,7 @@ namespace vcsparser.core
             }
         }
 
-        public virtual void ProcessProjectMeasure(SonarMeasuresJson sonarMeasuresJson)
+        public void ProcessProjectMeasure(SonarMeasuresJson sonarMeasuresJson)
         {
             if (!projectMeasure)
                 return;
@@ -95,7 +95,7 @@ namespace vcsparser.core
             }
         }
 
-        protected virtual bool ValidDailyCodeChurn(DailyCodeChurn dailyCodeChurn)
+        private bool ValidDailyCodeChurn(DailyCodeChurn dailyCodeChurn)
         {
             if (dailyCodeChurn.GetDateTimeAsDateTime() < startDate || dailyCodeChurn.GetDateTimeAsDateTime() > endDate)
                 return false;
@@ -106,7 +106,7 @@ namespace vcsparser.core
             return true;
         }
 
-        protected string ProcessFileName(string fileName, string filePrefixToRemove)
+        private string ProcessFileName(string fileName, string filePrefixToRemove)
         {
             if (filePrefixToRemove == null)
                 return fileName;
@@ -117,7 +117,7 @@ namespace vcsparser.core
             return fileName;
         }
 
-        protected void ProcessMetric(SonarMeasuresJson sonarMeasuresJson)
+        private void ProcessMetric(SonarMeasuresJson sonarMeasuresJson)
         {
             if (processedMetric)
                 return;

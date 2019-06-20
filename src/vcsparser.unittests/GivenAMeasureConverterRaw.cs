@@ -15,6 +15,8 @@ namespace vcsparser.unittests
         private Metric metric;
         private Mock<IMeasureAggregator<string>> mockMeasureAggregator;
 
+        private Mock<IMeasureAggregatorProject<string>> mockMeasureAggregatorProject;
+
         public GivenAMeasureConverterRaw()
         {
             metric = new Metric();
@@ -28,7 +30,62 @@ namespace vcsparser.unittests
             this.mockMeasureAggregator.Setup(m => m.GetValueForExistingMeasure(It.IsAny<DailyCodeChurn>(), It.IsAny<Measure<string>>())).
                 Returns((DailyCodeChurn d, Measure<string> existingMeasure) => d.FileName + "," + existingMeasure.Value);
 
+            this.mockMeasureAggregatorProject = new Mock<IMeasureAggregatorProject<string>>();
+            this.mockMeasureAggregatorProject.Setup(m => m.HasValue(It.IsAny<DailyCodeChurn>())).
+                Returns((DailyCodeChurn d) => d.FileName.Length > 0);
+            this.mockMeasureAggregatorProject.Setup(m => m.GetValueForNewMeasure(It.IsAny<DailyCodeChurn>())).
+                Returns((DailyCodeChurn d) => d.FileName);
+            this.mockMeasureAggregatorProject.Setup(m => m.GetValueForExistingMeasure(It.IsAny<DailyCodeChurn>(), It.IsAny<Measure<string>>())).
+                Returns((DailyCodeChurn d, Measure<string> existingMeasure) => d.FileName + "," + existingMeasure.Value);
+            this.mockMeasureAggregatorProject.Setup(m => m.GetValueForProjectMeasure()).
+               Returns("FileName");
+
             this.measureConverter = new MeasureConverterRaw<string>(metric, mockMeasureAggregator.Object, "//prefix/");
+        }
+
+        [Fact]
+        public void WhenGettingStartDateShouldThrowInvalidOperationException()
+        {
+            Assert.Throws<InvalidOperationException>(() => this.measureConverter.StartDate);
+        }
+
+        [Fact]
+        public void WhenGettingEndDateShouldThrowInvalidOperationException()
+        {
+            Assert.Throws<InvalidOperationException>(() => this.measureConverter.EndDate);
+        }
+
+        [Fact]
+        public void WhenConvertingWithinRangeShouldRemoveFilePrefix()
+        {
+            var dailyCodeChurn = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "//prefix/file"
+            };
+            var measures = new SonarMeasuresJson();
+
+            this.measureConverter.ProcessFileMeasure(dailyCodeChurn, measures);
+
+            Assert.Equal("file",
+                measures.MeasuresRaw.Where(m => m.MetricKey == "key").Single().File);
+        }
+
+        [Fact]
+        public void WhenConvertingWithinRangeAndNoFilePrefixShouldConvert()
+        {
+            this.measureConverter = new MeasureConverterRaw<string>(metric, mockMeasureAggregator.Object, null);
+            var dailyCodeChurn = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "//prefix/file"
+            };
+            var measures = new SonarMeasuresJson();
+
+            this.measureConverter.ProcessFileMeasure(dailyCodeChurn, measures);
+
+            Assert.Equal("//prefix/file",
+                measures.MeasuresRaw.Where(m => m.MetricKey == "key").Single().File);
         }
 
         [Fact]
@@ -98,6 +155,57 @@ namespace vcsparser.unittests
             this.measureConverter.ProcessFileMeasure(dailyCodeChurn, measures);
 
             Assert.Empty(measures.MeasuresRaw);
+        }
+
+        [Fact]
+        public void WhenConvertingNoProjectMeausreShouldAppendProjectMeasure()
+        {
+            this.measureConverter = new MeasureConverterRaw<string>(metric, mockMeasureAggregatorProject.Object, "//prefix/");
+            var measures = new SonarMeasuresJson();
+
+            this.measureConverter.ProcessProjectMeasure(measures);
+
+            Assert.NotEmpty(measures.MeasuresProject.Where(m => m.MetricKey == "key"));
+        }
+
+        [Fact]
+        public void WhenConvertingANonProjectAggregatorWithProjectMeausreShouldDoNothing()
+        {
+            this.measureConverter = new MeasureConverterRaw<string>(metric, mockMeasureAggregator.Object, "//prefix/");
+
+            var dailyCodeChurn = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "file1"
+            };
+            var measures = new SonarMeasuresJson();
+
+            this.measureConverter.ProcessProjectMeasure(measures);
+
+            Assert.Empty(measures.MeasuresProject.Where(m => m.MetricKey == "key"));
+        }
+
+        [Fact]
+        public void WhenConvertingWithProjectMeausreShouldAppendProjectMeasure()
+        {
+            this.measureConverter = new MeasureConverterRaw<string>(metric, mockMeasureAggregatorProject.Object, "//prefix/");
+
+            var dailyCodeChurn1 = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "file1"
+            };
+            var dailyCodeChurn2 = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "file2"
+            };
+            var measures = new SonarMeasuresJson();
+
+            this.measureConverter.ProcessProjectMeasure(measures);
+            this.measureConverter.ProcessProjectMeasure(measures);
+
+            Assert.Single(measures.MeasuresProject.Where(m => m.MetricKey == "key"));
         }
     }
 }

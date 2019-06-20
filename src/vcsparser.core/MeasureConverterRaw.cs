@@ -7,13 +7,36 @@ using vcsparser.core.MeasureAggregators;
 
 namespace vcsparser.core
 {
-    public class MeasureConverterRaw<T> : MeasureConverter<T>
+    public class MeasureConverterRaw<T> : IMeasureConverter
     {
-        public MeasureConverterRaw(Metric metric, IMeasureAggregator<T> measureAggregator, string filePrefixToRemove)
-            : base(DateTime.Today, DateTime.Today, metric, measureAggregator, filePrefixToRemove)
-        { }
+        private readonly Metric metric;
+        private string filePrefixToRemove;
+        private readonly bool projectMeasure;
 
-        public override void ProcessFileMeasure(DailyCodeChurn dailyCodeChurn, SonarMeasuresJson sonarMeasuresJson)
+        private bool processedMetric = false;
+
+        public Metric Metric {
+            get { return metric; }
+        }
+
+        private IMeasureAggregator<T> measureAggregator;
+
+        public IMeasureAggregator<T> MeasureAggregator {
+            get { return this.measureAggregator; }
+        }
+
+        public DateTime StartDate => throw new InvalidOperationException();
+        public DateTime EndDate => throw new InvalidOperationException();
+
+        public MeasureConverterRaw(Metric metric, IMeasureAggregator<T> measureAggregator, string filePrefixToRemove)
+        {
+            this.metric = metric;
+            this.measureAggregator = measureAggregator;
+            this.filePrefixToRemove = filePrefixToRemove;
+            this.projectMeasure = measureAggregator is IMeasureAggregatorProject<T>;
+        }
+
+        public void ProcessFileMeasure(DailyCodeChurn dailyCodeChurn, SonarMeasuresJson sonarMeasuresJson)
         {
             if (!ValidDailyCodeChurn(dailyCodeChurn))
                 return;
@@ -22,9 +45,9 @@ namespace vcsparser.core
 
             var fileName = ProcessFileName(dailyCodeChurn.FileName, filePrefixToRemove);
 
-            var existingMeasureFile = sonarMeasuresJson.FindRawMeasure(metric.MetricKey, fileName) as Measure<T>;
+            var existingMeasureRaw = sonarMeasuresJson.FindRawMeasure(metric.MetricKey, fileName) as Measure<T>;
 
-            if (existingMeasureFile == null)
+            if (existingMeasureRaw == null)
             {
                 sonarMeasuresJson.AddRawMeasure(new Measure<T>()
                 {
@@ -35,19 +58,61 @@ namespace vcsparser.core
             }
             else
             {
-                existingMeasureFile.Value = measureAggregator.GetValueForExistingMeasure(dailyCodeChurn, existingMeasureFile);
+                existingMeasureRaw.Value = measureAggregator.GetValueForExistingMeasure(dailyCodeChurn, existingMeasureRaw);
             }
         }
 
-        public override void ProcessProjectMeasure(SonarMeasuresJson _)
-        {}
+        public void ProcessProjectMeasure(SonarMeasuresJson sonarMeasuresJson)
+        {
+            if (!projectMeasure)
+                return;
 
-        protected override bool ValidDailyCodeChurn(DailyCodeChurn dailyCodeChurn)
+            ProcessMetric(sonarMeasuresJson);
+
+            var existingMeasureProject = sonarMeasuresJson.FindProjectMeasure(metric.MetricKey) as Measure<T>;
+            var projectMeasureAggregator = measureAggregator as IMeasureAggregatorProject<T>;
+
+            if (existingMeasureProject == null)
+            {
+                sonarMeasuresJson.AddProjectMeasure(new Measure<T>()
+                {
+                    MetricKey = this.metric.MetricKey,
+                    Value = projectMeasureAggregator.GetValueForProjectMeasure()
+                });
+            }
+            else
+            {
+                existingMeasureProject.Value = projectMeasureAggregator.GetValueForProjectMeasure();
+            }
+        }
+
+        private bool ValidDailyCodeChurn(DailyCodeChurn dailyCodeChurn)
         {
             if (!measureAggregator.HasValue(dailyCodeChurn))
                 return false;
 
             return true;
+        }
+
+        private string ProcessFileName(string fileName, string filePrefixToRemove)
+        {
+            if (filePrefixToRemove == null)
+                return fileName;
+
+            if (fileName.StartsWith(filePrefixToRemove))
+                return fileName.Substring(filePrefixToRemove.Length);
+
+            return fileName;
+        }
+
+        private void ProcessMetric(SonarMeasuresJson sonarMeasuresJson)
+        {
+            if (processedMetric)
+                return;
+
+            sonarMeasuresJson.Metrics.Add(metric);
+
+            processedMetric = true;
         }
     }
 }
