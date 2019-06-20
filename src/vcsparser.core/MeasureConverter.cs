@@ -9,13 +9,12 @@ namespace vcsparser.core
 {
     public class MeasureConverter<T> : IMeasureConverter
     {
-        private readonly DateTime startDate;
-        private readonly DateTime endDate;
-        private readonly Metric metric;
-        private string filePrefixToRemove;
-        private readonly bool projectMeasure;
-
+        private DateTime startDate;
+        private DateTime endDate;
+        private Metric metric;
         private bool processedMetric = false;
+
+        private readonly bool projectMeasure;
 
         public Metric Metric {
             get { return metric; }
@@ -29,11 +28,13 @@ namespace vcsparser.core
             get { return endDate; }
         }
 
-        protected IMeasureAggregator<T> measureAggregator;
+        private IMeasureAggregator<T> measureAggregator;
 
         public IMeasureAggregator<T> MeasureAggregator {
             get { return this.measureAggregator; }
         }
+
+        private string filePrefixToRemove;
 
         public MeasureConverter(DateTime startDate, DateTime endDate, Metric metric, IMeasureAggregator<T> measureAggregator, string filePrefixToRemove)
         {
