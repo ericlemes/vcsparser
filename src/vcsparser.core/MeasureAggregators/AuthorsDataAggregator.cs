@@ -25,7 +25,7 @@ namespace vcsparser.core.MeasureAggregators
 
         public bool HasValue(DailyCodeChurn dailyCodeChurn)
         {
-            return true;
+            return (dailyCodeChurn.Authors.Count > 0);
         }
 
         private AuthorsData CreateAuthorsData(DailyCodeChurn dailyCodeChurn)

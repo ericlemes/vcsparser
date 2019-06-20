@@ -101,6 +101,7 @@
     <Compile Include="GivenARawConsoleLogger.cs" />
     <Compile Include="GivenARegex.cs" />
     <Compile Include="GivenASonarMeasuresJson.cs" />
+    <Compile Include="MeasureAggregators\GivenAAuthorsDataAggregator.cs" />
     <Compile Include="MeasureAggregators\GivenALinesChangedInFixesMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\GivenALinesChangedBugDatabaseMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\GivenALinesChangedMeasureAggregator.cs" />

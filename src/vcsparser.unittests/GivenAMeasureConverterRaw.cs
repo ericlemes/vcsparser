@@ -82,5 +82,22 @@ namespace vcsparser.unittests
                 Assert.True(false);
             }
         }
+
+        [Fact]
+        public void WhenConvertingAndInvalidDailyCodeChurnShouldNotAdd()
+        {
+            var dailyCodeChurn = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "file1"
+            };
+            this.mockMeasureAggregator.Setup(m => m.HasValue(dailyCodeChurn)).Returns(false);
+
+            var measures = new SonarMeasuresJson();
+
+            this.measureConverter.ProcessFileMeasure(dailyCodeChurn, measures);
+
+            Assert.Empty(measures.MeasuresRaw);
+        }
     }
 }
