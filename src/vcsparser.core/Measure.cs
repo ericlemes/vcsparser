@@ -1,13 +1,12 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 
 namespace vcsparser.core
 {
+
     public interface IMeasure
     {
         string MetricKey { get; set; }
-
+        
         string File { get; set; }
     }
 
