@@ -81,5 +81,57 @@ namespace vcsparser.unittests
                 });
             });
         }
+
+        [Fact]
+        public void WhenInexistentRawMeasureShouldReturnNull()
+        {
+            Assert.Null(this.sonarMeasuresJson.FindRawMeasure("key", "file1"));
+        }
+
+        [Fact]
+        public void WhenFindingRawMeasureForExistingMetricAndInexistentFileShouldReturnNull()
+        {
+            this.sonarMeasuresJson.AddRawMeasure(new Measure<int>()
+            {
+                MetricKey = "key",
+                File = "file2"
+            });
+            Assert.Null(this.sonarMeasuresJson.FindRawMeasure("key", "file1"));
+        }
+
+        [Fact]
+        public void WhenAddingExistingRawMeasureShouldThrow()
+        {
+            this.sonarMeasuresJson.AddRawMeasure(new Measure<int>()
+            {
+                MetricKey = "key",
+                File = "file2"
+            });
+            Assert.Throws<Exception>(() => {
+                this.sonarMeasuresJson.AddRawMeasure(new Measure<int>()
+                {
+                    MetricKey = "key",
+                    File = "file2"
+                });
+            });
+        }
+
+        [Fact]
+        public void WhenMeasuresFileShouldAddMeasuresAndMeasuresRaw()
+        {
+            this.sonarMeasuresJson.AddFileMeasure(new Measure<int>()
+            {
+                MetricKey = "key1",
+                File = "file1"
+            });
+            this.sonarMeasuresJson.AddRawMeasure(new Measure<int>()
+            {
+                MetricKey = "key2",
+                File = "file2"
+            });
+
+            List<IMeasure> measures = this.sonarMeasuresJson.MeasuresFile;
+            Assert.Equal(2, measures.Count);
+        }
     }
 }

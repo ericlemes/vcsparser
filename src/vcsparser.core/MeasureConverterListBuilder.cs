@@ -17,13 +17,11 @@ namespace vcsparser.core
 
         public static readonly string LINES_CHANGED_FIXES_METRIC_KEY = "vcsparser_lineschanged_fixes";
 
-        public static readonly string NUM_AUTHORS = "vcsparser_numauthors";
-
-        public static readonly string NUM_AUTHORS_10_PERC = "vcsparser_numauthors10perc";
-
         public static readonly string BUG_DATABASE_CHANGES_METRIC_KEY = "vcsparser_bugdatabase_numchanges";
 
         public static readonly string BUG_DATABASE_LINES_CHANGED_METRIC_KEY = "vcsparser_bugdatabase_lineschanged";
+
+        public static readonly string AUTHORS_DATA = "vcsparser_authors_data";
 
         private IEnvironment environment;
         
@@ -47,6 +45,8 @@ namespace vcsparser.core
                 CreateConvertersFor6Months(result, a);
             if (a.Generate7Days.ToLower() == "true")
                 CreateConvertersFor7Days(result, a);
+
+            CreateConvertersForData(result, a);
             return result;
         }
 
@@ -82,10 +82,6 @@ namespace vcsparser.core
                 "Number of changes in fixes (" + suffixLongDescription + ")", "Number of changes in fixes (" + suffixLongDescription + ")");
             var metricLinesChangedWithFixes = CreateMetric(LINES_CHANGED_FIXES_METRIC_KEY + metricKeySuffix,
                 "Lines changed in fixes (" + suffixLongDescription + ")", "Lines changed in fixes (" + suffixLongDescription + ")");
-            var metricNumAuthors = CreateMetric(NUM_AUTHORS + metricKeySuffix,
-                "Number of authors (" + suffixLongDescription + ")", "Number of authors (" + suffixLongDescription + ")");
-            var metricNumAuthors10Perc = CreateMetric(NUM_AUTHORS_10_PERC + metricKeySuffix,
-                "Number of authors over 10% contrib (" + suffixLongDescription + ")", "Number of authors with over 10% of changes (" + suffixLongDescription + ")");
             var metricChangesBugDatabase = CreateMetric(BUG_DATABASE_CHANGES_METRIC_KEY + metricKeySuffix,
               "Number of changes in bug fixes (" + suffixLongDescription + ")", "Number of changes in bug fixes (" + suffixLongDescription + ")");
             var metricChangesWithFixesBugDatabase = CreateMetric(BUG_DATABASE_LINES_CHANGED_METRIC_KEY + metricKeySuffix,
@@ -95,10 +91,15 @@ namespace vcsparser.core
             result.Add(new MeasureConverter<int>(startDate, endDate, metricLinesChanged, new LinesChangedMeasureAggregator(), a.FilePrefixToRemove));
             result.Add(new MeasureConverter<int>(startDate, endDate, metricChangesWithFixes, new NumberOfChangesWithFixesMeasureAggregator(), a.FilePrefixToRemove));
             result.Add(new MeasureConverter<int>(startDate, endDate, metricLinesChangedWithFixes, new LinesChangedWithFixesMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter<int>(startDate, endDate, metricNumAuthors, new NumberOfAuthorsMeasureAggregator(), a.FilePrefixToRemove));
-            result.Add(new MeasureConverter<int>(startDate, endDate, metricNumAuthors10Perc, new NumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator(), a.FilePrefixToRemove));
             result.Add(new MeasureConverter<int>(startDate, endDate, metricChangesBugDatabase, new NumberOfChangesInFixesBugDatabaseMeasureAggregator(), a.FilePrefixToRemove));
             result.Add(new MeasureConverter<int>(startDate, endDate, metricChangesWithFixesBugDatabase, new LinesChangedInFixesBugDatabaseMeasureAggregator(), a.FilePrefixToRemove));
+        }
+
+        private void CreateConvertersForData(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)
+        {
+            var metricChanges = CreateMetric(AUTHORS_DATA, "Authors Data", "Authors Data", "DATA");
+
+            result.Add(new MeasureConverterRaw<List<AuthorsData>>(metricChanges, new AuthorsDataAggregator(), a.FilePrefixToRemove));
         }
 
         private void CreateConvertersFor1Day(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)

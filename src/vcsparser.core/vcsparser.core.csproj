@@ -54,6 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AuthorsData.cs" />
     <Compile Include="bugdatabase\BugDatabaseDllLoader.cs" />
     <Compile Include="bugdatabase\BugDatabaseFactory.cs" />
     <Compile Include="bugdatabase\HttpClientWrapper.cs" />
@@ -82,14 +83,14 @@
     <Compile Include="IMeasureAggregator.cs" />
     <Compile Include="JsonOutputData.cs" />
     <Compile Include="JsonDateTimeCustomConverter.cs" />
+    <Compile Include="MeasureAggregators\AuthorsDataAggregator.cs" />
     <Compile Include="MeasureAggregators\LinesChangedMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\LinesChangedWithFixesMeasureAggregator.cs" />
-    <Compile Include="MeasureAggregators\NumberOfAuthorsMeasureAggregator.cs" />
-    <Compile Include="MeasureAggregators\NumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\NumberOfChangesInFixesBugDatabaseMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\NumberOfChangesMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\LinesChangedInFixesBugDatabaseMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\NumberOfChangesWithFixesMeasureAggregator.cs" />
+    <Compile Include="MeasureConverterRaw.cs" />
     <Compile Include="p4\Changeset.cs" />
     <Compile Include="p4\ChangesParser.cs" />
     <Compile Include="p4\PerforceCodeChurnProcessor.cs" />

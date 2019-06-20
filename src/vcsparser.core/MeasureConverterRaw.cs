@@ -7,10 +7,8 @@ using vcsparser.core.MeasureAggregators;
 
 namespace vcsparser.core
 {
-    public class MeasureConverter<T> : IMeasureConverter
+    public class MeasureConverterRaw<T> : IMeasureConverter
     {
-        private readonly DateTime startDate;
-        private readonly DateTime endDate;
         private readonly Metric metric;
         private string filePrefixToRemove;
         private readonly bool projectMeasure;
@@ -21,24 +19,17 @@ namespace vcsparser.core
             get { return metric; }
         }
 
-        public DateTime StartDate {
-            get { return startDate; }
-        }
-
-        public DateTime EndDate {
-            get { return endDate; }
-        }
-
-        protected IMeasureAggregator<T> measureAggregator;
+        private IMeasureAggregator<T> measureAggregator;
 
         public IMeasureAggregator<T> MeasureAggregator {
             get { return this.measureAggregator; }
         }
 
-        public MeasureConverter(DateTime startDate, DateTime endDate, Metric metric, IMeasureAggregator<T> measureAggregator, string filePrefixToRemove)
+        public DateTime StartDate => throw new InvalidOperationException();
+        public DateTime EndDate => throw new InvalidOperationException();
+
+        public MeasureConverterRaw(Metric metric, IMeasureAggregator<T> measureAggregator, string filePrefixToRemove)
         {
-            this.startDate = startDate;
-            this.endDate = endDate;
             this.metric = metric;
             this.measureAggregator = measureAggregator;
             this.filePrefixToRemove = filePrefixToRemove;
@@ -54,11 +45,11 @@ namespace vcsparser.core
 
             var fileName = ProcessFileName(dailyCodeChurn.FileName, filePrefixToRemove);
 
-            var existingMeasureFile = sonarMeasuresJson.FindFileMeasure(metric.MetricKey, fileName) as Measure<T>;
+            var existingMeasureRaw = sonarMeasuresJson.FindRawMeasure(metric.MetricKey, fileName) as Measure<T>;
 
-            if (existingMeasureFile == null)
+            if (existingMeasureRaw == null)
             {
-                sonarMeasuresJson.AddFileMeasure(new Measure<T>()
+                sonarMeasuresJson.AddRawMeasure(new Measure<T>()
                 {
                     MetricKey = this.metric.MetricKey,
                     Value = measureAggregator.GetValueForNewMeasure(dailyCodeChurn),
@@ -67,7 +58,7 @@ namespace vcsparser.core
             }
             else
             {
-                existingMeasureFile.Value = measureAggregator.GetValueForExistingMeasure(dailyCodeChurn, existingMeasureFile);
+                existingMeasureRaw.Value = measureAggregator.GetValueForExistingMeasure(dailyCodeChurn, existingMeasureRaw);
             }
         }
 
@@ -97,9 +88,6 @@ namespace vcsparser.core
 
         private bool ValidDailyCodeChurn(DailyCodeChurn dailyCodeChurn)
         {
-            if (dailyCodeChurn.GetDateTimeAsDateTime() < startDate || dailyCodeChurn.GetDateTimeAsDateTime() > endDate)
-                return false;
-
             if (!measureAggregator.HasValue(dailyCodeChurn))
                 return false;
 

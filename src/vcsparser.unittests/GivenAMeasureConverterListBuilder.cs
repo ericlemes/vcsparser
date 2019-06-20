@@ -37,7 +37,7 @@ namespace vcsparser.unittests
             args.Generate7Days = "true";            
             
             var converters = builder.Build(args);
-            Assert.Equal(48, converters.Count);
+            Assert.Equal(37, converters.Count);
         }
 
         [Fact]
@@ -60,9 +60,15 @@ namespace vcsparser.unittests
             Assert.Equal(endDate, measureConverter.EndDate);
         }
 
+        private void AssertMeasureConverterRaw<MeasureAggregatorType, T>(List<IMeasureConverter> converters, string metricKey)
+        {
+            var measureConverter = (MeasureConverterRaw<T>)converters.Where(c => c is MeasureConverterRaw<T> && ((MeasureConverterRaw<T>)c).Metric.MetricKey == metricKey).First();
+            Assert.IsType<MeasureAggregatorType>(measureConverter.MeasureAggregator);
+        }
+
         private void AssertAllMeasureConverters(List<IMeasureConverter> converters, string metricKeySuffix, DateTime startDate, DateTime endDate)
         {
-            Assert.Equal(8, converters.Count);
+            Assert.Equal(7, converters.Count);
             AssertMeasureConverter<NumberOfChangesMeasureAggregator, int>(converters, MeasureConverterListBuilder.CHANGES_METRIC_KEY + metricKeySuffix,
                 startDate, endDate);
             AssertMeasureConverter<LinesChangedMeasureAggregator, int>(converters, MeasureConverterListBuilder.LINES_CHANGED_METRIC_KEY + metricKeySuffix,
@@ -71,14 +77,11 @@ namespace vcsparser.unittests
                 startDate, endDate);
             AssertMeasureConverter<LinesChangedWithFixesMeasureAggregator, int>(converters, MeasureConverterListBuilder.LINES_CHANGED_FIXES_METRIC_KEY + metricKeySuffix,
                 startDate, endDate);
-            AssertMeasureConverter<NumberOfAuthorsMeasureAggregator, int>(converters, MeasureConverterListBuilder.NUM_AUTHORS + metricKeySuffix,
-                startDate, endDate);
-            AssertMeasureConverter<NumberOfAuthorsWithMoreThanTenPercentChangesMeasureAggregator, int>(converters, MeasureConverterListBuilder.NUM_AUTHORS_10_PERC + metricKeySuffix,
-                startDate, endDate);
             AssertMeasureConverter<NumberOfChangesInFixesBugDatabaseMeasureAggregator, int>(converters, MeasureConverterListBuilder.BUG_DATABASE_CHANGES_METRIC_KEY + metricKeySuffix,
                 startDate, endDate);
             AssertMeasureConverter<LinesChangedInFixesBugDatabaseMeasureAggregator, int>(converters, MeasureConverterListBuilder.BUG_DATABASE_LINES_CHANGED_METRIC_KEY + metricKeySuffix,
                 startDate, endDate);
+            AssertMeasureConverterRaw<AuthorsDataAggregator, List<AuthorsData>>(converters, MeasureConverterListBuilder.AUTHORS_DATA);
         }
 
         [Fact]
