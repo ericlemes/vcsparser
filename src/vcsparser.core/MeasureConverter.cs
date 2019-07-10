@@ -111,7 +111,7 @@ namespace vcsparser.core
             if (filePrefixToRemove == null)
                 return fileName;
 
-            if (fileName.StartsWith(filePrefixToRemove))
+            if (fileName.StartsWith(filePrefixToRemove, StringComparison.OrdinalIgnoreCase))
                 return fileName.Substring(filePrefixToRemove.Length);
 
             return fileName;
