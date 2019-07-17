@@ -38,15 +38,6 @@ namespace vcsparser.core.p4
             this.changesetProcessor = new ChangesetProcessor(args.BugRegexes, this.logger);
         }
 
-        private IList<int> ParseChangeSets(string changesCommandLine)
-        {
-            this.logger.LogToConsole("Invoking: " + changesCommandLine);
-            var parsedCommandLine = this.commandLineParser.ParseCommandLine(changesCommandLine);
-            var stdOutStream = this.processWrapper.Invoke(parsedCommandLine.Item1, parsedCommandLine.Item2);
-
-            return this.changesParser.Parse(stdOutStream);
-        }
-
         public void QueryBugDatabase()
         {
             if (string.IsNullOrWhiteSpace(args.BugDatabaseDLL))
@@ -63,11 +54,17 @@ namespace vcsparser.core.p4
             this.outputProcessor.ProcessOutput(args.BugDatabaseOutputType, args.BugDatabaseOutputFile, bugCache);
         }
 
-        public void Extract()
+        public int Extract()
         {
-            var changes = ParseChangeSets(args.P4ChangesCommandLine);
+            logger.LogToConsole("Invoking: " + args.P4ChangesCommandLine);
+            var parsedCommand = this.commandLineParser.ParseCommandLine(args.P4ChangesCommandLine);
 
-            this.logger.LogToConsole(String.Format("Found {0} changesets to parse", changes.Count));
+            var invoke = this.processWrapper.Invoke(parsedCommand.Item1, parsedCommand.Item2);
+            if (invoke.Item1 != 0)
+                return invoke.Item1;
+
+            var changes = changesParser.Parse(invoke.Item2);
+            logger.LogToConsole($"Found {changes.Count} changesets to parse");
 
             this.bugDatabaseProcessor.ProcessCache(args.BugDatabaseOutputFile, this.changesetProcessor);
 
@@ -79,13 +76,22 @@ namespace vcsparser.core.p4
                 ReportProgressAfterOneMinute(i, changes);                
 
                 var cmd = commandLineParser.ParseCommandLine(String.Format(args.P4DescribeCommandLine, change));
-                changesetProcessor.ProcessChangeset(describeParser.Parse(this.processWrapper.Invoke(cmd.Item1, cmd.Item2)));
+
+                var describeInvoke= this.processWrapper.Invoke(cmd.Item1, cmd.Item2);
+                if (describeInvoke.Item1 != 0)
+                {
+                    this.stopWatch.Stop();
+                    return describeInvoke.Item1;
+                }
+
+                changesetProcessor.ProcessChangeset(describeParser.Parse(describeInvoke.Item2));
 
                 i++;
             }
             this.stopWatch.Stop();
 
             this.outputProcessor.ProcessOutput(args.OutputType, args.OutputFile, this.changesetProcessor.Output);
+            return 0;
         }
 
         private void ReportProgressAfterOneMinute(int currentChangeset, IList<int> changes)

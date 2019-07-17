@@ -22,39 +22,49 @@ namespace vcsparser.core
             return process;
         }
 
-        public Stream Invoke(string executable, string args)
+        private void StartProcess(Process process, OutputLineDelegate outputLineCallback)
         {
-            var process = CreateProcessWithBaseParams(executable, args);
-
-            process.Start();                        
-            return process.StandardOutput.BaseStream;
-        }        
-
-        public Stream Invoke(string executable, string args, string workingDir)
-        {
-            var process = CreateProcessWithBaseParams(executable, args);
-            process.StartInfo.WorkingDirectory = workingDir;
-
             process.Start();
-            return process.StandardOutput.BaseStream;
-        }
-
-        public int Invoke(string executable, string arguments, string workingDir, OutputLineDelegate outputLineCallback)
-        {
-            var process = CreateProcessWithBaseParams(executable, arguments);
-            process.StartInfo.WorkingDirectory = workingDir;
-
-            process.Start();            
 
             var sr = new StreamReader(process.StandardOutput.BaseStream);
             while (!sr.EndOfStream)
             {
                 var line = sr.ReadLine();
                 if (outputLineCallback != null)
-                    outputLineCallback(line);                    
+                    outputLineCallback(line);
             }
+        }
 
+        public int Invoke(string executable, string arguments, OutputLineDelegate outputLineCallback)
+        {
+            var process = CreateProcessWithBaseParams(executable, arguments);
+            StartProcess(process, outputLineCallback);
             return process.ExitCode;
+        }
+
+        public int Invoke(string executable, string arguments, string workingDir, OutputLineDelegate outputLineCallback)
+        {
+            var process = CreateProcessWithBaseParams(executable, arguments);
+            process.StartInfo.WorkingDirectory = workingDir;
+            StartProcess(process, outputLineCallback);
+            return process.ExitCode;
+        }
+
+        public Tuple<int, List<string>> Invoke(string executable, string arguments)
+        {
+            var process = CreateProcessWithBaseParams(executable, arguments);
+            var lines = new List<string>();
+            StartProcess(process, (l) => { lines.Add(l); });
+            return new Tuple<int, List<string>>(process.ExitCode, lines);
+        }
+
+        public Tuple<int, List<string>> Invoke(string executable, string arguments, string workingDir)
+        {
+            var process = CreateProcessWithBaseParams(executable, arguments);
+            process.StartInfo.WorkingDirectory = workingDir;
+            var lines = new List<string>();
+            StartProcess(process, (l) => { lines.Add(l); });
+            return new Tuple<int, List<string>>(process.ExitCode, lines);
         }
     }
 }

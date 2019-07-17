@@ -9,15 +9,13 @@ namespace vcsparser.core.p4
 {
     public class DescribeParser : IDescribeParser
     {
-        public PerforceChangeset Parse(Stream ms)
+        public PerforceChangeset Parse(List<string> lines)
         {
             var result = new PerforceChangeset();
             FileChanges currentFileChanges = null;
 
-            var sr = new StreamReader(ms);
-            while (!sr.EndOfStream)
+            foreach (var line in lines)
             {
-                var line = sr.ReadLine();
                 ParseLine(ref currentFileChanges, line, result);
             }
 

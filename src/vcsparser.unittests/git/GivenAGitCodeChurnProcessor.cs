@@ -18,7 +18,7 @@ namespace vcsparser.unittests.git
 
         private GitExtractCommandLineArgs args;
 
-        private MemoryStream memoryStream;
+        private List<string> invokeLines;
 
         private Mock<IGitLogParser> gitLogParserMock;
 
@@ -41,7 +41,7 @@ namespace vcsparser.unittests.git
             args.OutputType = OutputType.SingleFile;
             args.OutputFile = "outputfile";
 
-            memoryStream = new MemoryStream();
+            invokeLines = new List<string>();
 
             gitLogParserMock = new Mock<IGitLogParser>();
 
@@ -52,13 +52,13 @@ namespace vcsparser.unittests.git
                     this.processedOutput = dict;
                 });
 
-            gitLogParserMock.Setup(m => m.Parse(this.memoryStream)).Returns(new List<GitCommit>());
+            gitLogParserMock.Setup(m => m.Parse(invokeLines)).Returns(new List<GitCommit>());
 
             commandLineParserMock = new Mock<ICommandLineParser>();
             commandLineParserMock.Setup(m => m.ParseCommandLine("git log blah")).Returns(new Tuple<string, string>("git", "log blah"));
 
             processWrapperMock = new Mock<IProcessWrapper>();
-            processWrapperMock.Setup(m => m.Invoke("git", "log blah")).Returns(this.memoryStream);
+            processWrapperMock.Setup(m => m.Invoke("git", "log blah")).Returns(new Tuple<int, List<string>>(0, invokeLines));
 
             bugDatabaseMock = new Mock<IBugDatabaseProcessor>();
 
@@ -76,10 +76,29 @@ namespace vcsparser.unittests.git
         }
 
         [Fact]
+        public void WhenExtractingShouldReturnExitCode()
+        {
+            var exitCode = processor.Extract();
+
+            Assert.Equal(0, exitCode);
+        }
+
+        [Fact]
+        public void WhenExtractingAndInvokeCommandLineNotZeroShouldReturnExitCode()
+        {
+            processWrapperMock.Setup(m => m.Invoke("git", "log blah")).Returns(new Tuple<int, List<string>>(1, invokeLines));
+
+            var exitCode = processor.Extract();
+
+            gitLogParserMock.Verify(m => m.Parse(invokeLines), Times.Never());
+            Assert.Equal(1, exitCode);
+        }
+
+        [Fact]
         public void WhenExtractingShouldParseFile()
         {
             processor.Extract();
-            gitLogParserMock.Verify(m => m.Parse(this.memoryStream), Times.Once());
+            gitLogParserMock.Verify(m => m.Parse(invokeLines), Times.Once());
         }
 
         [Fact]
@@ -124,7 +143,7 @@ namespace vcsparser.unittests.git
                 }
             };
 
-            gitLogParserMock.Setup(m => m.Parse(this.memoryStream)).Returns(changesets);
+            gitLogParserMock.Setup(m => m.Parse(invokeLines)).Returns(changesets);
 
             processor.Extract();
             Assert.Equal(2, processedOutput.Count);

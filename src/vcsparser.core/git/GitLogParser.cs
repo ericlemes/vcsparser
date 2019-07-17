@@ -17,20 +17,14 @@ namespace vcsparser.core.git
         public readonly String COMMIT_DATE_PREFIX = "CommitDate: ";
         public readonly String MERGE_PREFIX = "Merge: ";
 
-        public List<GitCommit> Parse(Stream stream)
+        public List<GitCommit> Parse(List<string> lines)
         {
             GitLogParserContext context = new GitLogParserContext();
-            var reader = new StreamReader(stream);
-            using (stream)
+            foreach (var line in lines)
             {
-                var line = reader.ReadLine();
-                while (line != null)
-                {
-                    ParseLine(context, line);
-                    line = reader.ReadLine();
-                }
+                ParseLine(context, line);
             }
-            return context.Commits;                
+            return context.Commits;
         }
 
         private void ParseLine(GitLogParserContext context, String line)

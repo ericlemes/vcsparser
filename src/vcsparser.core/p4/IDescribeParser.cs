@@ -9,6 +9,6 @@ namespace vcsparser.core.p4
 {
     public interface IDescribeParser
     {
-        PerforceChangeset Parse(Stream ms);
+        PerforceChangeset Parse(List<string> lines);
     }
 }

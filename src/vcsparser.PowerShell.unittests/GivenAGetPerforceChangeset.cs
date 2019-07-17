@@ -23,6 +23,8 @@ namespace vcsparser.PowerShell.unittests
 
         private Mock<ICmdlet> mockCmdLet;
 
+        private List<string> invokeLines;
+
         public GivenAGetPerforceChangeset()
         {
             mockProcessWrapper = new Mock<IProcessWrapper>();
@@ -31,6 +33,9 @@ namespace vcsparser.PowerShell.unittests
                 Returns(new Tuple<string, string>("p4", "describe -ds 42"));
             mockDescribeParser = new Mock<IDescribeParser>();
             mockCmdLet = new Mock<ICmdlet>();
+
+            invokeLines = new List<string>();
+            mockProcessWrapper.Setup(m => m.Invoke("p4", "describe -ds 42")).Returns(new Tuple<int, List<string>>(0, invokeLines));
 
             cmdLet = new GetPerforceChangeset();
             cmdLet.InjectDependencies(mockDescribeParser.Object, mockProcessWrapper.Object, mockCommandLineParser.Object,
@@ -44,32 +49,37 @@ namespace vcsparser.PowerShell.unittests
         }
 
         [Fact]
+        public void WhenProcessingInvokeP4NotZeroShouldThrow()
+        {
+            mockCommandLineParser.Setup(m => m.ParseCommandLine("p4 describe -ds 0")).
+                Returns(new Tuple<string, string>("p4", "describe -ds 0"));
+            mockProcessWrapper.Setup(m => m.Invoke("p4", "describe -ds 0")).Returns(new Tuple<int, List<string>>(1, invokeLines));
+            Action processRecord = () => cmdLet.DoProcessRecord();
+            Assert.Throws<Exception>(processRecord);
+        }
+
+        [Fact]
         public void WhenProcessingShouldExecuteDescribeCommand()
         {
             cmdLet.Changeset = 42;
             cmdLet.DoProcessRecord();
 
-            mockProcessWrapper.Verify(m => m.Invoke("p4", "describe -ds 42"));
+            mockProcessWrapper.Verify(m => m.Invoke("p4", "describe -ds 42"), Times.Once);
         }
 
         [Fact]
         public void WhenProcessingShouldParseOutput()
         {
-            var memoryStream = new MemoryStream();
-            mockProcessWrapper.Setup(m => m.Invoke("p4", "describe -ds 42")).Returns(memoryStream);
-
             cmdLet.Changeset = 42;
             cmdLet.DoProcessRecord();
-            mockDescribeParser.Verify(m => m.Parse(memoryStream), Times.Once());
+            mockDescribeParser.Verify(m => m.Parse(invokeLines), Times.Once());
         }
 
         [Fact]
         public void WhenProcessingShouldWriteObject()
         {
-            var memoryStream = new MemoryStream();
-            mockProcessWrapper.Setup(m => m.Invoke("p4", "describe -ds 42")).Returns(memoryStream);
             var changeset = new PerforceChangeset();
-            mockDescribeParser.Setup(m => m.Parse(memoryStream)).Returns(changeset);
+            mockDescribeParser.Setup(m => m.Parse(invokeLines)).Returns(changeset);
 
             cmdLet.Changeset = 42;
             cmdLet.DoProcessRecord();

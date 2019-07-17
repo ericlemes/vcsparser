@@ -11,9 +11,6 @@ namespace vcsparser.core
 
     public interface IProcessWrapper
     {
-        Stream Invoke(string executable, string arguments);
-        Stream Invoke(string executable, string arguments, string workingDir);
-
         /// <summary>
         /// Calls an external executable with specified arguments, invoking a callback for each line of standard
         /// output.
@@ -24,5 +21,9 @@ namespace vcsparser.core
         /// <param name="outputLineCallback"></param>
         /// <returns></returns>
         int Invoke(string executable, string arguments, string workingDir, OutputLineDelegate outputLineCallback);
+        int Invoke(string executable, string arguments, OutputLineDelegate outputLineCallback);
+
+        Tuple<int, List<string>> Invoke(string executable, string arguments, string workingDir);
+        Tuple<int, List<string>> Invoke(string executable, string arguments);
     }
 }

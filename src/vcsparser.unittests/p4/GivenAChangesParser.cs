@@ -18,22 +18,20 @@ namespace vcsparser.unittests
             this.parser = new ChangesParser();
         }
 
-        private MemoryStream GetStreamWithContent(string content)
+        private List<string> GetListWithContent(string content)
         {
-            var ms = new MemoryStream();
-            var sw = new StreamWriter(ms);
-            sw.Write(content);
-            sw.Flush();
-            ms.Seek(0, SeekOrigin.Begin);
-            return ms;
+            return new List<string>(content.Split(
+                new[] { "\n", Environment.NewLine },
+                StringSplitOptions.None
+            ));
         }
 
         [Fact]
         public void WhenParsingChangesWithValidFileShouldReturnChangeNumbers()
         {
-            var ms = GetStreamWithContent(Resources.ChangesFiles1);
+            var lines = GetListWithContent(Resources.ChangesFiles1);
 
-            var changeNumbers = this.parser.Parse(ms);
+            var changeNumbers = this.parser.Parse(lines);
 
             Assert.Equal(144545, changeNumbers[0]);
             Assert.Equal(144544, changeNumbers[1]);
@@ -50,9 +48,9 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenParsingEmptyFileShouldReturnEmptyList()
         {
-            var ms = new MemoryStream();
+            var lines = new List<string>();
 
-            var changeNumbers = this.parser.Parse(ms);
+            var changeNumbers = this.parser.Parse(lines);
 
             Assert.Empty(changeNumbers);
         }
@@ -60,25 +58,25 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenParsingFileWithBadContentShouldThrowInvalidFormatException()
         {
-            var ms = GetStreamWithContent("someinvalidcontent");
+            var lines = GetListWithContent("someinvalidcontent");
 
-            Assert.Throws<InvalidFormatException>(() => { this.parser.Parse(ms); });
+            Assert.Throws<InvalidFormatException>(() => { this.parser.Parse(lines); });
         }
 
         [Fact]
         public void WhenParsingFileWithBadContent2ShouldThrowInvalidFormatException()
         {
-            var ms = GetStreamWithContent("some invalid content");
+            var lines = GetListWithContent("some invalid content");
 
-            Assert.Throws<InvalidFormatException>(() => { this.parser.Parse(ms); });
+            Assert.Throws<InvalidFormatException>(() => { this.parser.Parse(lines); });
         }
 
         [Fact]
         public void WhenParsingFileWithBadContent3ShouldThrowInvalidFormatException()
         {
-            var ms = GetStreamWithContent("Change shouldbeanumberhere");
+            var lines = GetListWithContent("Change shouldbeanumberhere");
 
-            Assert.Throws<InvalidFormatException>(() => { this.parser.Parse(ms); });
+            Assert.Throws<InvalidFormatException>(() => { this.parser.Parse(lines); });
         }
     }
 }
