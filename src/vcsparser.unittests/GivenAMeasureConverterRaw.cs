@@ -72,6 +72,22 @@ namespace vcsparser.unittests
         }
 
         [Fact]
+        public void WhenConvertingWithinRangeAndDiffrentCaseShouldRemoveFilePrefix()
+        {
+            var dailyCodeChurn = new DailyCodeChurn()
+            {
+                Timestamp = "2018/09/17 00:00:00",
+                FileName = "//PREfix/file"
+            };
+            var measures = new SonarMeasuresJson();
+
+            this.measureConverter.ProcessFileMeasure(dailyCodeChurn, measures);
+
+            Assert.Equal("file",
+                measures.MeasuresRaw.Where(m => m.MetricKey == "key").Single().File);
+        }
+
+        [Fact]
         public void WhenConvertingWithinRangeAndNoFilePrefixShouldConvert()
         {
             this.measureConverter = new MeasureConverterRaw<string>(metric, mockMeasureAggregator.Object, null);
