@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using vcsparser.core;
 using vcsparser.core.bugdatabase;
 
 namespace vcsparser.bugdatabase.azuredevops
@@ -56,12 +57,16 @@ namespace vcsparser.bugdatabase.azuredevops
             return await SendRequest<JSONQuery>(httpRequest);
         }
 
+        [IgnoreCoverage]
+        //This method is ignored because OpenCover can't cover all branches for async methods
         public async Task<dynamic> GetFullWorkItem(Uri uri)
         {
             HttpRequestMessage httpRequest = webRequest.NewHttpRequestMessage(uri, HttpMethod.Get);
             return await SendRequest<dynamic>(httpRequest);
         }
 
+        [IgnoreCoverage]
+        //This method is ignored because OpenCover can't cover all branches for async methods
         public async Task<T> SendRequest<T>(HttpRequestMessage httpRequest)
         {
             httpRequest.Headers.Authorization = Authorization;

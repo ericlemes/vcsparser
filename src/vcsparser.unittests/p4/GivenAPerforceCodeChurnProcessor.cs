@@ -96,7 +96,7 @@ namespace vcsparser.unittests
 
             var exitCode = this.processor.Extract();
 
-            this.processWrapperMock.Verify(m => m.Invoke(It.IsAny<string>(), It.IsAny<string>()), Times.Never());
+            this.processWrapperMock.Verify(m => m.Invoke(It.IsAny<string>(), It.IsAny<string>()), Times.Once());
             Assert.Equal(1, exitCode);
         }
 
@@ -118,7 +118,7 @@ namespace vcsparser.unittests
         }
 
         [Fact]
-        public void WhenProcessingAndeDescribeNonZeroShouldExitCode()
+        public void WhenProcessingAndDescribeNonZeroShouldExitCode()
         {
             var invokeLines = new List<string>();
             var describeLines = new List<string>();
@@ -129,7 +129,7 @@ namespace vcsparser.unittests
 
             var exitCode = this.processor.Extract();
 
-            this.processWrapperMock.Verify(m => m.Invoke("describe", "1"), Times.Never());
+            this.processWrapperMock.Verify(m => m.Invoke("describe", "1"), Times.Once());
             Assert.Equal(1, exitCode);
         }
 
