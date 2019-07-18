@@ -69,7 +69,7 @@ namespace vcsparser.core.git
 
         public DateTime Iso8601StringToDateTime(string isoDateTime)
         {
-            return DateTime.Parse(isoDateTime, null, DateTimeStyles.RoundtripKind);
+            return DateTimeOffset.Parse(isoDateTime, null, DateTimeStyles.RoundtripKind).UtcDateTime;
             //return DateTime.ParseExact(isoDateTime, "yyyy-MM-ddThh:mm:ss", CultureInfo.InvariantCulture);
         }
 
