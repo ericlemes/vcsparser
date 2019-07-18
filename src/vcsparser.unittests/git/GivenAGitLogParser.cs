@@ -30,7 +30,7 @@ namespace vcsparser.unittests.git
         public void WhenConvertingIsoDateStringToDateShouldReturnExpectedValue()
         {
             var dateTime = parser.Iso8601StringToDateTime("2018-09-19T14:19:14+01:00");
-            Assert.Equal(new DateTime(2018, 09, 19, 14, 19, 14), dateTime);
+            Assert.Equal(new DateTime(2018, 09, 19, 13, 19, 14, DateTimeKind.Utc), dateTime.ToUniversalTime());
         }
 
         [Fact]
@@ -49,9 +49,9 @@ namespace vcsparser.unittests.git
             GitCommit commit = this.parser.Parse(list)[0];
             Assert.Equal("82419fcdc1fca1f8b14905366159837bfe8a1be4", commit.CommitHash);
             Assert.Equal("Author Name <author@email.com>", commit.Author);
-            Assert.Equal(new DateTime(2018, 09, 19, 14, 19, 14), commit.AuthorDate);
+            Assert.Equal(new DateTime(2018, 09, 19, 13, 19, 14, DateTimeKind.Utc), commit.AuthorDate.ToUniversalTime());
             Assert.Equal("Author Name <author@email.com>", commit.Commiter);
-            Assert.Equal(new DateTime(2018, 09, 19, 14, 19, 14), commit.CommiterDate);
+            Assert.Equal(new DateTime(2018, 09, 19, 13, 19, 14, DateTimeKind.Utc), commit.CommiterDate.ToUniversalTime());
             Assert.Equal("Commit message 1\r\n\r\n* Long description 1 line 1\r\n* Long description 1 line 2\r\n", commit.ChangesetMessage);
         }
 
@@ -62,9 +62,9 @@ namespace vcsparser.unittests.git
             GitCommit commit = this.parser.Parse(list)[1];
             Assert.Equal("31b45b8417418c3562d19eab8830ed786ac40f40", commit.CommitHash);
             Assert.Equal("Author Name <author@email.com>", commit.Author);
-            Assert.Equal(new DateTime(2018, 09, 18, 16, 48, 22), commit.AuthorDate);
+            Assert.Equal(new DateTime(2018, 09, 18, 15, 48, 22, DateTimeKind.Utc), commit.AuthorDate.ToUniversalTime());
             Assert.Equal("Author Name <author@email.com>", commit.Commiter);
-            Assert.Equal(new DateTime(2018, 09, 18, 16, 48, 22), commit.CommiterDate);
+            Assert.Equal(new DateTime(2018, 09, 18, 15, 48, 22, DateTimeKind.Utc), commit.CommiterDate.ToUniversalTime());
             Assert.Equal("This one only has the commit message. No long description\r\n", commit.ChangesetMessage);
         }
 
