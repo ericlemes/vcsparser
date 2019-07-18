@@ -31,6 +31,8 @@ namespace vcsparser.core.bugdatabase
             return httpRequestMessage;
         }
 
+        [IgnoreCoverage]
+        //This method is ignored because OpenCover can't cover all branches for async methods
         public async Task<HttpResponseMessage> Send(HttpRequestMessage message)
         {
             return await this.httpClientWrapperFactory.GetSingletonHttpClientWrapper().SendAsync(message);
