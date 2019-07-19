@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -57,7 +58,7 @@ namespace vcsparser.bugdatabase.azuredevops
             return await SendRequest<JSONQuery>(httpRequest);
         }
 
-        [IgnoreCoverage]
+        [ExcludeFromCodeCoverage]
         //This method is ignored because OpenCover can't cover all branches for async methods
         public async Task<dynamic> GetFullWorkItem(Uri uri)
         {
@@ -65,7 +66,7 @@ namespace vcsparser.bugdatabase.azuredevops
             return await SendRequest<dynamic>(httpRequest);
         }
 
-        [IgnoreCoverage]
+        [ExcludeFromCodeCoverage]
         //This method is ignored because OpenCover can't cover all branches for async methods
         public async Task<T> SendRequest<T>(HttpRequestMessage httpRequest)
         {
