@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Diagnostics.CodeAnalysis;
 
 namespace vcsparser.core.bugdatabase
 {
@@ -31,7 +32,7 @@ namespace vcsparser.core.bugdatabase
             return httpRequestMessage;
         }
 
-        [IgnoreCoverage]
+        [ExcludeFromCodeCoverage]
         //This method is ignored because OpenCover can't cover all branches for async methods
         public async Task<HttpResponseMessage> Send(HttpRequestMessage message)
         {

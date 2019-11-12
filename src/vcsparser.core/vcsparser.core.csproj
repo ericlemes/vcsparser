@@ -79,7 +79,6 @@
     <Compile Include="git\GitLogParserContext.cs" />
     <Compile Include="git\IGitLogParser.cs" />
     <Compile Include="IChangesetProcessor.cs" />
-    <Compile Include="IgnoreCoverageAttribute.cs" />
     <Compile Include="IMeasureAggregator.cs" />
     <Compile Include="JsonOutputData.cs" />
     <Compile Include="JsonDateTimeCustomConverter.cs" />
