@@ -34,6 +34,22 @@ namespace vcsparser.unittests
             Assert.DoesNotMatch(regex, "Changeset with partial word like somebugword");
             Assert.DoesNotMatch(regex, "Changeset with partial word like somecrashword");
         }
-        
+
+        [Fact]
+        public void WhenHasBugWithNumberInBracketsShouldMatch()
+        {
+            var regex = new Regex(@"(?i)(\[\s*bug\s+\#\d+\s*\])");
+            Assert.Matches(regex, "[BUG #1234]");
+            Assert.Matches(regex, "[bug #1234]");
+            Assert.Matches(regex, "[bug  #1234]");
+            Assert.Matches(regex, " [bug  #1234]");
+            Assert.Matches(regex, "[bug  #1]asdf");
+            Assert.Matches(regex, "[bug  #1] ");
+            Assert.Matches(regex, "asdf[bug  #1]asdf");
+            Assert.Matches(regex, "[  bug  #1] ");
+            Assert.Matches(regex, "[bug  #1  ] ");
+            Assert.DoesNotMatch(regex, "bug");
+        }
+
     }
 }
