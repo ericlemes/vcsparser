@@ -65,6 +65,8 @@ artifacts:
     name: vcsparser-PowerShell
   - path: src\vcsparser.bugdatabase.azuredevops\bin\Release
     name: vcsparser-BugDatabase-AzureDevOps
+  - path: coverage.xml
+    name: coverage-report
 
 notifications:
   - provider: Email
