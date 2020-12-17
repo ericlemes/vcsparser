@@ -14,7 +14,7 @@ branches:
 max_jobs: 1
 
 # Build worker image (VM template)
-image: Visual Studio 2017
+image: Visual Studio 2019
 
 # scripts that are called at very beginning, before repo cloning
 init:
@@ -33,7 +33,7 @@ assembly_info:
 
 
 platform: Any CPU
-configuration: Debug
+configuration: Release
 
 build:
   parallel: true
@@ -48,13 +48,13 @@ after_build:
 before_package:
 
 test_script:
-  - .\src\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:"user" -oldStyle -returntargetcode -target:".\src\packages\xunit.runner.console.2.4.1\tools\net452\xunit.console.x86.exe" -targetargs:".\src\vcsparser.unittests\bin\Debug\vcsparser.unittests.dll .\src\vcsparser.PowerShell.unittests\bin\Debug\vcsparser.PowerShell.unittests.dll .\src\vcsparser.bugdatabase.azuredevops.unittests\bin\Debug\vcsparser.bugdatabase.azuredevops.unittests.dll -noshadow" -output:"coverage.xml" -filter:"+[vcsparser.core*]* -[vcsparser.*unittests*]* +[vcsparser.PowerShell*]* -[vcsparser.PowerShell]vcsparser.PowerShell.CmdletAdapter +[vcsparser.bugdatabase*]* -[vcsparser.bugdatabase.azuredevops]vcsparser.bugdatabase.azuredevops.AzureDevOpsFactory -[vcsparser.core]vcsparser.core.bugdatabase.BugDatabaseFactory -[vcsparser.core]vcsparser.core.bugdatabase.HttpClientWrapper" -excludebyattribute:"*.ExcludeFromCodeCoverage*"
+  - .\src\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:"user" -returntargetcode -target:".\src\packages\xunit.runner.console.2.4.1\tools\net452\xunit.console.x86.exe" -targetargs:".\src\vcsparser.unittests\bin\Release\vcsparser.unittests.dll .\src\vcsparser.PowerShell.unittests\bin\Release\vcsparser.PowerShell.unittests.dll .\src\vcsparser.bugdatabase.azuredevops.unittests\bin\Release\vcsparser.bugdatabase.azuredevops.unittests.dll -noshadow" -output:"coverage.xml" -filter:"+[vcsparser.core*]* -[vcsparser.*unittests*]* +[vcsparser.PowerShell*]* -[vcsparser.PowerShell]vcsparser.PowerShell.CmdletAdapter +[vcsparser.bugdatabase*]* -[vcsparser.bugdatabase.azuredevops]vcsparser.bugdatabase.azuredevops.AzureDevOpsFactory -[vcsparser.core]vcsparser.core.bugdatabase.BugDatabaseFactory -[vcsparser.core]vcsparser.core.bugdatabase.HttpClientWrapper" -excludebyattribute:"*.ExcludeFromCodeCoverage*"
 
 #after_test:
 #  - ps: |
 #      $env:PATH = 'C:\msys64\usr\bin;' + $env:PATH
 #      Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
-#      bash codecov.sh -f "coverage.xml" -t 565df92a-14b9-4de0-bf28-72c4946fd4b4 -v
+#      bash codecov.sh -f "coverage.xml" -t 565df92a-14b9-4de0-bf28-72c4946fd4b4
 
 artifacts:
 
@@ -66,7 +66,7 @@ artifacts:
   - path: src\vcsparser.bugdatabase.azuredevops\bin\Release
     name: vcsparser-BugDatabase-AzureDevOps
   - path: coverage.xml
-    name: coverage-report
+    name: coverage-report    
 
 notifications:
   - provider: Email
