@@ -116,4 +116,20 @@ namespace vcsparser.core
         [Option("generate1day", HelpText = "Generates 1 day churn data. ", Default = "true")]
         public string Generate1Day { get; set; }
     }
+
+    [Verb("dailycodechurn", HelpText = "Process code churn json files in aggregated daily churn report, processing file exclusions")]
+    public class DailyCodeChurnCommandLineArgs
+    {
+        [Option("fileprefixtoremove", HelpText = "Prefix to remove from file. Usually repository root")]
+        public string FilePrefixToRemove { get; set; }
+
+        [Option("inputdir", HelpText = "Directory with input json files", Required = true)]
+        public string InputDir { get; set; }
+
+        [Option("outputfile", HelpText = "File to generate json output", Required = true)]
+        public string OutputFile { get; set; }
+
+        [Option("exclusions", HelpText = "SonarQube-style exclusions file directory/file list", Required = false)]
+        public string Exclusions { get; set; }
+    }
 }

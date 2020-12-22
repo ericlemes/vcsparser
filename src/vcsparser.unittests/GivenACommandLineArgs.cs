@@ -215,5 +215,38 @@ namespace vcsparser.unittests
                     throw new Exception("Should not fail.");
                 });
         }
+
+        [Fact]
+        public void WhenParsingDailyChurnReportShouldReturnExpectedValues()
+        {
+            var args = new List<string>()
+            {
+                "dailychurnreport",
+                "--fileprefixtoremove",
+                "prefix",
+                "--inputdir",
+                "inputdir",
+                "--outputfile",
+                "outputfile",
+                "--exclusions",
+                "exclusions"
+            };
+
+            Parser.Default.ParseArguments<DailyCodeChurnCommandLineArgs>(args)
+                .MapResult(
+                (DailyCodeChurnCommandLineArgs a) =>
+                {
+                    Assert.Equal("prefix", a.FilePrefixToRemove);
+                    Assert.Equal("inputdir", a.InputDir);
+                    Assert.Equal("outputfile", a.OutputFile);
+                    Assert.Equal("exclusions", a.Exclusions);
+
+                    return 0;
+                },
+                
+                (IEnumerable<Error> errs) => {
+                    throw new Exception("Should not fail.");
+                });
+        }
     }
 }

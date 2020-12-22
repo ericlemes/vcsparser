@@ -17,6 +17,8 @@ namespace vcsparser.core
 
         private bool processedMetric = false;
 
+        private FilePrefixRemover filePrefixRemover = new FilePrefixRemover();
+
         public Metric Metric {
             get { return metric; }
         }
@@ -52,7 +54,7 @@ namespace vcsparser.core
 
             ProcessMetric(sonarMeasuresJson);
 
-            var fileName = ProcessFileName(dailyCodeChurn.FileName, filePrefixToRemove);
+            var fileName = filePrefixRemover.ProcessFileName(dailyCodeChurn.FileName, filePrefixToRemove);
 
             var existingMeasureFile = sonarMeasuresJson.FindFileMeasure(metric.MetricKey, fileName) as Measure<T>;
 
@@ -106,16 +108,7 @@ namespace vcsparser.core
             return true;
         }
 
-        private string ProcessFileName(string fileName, string filePrefixToRemove)
-        {
-            if (filePrefixToRemove == null)
-                return fileName;
 
-            if (fileName.StartsWith(filePrefixToRemove, StringComparison.OrdinalIgnoreCase))
-                return fileName.Substring(filePrefixToRemove.Length);
-
-            return fileName;
-        }
 
         private void ProcessMetric(SonarMeasuresJson sonarMeasuresJson)
         {
