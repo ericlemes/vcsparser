@@ -21,7 +21,7 @@ namespace vcsparser
                 config.HelpWriter = Console.Error;
                 config.EnableDashDash = true;
             });
-            var result = parser.ParseArguments<P4ExtractCommandLineArgs, GitExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
+            var result = parser.ParseArguments<P4ExtractCommandLineArgs, GitExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs, DailyCodeChurnCommandLineArgs>(args)
                 .MapResult(
                     (P4ExtractCommandLineArgs a) => RunPerforceCodeChurnProcessor(a),
                     (GitExtractCommandLineArgs a) => RunGitCodeChurnProcessor(a),
