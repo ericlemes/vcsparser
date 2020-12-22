@@ -76,7 +76,7 @@ namespace vcsparser.core
 
         private bool ProcessedQuestionMark(string exp, StringBuilder regex, ref int i)
         {
-            if (exp[1] != '?')
+            if (exp[i] != '?')
                 return false;
             
             regex.Append("(.{1}|^/)");
