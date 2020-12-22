@@ -77,6 +77,7 @@
     <Compile Include="DailyCodeChurnProcessor.cs" />
     <Compile Include="ExclusionsProcessor.cs" />
     <Compile Include="FilePrefixRemover.cs" />
+    <Compile Include="FileSystemExpressionToRegexConverter.cs" />
     <Compile Include="git\GitCodeChurnProcessor.cs" />
     <Compile Include="git\GitCommit.cs" />
     <Compile Include="git\GitLogParser.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="IChangesetProcessor.cs" />
     <Compile Include="IExclusionsProcessor.cs" />
     <Compile Include="IMeasureAggregator.cs" />
+    <Compile Include="InclusionsProcessor.cs" />
     <Compile Include="JsonOutputData.cs" />
     <Compile Include="JsonDateTimeCustomConverter.cs" />
     <Compile Include="MeasureAggregators\AuthorsDataAggregator.cs" />

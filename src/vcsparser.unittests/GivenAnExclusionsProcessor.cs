@@ -23,6 +23,7 @@ namespace vcsparser.unittests
             this.processor = new ExclusionsProcessor("");
             Assert.False(this.processor.IsExcluded("SomeFile.cs"));
             Assert.False(this.processor.IsExcluded("SomeDir/SomeFile.cs"));
+            Assert.False(this.processor.IsExcluded("somedir.xml/SomeOtherCompletelyDifferentFile.cpp"));
         }
 
         [Fact]
@@ -47,7 +48,7 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenHaveExclusionsWithSingleCharThenShouldNotMatchDirectorySeparator()
         {
-            Assert.False(this.processor.IsExcluded("dir/file.txt"));
+            Assert.False(this.processor.IsExcluded("dir/file.txt"));            
         }
     }
 }

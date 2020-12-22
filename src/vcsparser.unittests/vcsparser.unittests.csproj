@@ -103,6 +103,7 @@
     <Compile Include="GivenAJsonWorkItemParser.cs" />
     <Compile Include="GivenAMeasureConverterRaw.cs" />
     <Compile Include="GivenAnExclusionsProcessor.cs" />
+    <Compile Include="GivenAnInclusionsProcessor.cs" />
     <Compile Include="GivenARawConsoleLogger.cs" />
     <Compile Include="GivenARegex.cs" />
     <Compile Include="GivenASonarMeasuresJson.cs" />

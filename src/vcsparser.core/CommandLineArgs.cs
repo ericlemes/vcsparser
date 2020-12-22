@@ -129,7 +129,10 @@ namespace vcsparser.core
         [Option("outputfile", HelpText = "File to generate json output", Required = true)]
         public string OutputFile { get; set; }
 
-        [Option("exclusions", HelpText = "SonarQube-style exclusions file directory/file list", Required = false)]
+        [Option("inclusions", HelpText="SonarQube-stype inclusions expressions", Required = false)]
+        public string Inclusions { get; set; }
+
+        [Option("exclusions", HelpText = "SonarQube-style exclusions expressions", Required = false)]
         public string Exclusions { get; set; }
     }
 }
