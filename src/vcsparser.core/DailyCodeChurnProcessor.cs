@@ -16,17 +16,19 @@ namespace vcsparser.core
         private ILogger logger;
 
         private IExclusionsProcessor exclusionsProcessor;
+        private IInclusionsProcessor inclusionsProcessor;
 
         private FilePrefixRemover filePrefixRemover = new FilePrefixRemover();
 
         private IJsonExporter jsonExporter;
 
-        public DailyCodeChurnProcessor(IFileSystem fileSystem, IJsonListParser<DailyCodeChurn> dailyCodeChurnParser, ILogger logger, IExclusionsProcessor exclusionsProcessor, IJsonExporter jsonExporter)
+        public DailyCodeChurnProcessor(IFileSystem fileSystem, IJsonListParser<DailyCodeChurn> dailyCodeChurnParser, ILogger logger, IExclusionsProcessor exclusionsProcessor, IInclusionsProcessor inclusionsProcessor, IJsonExporter jsonExporter)
         {
             this.fileSystem = fileSystem;
             this.dailyCodeChurnParser = dailyCodeChurnParser;
             this.logger = logger;
             this.exclusionsProcessor = exclusionsProcessor;
+            this.inclusionsProcessor = inclusionsProcessor;
             this.jsonExporter = jsonExporter;
         }
 
@@ -53,6 +55,9 @@ namespace vcsparser.core
 
         private void ProcessLine(SortedDictionary<DateTime, AggregatedDailyCodeChurn> dict, DailyCodeChurn line, string fileWithoutPrefix)
         {
+            if (!this.inclusionsProcessor.IsIncluded(fileWithoutPrefix))
+                return;
+
             if (this.exclusionsProcessor.IsExcluded(fileWithoutPrefix))
                 return;
 

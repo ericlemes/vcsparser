@@ -85,6 +85,7 @@
     <Compile Include="git\IGitLogParser.cs" />
     <Compile Include="IChangesetProcessor.cs" />
     <Compile Include="IExclusionsProcessor.cs" />
+    <Compile Include="IInclusionsProcessor.cs" />
     <Compile Include="IMeasureAggregator.cs" />
     <Compile Include="InclusionsProcessor.cs" />
     <Compile Include="JsonOutputData.cs" />

@@ -90,9 +90,10 @@ namespace vcsparser
             var jsonParser = new JsonListParser<DailyCodeChurn>(new FileStreamFactory());
             var logger = new ConsoleLoggerWithTimestamp();
             var exclusionsProcessor = new ExclusionsProcessor(a.Exclusions);
+            var inclusionsProcessor = new InclusionsProcessor(a.Inclusions);
             var jsonExporter = new JsonExporter(new FileStreamFactory());
 
-            var processor = new DailyCodeChurnProcessor(fileSystem, jsonParser, logger, exclusionsProcessor, jsonExporter);
+            var processor = new DailyCodeChurnProcessor(fileSystem, jsonParser, logger, exclusionsProcessor, inclusionsProcessor, jsonExporter);
             processor.Process(a);
 
             return 0;

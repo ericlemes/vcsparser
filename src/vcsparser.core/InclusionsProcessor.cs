@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core
 {
-    public class InclusionsProcessor
+    public class InclusionsProcessor : IInclusionsProcessor
     {
         private List<Regex> inclusionExpressions;
 

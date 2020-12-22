@@ -22,6 +22,7 @@ namespace vcsparser.unittests
         private Mock<ILogger> loggerMock;
 
         private Mock<IExclusionsProcessor> exclusionsProcessorMock;
+        private Mock<IInclusionsProcessor> inclusionsProcessorMock;
 
         private List<DailyCodeChurn> dailyCodeChurn1;
         private List<DailyCodeChurn> dailyCodeChurn2;
@@ -34,6 +35,7 @@ namespace vcsparser.unittests
             this.fileSystemMock = new Mock<IFileSystem>();
             this.parserMock = new Mock<IJsonListParser<DailyCodeChurn>>();
             this.exclusionsProcessorMock = new Mock<IExclusionsProcessor>();
+            this.inclusionsProcessorMock = new Mock<IInclusionsProcessor>();
             this.jsonExporter = new Mock<IJsonExporter>();
 
             this.commandLineArgs = new DailyCodeChurnCommandLineArgs()
@@ -45,13 +47,19 @@ namespace vcsparser.unittests
 
             SetupFileSystem();
             SetupParser();
-
+            
             this.exclusionsProcessorMock.Setup(m => m.IsExcluded("file1line1")).Returns(true);
             this.exclusionsProcessorMock.Setup(m => m.IsExcluded("file1line2")).Returns(false);
             this.exclusionsProcessorMock.Setup(m => m.IsExcluded("file2line1")).Returns(false);
             this.exclusionsProcessorMock.Setup(m => m.IsExcluded("file2line2")).Returns(false);
 
-            this.processor = new DailyCodeChurnProcessor(fileSystemMock.Object, parserMock.Object, loggerMock.Object, exclusionsProcessorMock.Object, jsonExporter.Object);
+            this.inclusionsProcessorMock.Setup(m => m.IsIncluded("file1line1")).Returns(true);
+            this.inclusionsProcessorMock.Setup(m => m.IsIncluded("file1line2")).Returns(true);
+            this.inclusionsProcessorMock.Setup(m => m.IsIncluded("file2line1")).Returns(true);
+            this.inclusionsProcessorMock.Setup(m => m.IsIncluded("file2line2")).Returns(true);
+            this.inclusionsProcessorMock.Setup(m => m.IsIncluded("file2line3")).Returns(false);
+
+            this.processor = new DailyCodeChurnProcessor(fileSystemMock.Object, parserMock.Object, loggerMock.Object, exclusionsProcessorMock.Object, inclusionsProcessorMock.Object, jsonExporter.Object);
         }
 
         private void SetupParser()
@@ -203,6 +211,42 @@ namespace vcsparser.unittests
                         ChangesBeforeInFixes = 1,
                         ChangesAfterInFixes = 1
                     }                
+                },
+                new DailyCodeChurn()
+                {
+                    FileName = "filePrefix/file2line3",
+                    Timestamp = "2020/12/22 00:00:00",
+                    Added = 2,
+                    AddedWithFixes = 1,
+                    Deleted = 2,
+                    DeletedWithFixes = 1,
+                    ChangesBefore = 2,
+                    ChangesBeforeWithFixes = 1,
+                    ChangesAfter = 2,
+                    ChangesAfterWithFixes = 1,
+                    NumberOfChanges = 2,
+                    NumberOfChangesWithFixes = 1,
+                    Authors = new List<DailyCodeChurnAuthor>()
+                    {
+                        new DailyCodeChurnAuthor()
+                        {
+                            Author = "author1",
+                            NumberOfChanges = 1
+                        },
+                        new DailyCodeChurnAuthor()
+                        {
+                            Author = "author2",
+                            NumberOfChanges = 1
+                        }
+                    },
+                    BugDatabase = new DailyCodeChurnBugDatabase()
+                    {
+                        AddedInFixes = 1,
+                        DeletedInFixes = 1,
+                        NumberOfChangesInFixes = 1,
+                        ChangesBeforeInFixes = 1,
+                        ChangesAfterInFixes = 1
+                    }
                 }
             };
 
@@ -245,9 +289,20 @@ namespace vcsparser.unittests
         {
             processor.Process(this.commandLineArgs);
             this.exclusionsProcessorMock.Verify(m => m.IsExcluded("file1line1"));
-            this.exclusionsProcessorMock.Verify(m => m.IsExcluded("file1line1"));
+            this.exclusionsProcessorMock.Verify(m => m.IsExcluded("file1line2"));
             this.exclusionsProcessorMock.Verify(m => m.IsExcluded("file2line1"));
-            this.exclusionsProcessorMock.Verify(m => m.IsExcluded("file2line1"));
+            this.exclusionsProcessorMock.Verify(m => m.IsExcluded("file2line2"));         
+        }
+
+        [Fact]
+        public void WhenProcessingFilesShouldProcessInclusions()
+        {
+            processor.Process(this.commandLineArgs);
+            this.inclusionsProcessorMock.Verify(m => m.IsIncluded("file1line1"));
+            this.inclusionsProcessorMock.Verify(m => m.IsIncluded("file1line1"));
+            this.inclusionsProcessorMock.Verify(m => m.IsIncluded("file2line1"));
+            this.inclusionsProcessorMock.Verify(m => m.IsIncluded("file2line2"));
+            this.inclusionsProcessorMock.Verify(m => m.IsIncluded("file2line3"));
         }
 
         [Fact]
