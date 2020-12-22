@@ -88,6 +88,7 @@ namespace vcsparser.core
 
             AggregateAuthors(aggregatedDailyCodeChurn, line);
             AggregateBugDatabase(aggregatedDailyCodeChurn, line);
+            aggregatedDailyCodeChurn.DailyCodeChurnPerFile.Add(line);
         }
 
         private static void AggregateBugDatabase(AggregatedDailyCodeChurn aggregatedDailyCodeChurn, DailyCodeChurn line)

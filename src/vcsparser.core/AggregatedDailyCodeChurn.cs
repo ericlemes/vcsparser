@@ -15,6 +15,7 @@ namespace vcsparser.core
         public AggregatedDailyCodeChurn()
         {
             this.Authors = new List<DailyCodeChurnAuthor>();
+            this.DailyCodeChurnPerFile = new List<DailyCodeChurn>();
         }
         public int UniqueAuthors
         {
@@ -84,6 +85,11 @@ namespace vcsparser.core
         public DateTime GetDateTimeAsDateTime()
         {
             return DateTime.ParseExact(this.Timestamp, DATE_FORMAT, CultureInfo.InvariantCulture);
+        }
+
+        public List<DailyCodeChurn> DailyCodeChurnPerFile
+        {
+            get; set;
         }
 
     }
