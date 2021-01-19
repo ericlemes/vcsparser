@@ -97,10 +97,13 @@
     <Compile Include="git\GivenAGitLogParser.cs" />
     <Compile Include="GivenAChangesetProcessor.cs" />
     <Compile Include="git\GivenAGitCommit.cs" />
+    <Compile Include="GivenADailyCodeChurnProcessor.cs" />
     <Compile Include="GivenAJsonDateTimeCustomConverter.cs" />
     <Compile Include="GivenAJsonOutputData.cs" />
     <Compile Include="GivenAJsonWorkItemParser.cs" />
     <Compile Include="GivenAMeasureConverterRaw.cs" />
+    <Compile Include="GivenAnExclusionsProcessor.cs" />
+    <Compile Include="GivenAnInclusionsProcessor.cs" />
     <Compile Include="GivenARawConsoleLogger.cs" />
     <Compile Include="GivenARegex.cs" />
     <Compile Include="GivenASonarMeasuresJson.cs" />

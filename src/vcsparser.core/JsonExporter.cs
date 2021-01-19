@@ -16,7 +16,7 @@ namespace vcsparser.core
             this.streamFactory = streamFactory;
         }
 
-        public void Export(SonarMeasuresJson measures, string outputFile)
+        public void Export<T>(T dataToExport, string outputFile)
         {
             var stream = streamFactory.createFileStream(outputFile, System.IO.FileMode.Create, System.IO.FileAccess.Write);
             var streamWriter = new StreamWriter(stream);
@@ -24,7 +24,7 @@ namespace vcsparser.core
             using (streamWriter)
             {
                 var serializer = Newtonsoft.Json.JsonSerializer.Create();
-                serializer.Serialize(streamWriter, measures);
+                serializer.Serialize(streamWriter, dataToExport);
                 streamWriter.Flush();
             }
         }

@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core
 {
-    public interface IJsonExporter
+    public interface IInclusionsProcessor
     {
-        void Export<T>(T dataToExport, string outputFile);
+        bool IsIncluded(string fileName);        
     }
 }

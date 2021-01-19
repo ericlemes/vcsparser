@@ -21,12 +21,13 @@ namespace vcsparser
                 config.HelpWriter = Console.Error;
                 config.EnableDashDash = true;
             });
-            var result = parser.ParseArguments<P4ExtractCommandLineArgs, GitExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
+            var result = parser.ParseArguments<P4ExtractCommandLineArgs, GitExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs, DailyCodeChurnCommandLineArgs>(args)
                 .MapResult(
                     (P4ExtractCommandLineArgs a) => RunPerforceCodeChurnProcessor(a),
                     (GitExtractCommandLineArgs a) => RunGitCodeChurnProcessor(a),
                     (SonarGenericMetricsCommandLineArgs a) => RunSonarGenericMetrics(a),
-                    err => 1);
+                    (DailyCodeChurnCommandLineArgs a) => RunDailyCodeChurn(a),
+                    err => 1); 
             return result;
         }
 
@@ -78,6 +79,21 @@ namespace vcsparser
             var jsonExporter = new JsonExporter(new FileStreamFactory());
 
             var processor = new SonarGenericMetricsProcessor(fileSystem, jsonParser, converters, jsonExporter, new ConsoleLoggerWithTimestamp());
+            processor.Process(a);
+
+            return 0;
+        }
+
+        private static int RunDailyCodeChurn(DailyCodeChurnCommandLineArgs a)
+        {
+            var fileSystem = new FileSystem();
+            var jsonParser = new JsonListParser<DailyCodeChurn>(new FileStreamFactory());
+            var logger = new ConsoleLoggerWithTimestamp();
+            var exclusionsProcessor = new ExclusionsProcessor(a.Exclusions);
+            var inclusionsProcessor = new InclusionsProcessor(a.Inclusions);
+            var jsonExporter = new JsonExporter(new FileStreamFactory());
+
+            var processor = new DailyCodeChurnProcessor(fileSystem, jsonParser, logger, exclusionsProcessor, inclusionsProcessor, jsonExporter);
             processor.Process(a);
 
             return 0;

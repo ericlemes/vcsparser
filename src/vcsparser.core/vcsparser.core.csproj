@@ -53,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AggregatedDailyCodeChurn.cs" />
     <Compile Include="AuthorsData.cs" />
     <Compile Include="bugdatabase\BugDatabaseDllLoader.cs" />
     <Compile Include="bugdatabase\BugDatabaseFactory.cs" />
@@ -73,13 +74,20 @@
     <Compile Include="ChangesetProcessor.cs" />
     <Compile Include="DailyCodeChurnAuthor.cs" />
     <Compile Include="DailyCodeChurnBugDatabase.cs" />
+    <Compile Include="DailyCodeChurnProcessor.cs" />
+    <Compile Include="ExclusionsProcessor.cs" />
+    <Compile Include="FilePrefixRemover.cs" />
+    <Compile Include="FileSystemExpressionToRegexConverter.cs" />
     <Compile Include="git\GitCodeChurnProcessor.cs" />
     <Compile Include="git\GitCommit.cs" />
     <Compile Include="git\GitLogParser.cs" />
     <Compile Include="git\GitLogParserContext.cs" />
     <Compile Include="git\IGitLogParser.cs" />
     <Compile Include="IChangesetProcessor.cs" />
+    <Compile Include="IExclusionsProcessor.cs" />
+    <Compile Include="IInclusionsProcessor.cs" />
     <Compile Include="IMeasureAggregator.cs" />
+    <Compile Include="InclusionsProcessor.cs" />
     <Compile Include="JsonOutputData.cs" />
     <Compile Include="JsonDateTimeCustomConverter.cs" />
     <Compile Include="MeasureAggregators\AuthorsDataAggregator.cs" />
