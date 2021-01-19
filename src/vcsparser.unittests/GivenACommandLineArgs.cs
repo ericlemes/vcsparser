@@ -229,7 +229,9 @@ namespace vcsparser.unittests
                 "--outputfile",
                 "outputfile",
                 "--exclusions",
-                "exclusions"
+                "exclusions",
+                "--inclusions",
+                "inclusions"
             };
 
             Parser.Default.ParseArguments<DailyCodeChurnCommandLineArgs>(args)
@@ -240,6 +242,7 @@ namespace vcsparser.unittests
                     Assert.Equal("inputdir", a.InputDir);
                     Assert.Equal("outputfile", a.OutputFile);
                     Assert.Equal("exclusions", a.Exclusions);
+                    Assert.Equal("inclusions", a.Inclusions);
 
                     return 0;
                 },

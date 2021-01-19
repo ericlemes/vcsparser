@@ -18,7 +18,7 @@ namespace vcsparser.unittests
         }
 
         [Fact]
-        public void GivenValidExamplesThenShouldReturnTrue()
+        public void WhenValidExamplesThenShouldReturnTrue()
         {
             Assert.True(this.processor.IsIncluded("somefile.cpp"));
             Assert.True(this.processor.IsIncluded("somedir/somefile.cpp"));
@@ -31,13 +31,19 @@ namespace vcsparser.unittests
         }
 
         [Fact]
-        public void GivenInvalidExamplesThenShouldNotMatch()
+        public void WhenInvalidExamplesThenShouldNotMatch()
         {
             Assert.False(this.processor.IsIncluded("noextension"));
             Assert.False(this.processor.IsIncluded("noextension.otherextension"));
             Assert.False(this.processor.IsIncluded("otherdirectory.cpp/noextension"));
         }
 
+        [Fact]
+        public void WhenCreatingWithEmptyExpressionsThenShouldNotThrow()
+        {
+            new InclusionsProcessor(null);
+            new InclusionsProcessor("");
+        }
 
     }
 }
