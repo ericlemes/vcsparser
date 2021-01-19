@@ -247,6 +247,23 @@ namespace vcsparser.unittests
                         ChangesBeforeInFixes = 1,
                         ChangesAfterInFixes = 1
                     }
+                },
+                new DailyCodeChurn()
+                {
+                    FileName = "filePrefix/file3line3",
+                    Timestamp = "2020/12/22 00:00:00",
+                    Added = 2,
+                    AddedWithFixes = 1,
+                    Deleted = 2,
+                    DeletedWithFixes = 1,
+                    ChangesBefore = 2,
+                    ChangesBeforeWithFixes = 1,
+                    ChangesAfter = 2,
+                    ChangesAfterWithFixes = 1,
+                    NumberOfChanges = 2,
+                    NumberOfChangesWithFixes = 1,
+                    Authors = null,                    
+                    BugDatabase = null
                 }
             };
 
@@ -315,6 +332,7 @@ namespace vcsparser.unittests
             Assert.Equal(2, result.Count);
 
             Assert.Equal("2020/12/21 00:00:00", result[0].Timestamp);
+            Assert.Equal(new DateTime(2020, 12, 21, 00, 00, 00), result[0].GetDateTimeAsDateTime());
             Assert.Equal(4, result[0].Added);
             Assert.Equal(2, result[0].AddedInFixesVCS);
             Assert.Equal(2, result[0].AddedInFixesBugDB);
@@ -332,7 +350,7 @@ namespace vcsparser.unittests
             Assert.Equal(2, result[0].NumberOfChangesWithFixesBugDB);
             Assert.Equal(2, result[0].Authors.Where(a => a.Author == "author1").First().NumberOfChanges);
             Assert.Equal(2, result[0].Authors.Where(a => a.Author == "author2").First().NumberOfChanges);
-            Assert.Equal(2, result[0].Authors.Count);
+            Assert.Equal(2, result[0].UniqueAuthors);
             Assert.Equal(16, result[0].TotalLinesChanged);
             Assert.Equal(8, result[0].TotalLinesChangedInFixesBugDB);
             Assert.Equal(8, result[0].TotalLinesChangedInFixesVCS);
