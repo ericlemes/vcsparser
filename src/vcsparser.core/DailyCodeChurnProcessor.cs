@@ -50,6 +50,10 @@ namespace vcsparser.core
             }
 
             var result = dict.ToList().Select(l => l.Value).ToList();
+            foreach(var dcn in result)
+            {
+                dcn.DailyCodeChurnPerFile = dcn.DailyCodeChurnPerFile.OrderByDescending(d => d.TotalLinesChanged).ToList();
+            }
             this.jsonExporter.Export(result, a.OutputFile);
         }
 
