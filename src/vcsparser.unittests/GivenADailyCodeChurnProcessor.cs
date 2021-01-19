@@ -58,6 +58,7 @@ namespace vcsparser.unittests
             this.inclusionsProcessorMock.Setup(m => m.IsIncluded("file2line1")).Returns(true);
             this.inclusionsProcessorMock.Setup(m => m.IsIncluded("file2line2")).Returns(true);
             this.inclusionsProcessorMock.Setup(m => m.IsIncluded("file2line3")).Returns(false);
+            this.inclusionsProcessorMock.Setup(m => m.IsIncluded("file3line1")).Returns(true);
 
             this.processor = new DailyCodeChurnProcessor(fileSystemMock.Object, parserMock.Object, loggerMock.Object, exclusionsProcessorMock.Object, inclusionsProcessorMock.Object, jsonExporter.Object);
         }
@@ -250,8 +251,8 @@ namespace vcsparser.unittests
                 },
                 new DailyCodeChurn()
                 {
-                    FileName = "filePrefix/file3line3",
-                    Timestamp = "2020/12/22 00:00:00",
+                    FileName = "filePrefix/file3line1",
+                    Timestamp = "2020/12/23 00:00:00",
                     Added = 2,
                     AddedWithFixes = 1,
                     Deleted = 2,
@@ -329,7 +330,7 @@ namespace vcsparser.unittests
             this.jsonExporter.Setup(m => m.Export(It.IsAny<IList<AggregatedDailyCodeChurn>>(), this.commandLineArgs.OutputFile)).Callback<IList<AggregatedDailyCodeChurn>, string>(
                 (IList<AggregatedDailyCodeChurn> p, string o) => { result = p; });
             processor.Process(this.commandLineArgs);
-            Assert.Equal(2, result.Count);
+            Assert.Equal(3, result.Count);
 
             Assert.Equal("2020/12/21 00:00:00", result[0].Timestamp);
             Assert.Equal(new DateTime(2020, 12, 21, 00, 00, 00), result[0].GetDateTimeAsDateTime());
