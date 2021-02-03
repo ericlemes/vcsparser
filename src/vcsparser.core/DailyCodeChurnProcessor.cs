@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -70,7 +71,7 @@ namespace vcsparser.core
             {
                 dict.Add(key, new AggregatedDailyCodeChurn()
                 {
-                    Timestamp = key.ToString(AggregatedDailyCodeChurn.DATE_FORMAT)
+                    Timestamp = key.ToString(AggregatedDailyCodeChurn.DATE_FORMAT, CultureInfo.InvariantCulture)
                 });
             }
 
