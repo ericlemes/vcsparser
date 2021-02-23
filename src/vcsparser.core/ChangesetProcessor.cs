@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -93,7 +94,7 @@ namespace vcsparser.core
                 dict[changeset.ChangesetTimestamp.Date].Add(fileName, new DailyCodeChurn());
 
             var dailyCodeChurn = dict[changeset.ChangesetTimestamp.Date][fileName];
-            dailyCodeChurn.Timestamp = changeset.ChangesetTimestamp.Date.ToString(DailyCodeChurn.DATE_FORMAT);
+            dailyCodeChurn.Timestamp = changeset.ChangesetTimestamp.Date.ToString(DailyCodeChurn.DATE_FORMAT, CultureInfo.InvariantCulture);
             dailyCodeChurn.FileName = fileName;
             return dailyCodeChurn;
         }
