@@ -15,7 +15,7 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
 
         public GivenAApiConverter()
         {
-            apiConverter = new ApiConverter();
+            apiConverter = new ApiConverter("Changeset", "ClosedDate");
         }
 
         [Fact]
@@ -26,8 +26,8 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
                 { "id", "Some Work Item id" },
                 { "fields", new JObject
                     {
-                        { "Microsoft.VSTS.Build.IntegrationBuild", "Some Integration Build" },
-                        { "Microsoft.VSTS.Common.ClosedDate", "2019-04-15T13:47:30.00Z"}
+                        { "Changeset", "Some Integration Build" },
+                        { "ClosedDate", "2019-04-15T13:47:30.00Z"}
                     }
                 }
             };
@@ -35,8 +35,8 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
             WorkItem workItem = apiConverter.ConvertToWorkItem(fullItem.ToObject<object>());
 
             Assert.Equal(fullItem["id"].ToString(), workItem.WorkItemId);
-            Assert.Equal(fullItem["fields"]["Microsoft.VSTS.Build.IntegrationBuild"].ToString(), workItem.ChangesetId);
-            Assert.Equal(DateTime.Parse(fullItem["fields"]["Microsoft.VSTS.Common.ClosedDate"].ToString()), workItem.ClosedDate);
+            Assert.Equal(fullItem["fields"]["Changeset"].ToString(), workItem.ChangesetId);
+            Assert.Equal(DateTime.Parse(fullItem["fields"]["ClosedDate"].ToString()), workItem.ClosedDate);
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
                 { "id", "Some Work Item id" },
                 { "fields", new JObject
                     {
-                        { "Microsoft.VSTS.Common.ClosedDate", "2019-04-15T13:47:30.00Z"}
+                        { "ClosedDate", "2019-04-15T13:47:30.00Z"}
                     }
                 }
             };
@@ -65,8 +65,8 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
                 { "id", "Some Work Item id" },
                 { "fields", new JObject
                     {
-                        { "Microsoft.VSTS.Build.IntegrationBuild", "Some Integration Build" },
-                        { "Microsoft.VSTS.Common.ClosedDate", "This is not a Date"}
+                        { "Changeset", "Some Integration Build" },
+                        { "ClosedDate", "This is not a Date"}
                     }
                 }
             };

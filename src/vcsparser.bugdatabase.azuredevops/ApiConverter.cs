@@ -10,10 +10,20 @@ namespace vcsparser.bugdatabase.azuredevops
 {
     public class ApiConverter : IApiConverter
     {
+        private string changesetIdFieldName;
+
+        private string closedDateFieldName;
+
+        public ApiConverter(string changesetIdFieldName, string closedDateFieldName)
+        {
+            this.changesetIdFieldName = changesetIdFieldName;
+            this.closedDateFieldName = closedDateFieldName;
+        }
+
         public WorkItem ConvertToWorkItem(dynamic fullWorkItem)
         {
-            string integrationBuild = fullWorkItem.fields["Microsoft.VSTS.Build.IntegrationBuild"] ?? string.Empty;
-            DateTime closedDate = DateTime.Parse((string)fullWorkItem.fields["Microsoft.VSTS.Common.ClosedDate"], CultureInfo.InvariantCulture);
+            string integrationBuild = fullWorkItem.fields[changesetIdFieldName] ?? string.Empty;
+            DateTime closedDate = DateTime.Parse((string)fullWorkItem.fields[closedDateFieldName], CultureInfo.InvariantCulture);
 
             return new WorkItem
             {

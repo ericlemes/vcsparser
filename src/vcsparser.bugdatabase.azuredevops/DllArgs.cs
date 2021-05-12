@@ -22,6 +22,12 @@ namespace vcsparser.bugdatabase.azuredevops
         [Option("query", HelpText = "Query to select work Items", Required = false, Default = @"Select [System.Id] From WorkItems Where [System.WorkItemType] = 'Bug' AND [System.State] = 'Closed' AND [Microsoft.VSTS.Common.ResolvedReason] = 'Fixed' and [Microsoft.VSTS.Common.ClosedDate] >= '{0}' and [Microsoft.VSTS.Common.ClosedDate] <= '{1}'")]
         public string QueryString { get; set; }
 
+        [Option("changeset-id-field", HelpText = "Name of the field that contains the changeset id. Default Microsoft.VSTS.Build.IntegrationBuild", Required = false, Default = "Microsoft.VSTS.Build.IntegrationBuild")]
+        public string ChangesetIdField { get; set; }
+
+        [Option("closed-date-field", HelpText = "Name of the field that contains the bug closed date. Default Microsoft.VSTS.Common.ClosedDate", Required = false, Default = "Microsoft.VSTS.Common.ClosedDate")]
+        public string ClosedDateField { get; set; }
+
         [Option("from", HelpText = "Start Date in format 'yyyy-mm-dd'", Required = true)]
         public string From { get; set; }
 

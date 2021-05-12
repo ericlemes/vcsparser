@@ -41,7 +41,7 @@ namespace vcsparser.bugdatabase
             }
 
             IAzureDevOpsRequest request = new AzureDevOpsRequest(WebRequest, args);
-            IApiConverter converter = new ApiConverter();
+            IApiConverter converter = new ApiConverter(args.ChangesetIdField, args.ClosedDateField);
             ITimeKeeper timeKeeper = new TimeKeeper(TimeSpan.FromSeconds(30));
             azureDevOps = AzureDevOpsFactory.GetAzureDevOps(Logger, request, converter, timeKeeper);
             return 0;
