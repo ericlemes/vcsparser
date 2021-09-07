@@ -11,7 +11,8 @@ namespace vcsparser.core
     public enum OutputType
     {
         SingleFile,
-        MultipleFile
+        MultipleFile,
+        CosmosDb
     }
 
     [Verb("p4extract", HelpText = "Extracts code churn information from p4 and outputs to json")]
@@ -71,6 +72,12 @@ namespace vcsparser.core
 
         [Option("bugdatabase-args", HelpText = "BugDatabase: Options for the dll", Separator = ' ', Required = false, Min = 1)]
         public IEnumerable<string> BugDatabaseDllArgs { get; set; }
+
+        [Option("cosmosdb-key", HelpText = "CosmosConnection: Cosmos database key", Required = false)]
+        public string CosmosDbKey { get; set; }
+
+        [Option("code-churn-cosmos-container", HelpText = "CosmosConnection: Cosmos database container name", Required = false)]
+        public string CodeChurnCosmosContainer { get; set; }
     }
 
     [Verb("sonargenericmetrics", HelpText = "Process json files in intermediate code churn format and outputs to Sonar Generic Metrics JSON format")]

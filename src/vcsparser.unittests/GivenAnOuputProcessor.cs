@@ -13,7 +13,7 @@ namespace vcsparser.unittests
 {
     public class GivenAnOuputProcessor
     {
-        private OutputProcessor outputProcessor;
+        private JsonFilesOutputProcessor jsonFilesOutputProcessor;
         private Mock<IStreamFactory> streamFactoryMock;
         private Mock<ILogger> loggerMock;
         private MemoryStream outputStream;
@@ -27,7 +27,7 @@ namespace vcsparser.unittests
 
             this.loggerMock = new Mock<ILogger>();
 
-            this.outputProcessor = new OutputProcessor(streamFactoryMock.Object, loggerMock.Object);
+            this.jsonFilesOutputProcessor = new JsonFilesOutputProcessor(streamFactoryMock.Object, loggerMock.Object);
         }
 
         [Fact]
@@ -65,7 +65,7 @@ namespace vcsparser.unittests
                 }
             };
 
-            this.outputProcessor.ProcessOutput(OutputType.SingleFile, "filename", dict);
+            this.jsonFilesOutputProcessor.ProcessOutput(OutputType.SingleFile, "filename", dict);
             var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.ToArray());
             Assert.NotEmpty(resultString);
             Assert.Equal(
@@ -101,7 +101,7 @@ namespace vcsparser.unittests
                 }
             };
 
-            this.outputProcessor.ProcessOutputSingleFile("filename", dict);
+            this.jsonFilesOutputProcessor.ProcessOutputSingleFile("filename", dict);
             var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.ToArray());
             Assert.Equal($"{{\"SchemaVersion\":{JsonOutputData<DailyCodeChurn>.CurrentVersion},\"Data\":[]}}", resultString);
         }
@@ -118,7 +118,7 @@ namespace vcsparser.unittests
                 }
             };
 
-            this.outputProcessor.ProcessOutput(OutputType.MultipleFile, "filename", dict);
+            this.jsonFilesOutputProcessor.ProcessOutput(OutputType.MultipleFile, "filename", dict);
             var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.GetBuffer());
             Assert.Empty(resultString);
         }
@@ -154,7 +154,7 @@ namespace vcsparser.unittests
             this.streamFactoryMock.Setup(m => m.createFileStream("filename_2018-08-30.json", FileMode.Create, FileAccess.Write)).Returns(output1);
             this.streamFactoryMock.Setup(m => m.createFileStream("filename_2018-08-31.json", FileMode.Create, FileAccess.Write)).Returns(output2);
 
-            this.outputProcessor.ProcessOutputMultipleFile("filename", dict);
+            this.jsonFilesOutputProcessor.ProcessOutputMultipleFile("filename", dict);
 
             var resultString1 = UTF8Encoding.UTF8.GetString(output1.ToArray());
             var resultString2 = UTF8Encoding.UTF8.GetString(output2.ToArray());
@@ -183,7 +183,7 @@ namespace vcsparser.unittests
                 }
             };
 
-            this.outputProcessor.ProcessOutput(OutputType.SingleFile, "filename", dict);
+            this.jsonFilesOutputProcessor.ProcessOutput(OutputType.SingleFile, "filename", dict);
             var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.ToArray());
             Assert.NotEmpty(resultString);
             Assert.Equal(
@@ -207,7 +207,7 @@ namespace vcsparser.unittests
                 }
             };
 
-            this.outputProcessor.ProcessOutputSingleFile("filename", dict);
+            this.jsonFilesOutputProcessor.ProcessOutputSingleFile("filename", dict);
             var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.ToArray());
             Assert.Equal(
                 "{\"SchemaVersion\":" + JsonOutputData<DailyCodeChurn>.CurrentVersion + "," +
@@ -226,7 +226,7 @@ namespace vcsparser.unittests
                 }
             };
 
-            this.outputProcessor.ProcessOutput(OutputType.MultipleFile, "filename", dict);
+            this.jsonFilesOutputProcessor.ProcessOutput(OutputType.MultipleFile, "filename", dict);
             var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.GetBuffer());
             Assert.Empty(resultString);
         }
@@ -256,7 +256,7 @@ namespace vcsparser.unittests
             this.streamFactoryMock.Setup(m => m.createFileStream("filename_2018-08-30.json", FileMode.Create, FileAccess.Write)).Returns(output1);
             this.streamFactoryMock.Setup(m => m.createFileStream("filename_2018-08-31.json", FileMode.Create, FileAccess.Write)).Returns(output2);
 
-            this.outputProcessor.ProcessOutputMultipleFile("filename", dict);
+            this.jsonFilesOutputProcessor.ProcessOutputMultipleFile("filename", dict);
 
             var resultString1 = UTF8Encoding.UTF8.GetString(output1.ToArray());
             var resultString2 = UTF8Encoding.UTF8.GetString(output2.ToArray());
@@ -277,7 +277,7 @@ namespace vcsparser.unittests
                 }
             };
 
-            this.outputProcessor.ProcessOutputSingleFile("filename", dict);
+            this.jsonFilesOutputProcessor.ProcessOutputSingleFile("filename", dict);
             var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.ToArray());
             Assert.Equal(
                 "{\"SchemaVersion\":" + JsonOutputData<SomeUnimplementedClass>.CurrentVersion + "," +
@@ -296,7 +296,7 @@ namespace vcsparser.unittests
                 }
             };
 
-            this.outputProcessor.ProcessOutputMultipleFile("filename", dict);
+            this.jsonFilesOutputProcessor.ProcessOutputMultipleFile("filename", dict);
             var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.GetBuffer());
             Assert.Empty(resultString);
         }
