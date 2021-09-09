@@ -202,7 +202,9 @@
     <Compile Include="DailyCodeChurnAuthor.cs" />
     <Compile Include="DailyCodeChurnBugDatabase.cs" />
     <Compile Include="DailyCodeChurnProcessor.cs" />
+    <Compile Include="Database\Cosmos\CodeChurnDocument.cs" />
     <Compile Include="Database\Cosmos\CosmosConnection.cs" />
+    <Compile Include="Database\Cosmos\CosmosDocumentBase.cs" />
     <Compile Include="Database\Cosmos\ICosmosConnection.cs" />
     <Compile Include="Database\DatabaseFactory.cs" />
     <Compile Include="Database\IDatabaseFactory.cs" />
