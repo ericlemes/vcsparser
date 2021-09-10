@@ -11,6 +11,9 @@ namespace vcsparser.core
 {
     public class DailyCodeChurn : IComparable, IOutputJson
     {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public string Id { get; set; }
+
         public DailyCodeChurn()
         {
             this.Authors = new List<DailyCodeChurnAuthor>();
@@ -25,6 +28,8 @@ namespace vcsparser.core
         }
 
         public string FileName { get; set; }
+
+        public string LongName { get; set; }
 
         public string Extension {
             get {

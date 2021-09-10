@@ -41,7 +41,7 @@ namespace vcsparser
             var commandLineParser = new CommandLineParser();
             var logger = new ConsoleLoggerWithTimestamp();
             var stopWatch = new StopWatchWrapper();
-            var outputProcessor = new JsonFilesOutputProcessor(new FileStreamFactory(), logger);
+            var outputProcessor = GetOutputProcessorBasedOnOutputType(logger, a.OutputType, a.OutputFile, a.CosmosEndpoint, a.CosmosDbKey, a.DatabaseId, a.CodeChurnCosmosContainer, a.CosmosProjectName);
             var bugDatabaseFactory = new BugDatabaseFactory();
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
@@ -60,7 +60,7 @@ namespace vcsparser
             var commandLineParser = new CommandLineParser();
             var gitLogParser = new GitLogParser();
             var logger = new ConsoleLoggerWithTimestamp();
-            var outputProcessor = GetOutputProcessorBasedOnOutputType(logger, a);
+            var outputProcessor = GetOutputProcessorBasedOnOutputType(logger, a.OutputType, a.OutputFile, a.CosmosEndpoint, a.CosmosDbKey, a.DatabaseId, a.CodeChurnCosmosContainer, a.CosmosProjectName);
             var bugDatabaseFactory = new BugDatabaseFactory();
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
@@ -101,13 +101,13 @@ namespace vcsparser
             return 0;
         }
 
-        private static OutputProcessor GetOutputProcessorBasedOnOutputType(ILogger logger, GitExtractCommandLineArgs args)
+        private static IOutputProcessor GetOutputProcessorBasedOnOutputType(ILogger logger, OutputType outputType, string outputFile, string cosmosEndpoint, string cosmosDbKey, string cosmosDatabaseId, string codeChurnCosmosContainer, string cosmosProjectName)
         {
-            if (args.OutputType != OutputType.CosmosDb)
-                return new JsonFilesOutputProcessor(new FileStreamFactory(), logger);
+            if (outputType != OutputType.CosmosDb)
+                return new JsonFilesOutputProcessor(new FileStreamFactory(), logger, new CodeChurnDataMapper(), outputType, outputFile);
 
-            var cosmosConnection = new CosmosConnection(new DatabaseFactory(args.CosmosEndpoint, args.CosmosDbKey, null), args.DatabaseId);
-            return new CosmosDbOutputProcessor(logger, cosmosConnection, args.CodeChurnCosmosContainer, args.CosmosProjectName);
+            var cosmosConnection = new CosmosConnection(new DatabaseFactory(cosmosEndpoint, cosmosDbKey, null), cosmosDatabaseId);
+            return new CosmosDbOutputProcessor(logger, cosmosConnection, new CodeChurnDataMapper(), codeChurnCosmosContainer, cosmosProjectName);
         }
     }
 }

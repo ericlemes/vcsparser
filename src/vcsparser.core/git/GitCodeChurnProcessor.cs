@@ -49,7 +49,7 @@ namespace vcsparser.core.git
 
             logger.LogToConsole(bugCache.Count + " bug database dates to output");
 
-            this.outputProcessor.ProcessOutput(args.BugDatabaseOutputType, args.BugDatabaseOutputFile, bugCache);
+            this.outputProcessor.ProcessOutput(bugCache);
         }
 
         public int Extract()
@@ -73,7 +73,7 @@ namespace vcsparser.core.git
                 logger.LogToConsole(String.Format("Changesets with bugs: {0}/{1}", this.changesetProcessor.ChangesetsWithBugs, changesets.Count));
             logger.LogToConsole(this.changesetProcessor.Output.Count + " dates to output");
 
-            this.outputProcessor.ProcessOutput(args.OutputType, args.OutputFile, this.changesetProcessor.Output);
+            this.outputProcessor.ProcessOutput(this.changesetProcessor.Output);
             return 0;
         }
     }

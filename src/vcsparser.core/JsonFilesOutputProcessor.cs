@@ -10,18 +10,24 @@ using vcsparser.core.bugdatabase;
 
 namespace vcsparser.core
 {
-    public class JsonFilesOutputProcessor : OutputProcessor
+    public class JsonFilesOutputProcessor : IOutputProcessor
     {
-        private IStreamFactory streamFactory;
-        private ILogger logger;
+        private readonly IStreamFactory streamFactory;
+        private readonly ILogger logger;
+        private readonly OutputType outputType;
+        private readonly ICodeChurnDataMapper codeChurnDataMapper;
+        private readonly string outputFile;
 
-        public JsonFilesOutputProcessor(IStreamFactory streamFactory, ILogger logger)
+        public JsonFilesOutputProcessor(IStreamFactory streamFactory, ILogger logger, ICodeChurnDataMapper codeChurnDataMapper, OutputType outputType, string outputFile)
         {
             this.streamFactory = streamFactory;
             this.logger = logger;
+            this.codeChurnDataMapper = codeChurnDataMapper;
+            this.outputType = outputType;
+            this.outputFile = outputFile;
         }
 
-        public override void ProcessOutput<T>(OutputType outputType, string outputFile, Dictionary<DateTime, Dictionary<string, T>> dict)
+        public void ProcessOutput<T>(Dictionary<DateTime, Dictionary<string, T>> dict) where T : IOutputJson
         {
             if (outputType == OutputType.SingleFile)
                 ProcessOutputSingleFile(outputFile, dict);
@@ -31,7 +37,7 @@ namespace vcsparser.core
 
         public void ProcessOutputMultipleFile<T>(string filePrefix, Dictionary<DateTime, Dictionary<string, T>> dict) where T : IOutputJson
         {
-            var listOfLists = ConvertDictToOrderedListPerDay<T>(dict);
+            var listOfLists = codeChurnDataMapper.ConvertDictToOrderedListPerDay<T>(dict);
             logger.LogToConsole(listOfLists.Count + " files to output");
             foreach (var list in listOfLists)
                 ProcessOutputSingleFile(filePrefix + "_" + list.Key.ToString("yyyy-MM-dd") + ".json", list.Value.Values);
@@ -39,7 +45,7 @@ namespace vcsparser.core
 
         public void ProcessOutputSingleFile<T>(string fileName, Dictionary<DateTime, Dictionary<string, T>> dict) where T : IOutputJson
         {
-            var result = ConvertDictToOrderedList<T>(dict);
+            var result = codeChurnDataMapper.ConvertDictToOrderedList<T>(dict);
             ProcessOutputSingleFile(fileName, result);
         }
 
