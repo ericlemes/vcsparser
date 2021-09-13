@@ -218,6 +218,7 @@
     <Compile Include="git\IGitLogParser.cs" />
     <Compile Include="IChangesetProcessor.cs" />
     <Compile Include="ICodeChurnDataMapper.cs" />
+    <Compile Include="ICosmosDbOutputProcessor.cs" />
     <Compile Include="IExclusionsProcessor.cs" />
     <Compile Include="IInclusionsProcessor.cs" />
     <Compile Include="IMeasureAggregator.cs" />
@@ -269,7 +270,7 @@
     <Compile Include="MeasureConverter.cs" />
     <Compile Include="MeasureConverterListBuilder.cs" />
     <Compile Include="Metric.cs" />
-    <Compile Include="JsonFilesOutputProcessor.cs" />
+    <Compile Include="JsonOutputProcessor.cs" />
     <Compile Include="ProcessWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RawConsoleLogger.cs" />

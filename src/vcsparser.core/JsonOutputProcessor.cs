@@ -10,7 +10,7 @@ using vcsparser.core.bugdatabase;
 
 namespace vcsparser.core
 {
-    public class JsonFilesOutputProcessor : IOutputProcessor
+    public class JsonOutputProcessor : IOutputProcessor
     {
         private readonly IStreamFactory streamFactory;
         private readonly ILogger logger;
@@ -18,7 +18,7 @@ namespace vcsparser.core
         private readonly ICodeChurnDataMapper codeChurnDataMapper;
         private readonly string outputFile;
 
-        public JsonFilesOutputProcessor(IStreamFactory streamFactory, ILogger logger, ICodeChurnDataMapper codeChurnDataMapper, OutputType outputType, string outputFile)
+        public JsonOutputProcessor(IStreamFactory streamFactory, ILogger logger, ICodeChurnDataMapper codeChurnDataMapper, OutputType outputType, string outputFile)
         {
             this.streamFactory = streamFactory;
             this.logger = logger;

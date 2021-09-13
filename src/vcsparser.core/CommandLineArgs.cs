@@ -166,4 +166,35 @@ namespace vcsparser.core
         [Option("exclusions", HelpText = "SonarQube-style exclusions expressions", Required = false)]
         public string Exclusions { get; set; }
     }
+
+    [Verb("cosmosdb-download-data", HelpText = "Process code churn documents that are stored in azure cosmos database")]
+    public class CosmosDbCommandLineArgs
+    {
+        [Option("cosmos-db-key", HelpText = "CosmosConnection: Cosmos database key", Required = false)]
+        public string CosmosDbKey { get; set; }
+
+        [Option("cosmos-db-database-id", HelpText = "CosmosConnection: Cosmos database id", Required = false)]
+        public string DatabaseId { get; set; }
+
+        [Option("cosmos-db-code-churn-cosmos-container", HelpText = "CosmosConnection: Cosmos database container name", Required = false)]
+        public string CodeChurnCosmosContainer { get; set; }
+
+        [Option("cosmos-endpoint", HelpText = "CosmosConnection: Cosmos endpoint", Required = false)]
+        public string CosmosEndpoint { get; set; }
+
+        [Option("cosmos-project-name", HelpText = "CosmosDocuments: Document's id prefix", Required = false)]
+        public string CosmosProjectName { get; set; }
+
+        [Option("output", HelpText = "File path for single file or file prefix for multiple files.", Required = true)]
+        public string OutputFile { get; set; }
+
+        [Option("startdate", HelpText = "Analyzes start date", Required = false)]
+        public DateTime StartDate { get; set; }
+
+        [Option("enddate", HelpText = "Date to limit the analysis to. ", Required = false)]
+        public DateTime EndDate { get; set; }
+
+        [Option("output-type", HelpText = "SingleFile or MultipleFile. MultipleFile dumps one file per date.", Required = true)]
+        public OutputType OutputType { get; set; }
+    }
 }
