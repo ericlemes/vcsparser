@@ -23,13 +23,14 @@ namespace vcsparser
                 config.HelpWriter = Console.Error;
                 config.EnableDashDash = true;
             });
-            var result = parser.ParseArguments<P4ExtractCommandLineArgs, GitExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs, DailyCodeChurnCommandLineArgs, CosmosDbCommandLineArgs>(args)
+            var result = parser.ParseArguments<P4ExtractCommandLineArgs, GitExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs, DailyCodeChurnCommandLineArgs, GitExtractToCosmosDbCommandLineArgs, DownloadFromCosmosDbCommandLineArgs >(args)
                 .MapResult(
                     (P4ExtractCommandLineArgs a) => RunPerforceCodeChurnProcessor(a),
                     (GitExtractCommandLineArgs a) => RunGitCodeChurnProcessor(a),
                     (SonarGenericMetricsCommandLineArgs a) => RunSonarGenericMetrics(a),
                     (DailyCodeChurnCommandLineArgs a) => RunDailyCodeChurn(a),
-                    (CosmosDbCommandLineArgs a) => RunDownloadCodeChurnFromCosmosDbToJsonFile(a),
+                    (GitExtractToCosmosDbCommandLineArgs a) => RunGitToCosmosDbCodeChurnProcessor(a),
+                    (DownloadFromCosmosDbCommandLineArgs a) => RunDownloadCodeChurnFromCosmosDbToJsonFiles(a),
                     err => 1); 
             return result;
         }
@@ -42,8 +43,7 @@ namespace vcsparser
             var commandLineParser = new CommandLineParser();
             var logger = new ConsoleLoggerWithTimestamp();
             var stopWatch = new StopWatchWrapper();
-            var outputProcessor = GetOutputProcessorBasedOnOutputType(logger, a.OutputType, a.OutputFile, a.CosmosEndpoint, a.CosmosDbKey, a.DatabaseId, a.CodeChurnCosmosContainer, a.CosmosProjectName);
-            var bugDatabaseFactory = new BugDatabaseFactory();
+            var outputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger, new CodeChurnDataMapper(), a.OutputType, a.OutputFile); var bugDatabaseFactory = new BugDatabaseFactory();
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
             var fileSystem = new FileSystem();
@@ -61,14 +61,14 @@ namespace vcsparser
             var commandLineParser = new CommandLineParser();
             var gitLogParser = new GitLogParser();
             var logger = new ConsoleLoggerWithTimestamp();
-            var outputProcessor = GetOutputProcessorBasedOnOutputType(logger, a.OutputType, a.OutputFile, a.CosmosEndpoint, a.CosmosDbKey, a.DatabaseId, a.CodeChurnCosmosContainer, a.CosmosProjectName);
+            var outputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger, new CodeChurnDataMapper(), a.OutputType, a.OutputFile);
             var bugDatabaseFactory = new BugDatabaseFactory();
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
             var fileSystem = new FileSystem();
             var jsonParser = new JsonListParser<WorkItem>(new FileStreamFactory());
             var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, webRequest, fileSystem, jsonParser, logger);
-            var processor = new GitCodeChurnProcessor(commandLineParser, processWrapper, gitLogParser, outputProcessor, bugDatabaseProcessor, logger, a);
+            var processor = new GitCodeChurnProcessor(commandLineParser, processWrapper, gitLogParser, outputProcessor, bugDatabaseProcessor, logger, a.BugRegexes, a.BugDatabaseDLL, a.BugDatabaseOutputFile, a.BugDatabaseDllArgs, a.GitLogCommand);
 
             processor.QueryBugDatabase();
             return processor.Extract();
@@ -102,28 +102,40 @@ namespace vcsparser
             return 0;
         }
 
-        private static int RunDownloadCodeChurnFromCosmosDbToJsonFile(CosmosDbCommandLineArgs a)
+        private static int RunGitToCosmosDbCodeChurnProcessor(GitExtractToCosmosDbCommandLineArgs a)
         {
+            var processWrapper = new ProcessWrapper();
+            var commandLineParser = new CommandLineParser();
+            var gitLogParser = new GitLogParser();
             var logger = new ConsoleLoggerWithTimestamp();
             var cosmosConnection = new CosmosConnection(new DatabaseFactory(a.CosmosEndpoint, a.CosmosDbKey, null), a.DatabaseId);
             var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, cosmosConnection, new CodeChurnDataMapper(), a.CodeChurnCosmosContainer, a.CosmosProjectName);
+            var bugDatabaseFactory = new BugDatabaseFactory();
+            var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
+            var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
+            var fileSystem = new FileSystem();
+            var jsonParser = new JsonListParser<WorkItem>(new FileStreamFactory());
+            var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, webRequest, fileSystem, jsonParser, logger);
+
+            var processor = new GitCodeChurnProcessor(commandLineParser, processWrapper, gitLogParser, cosmosOutputProcessor, bugDatabaseProcessor, logger, a.BugRegexes, a.BugDatabaseDLL, a.BugDatabaseOutputFile, a.BugDatabaseDllArgs, a.GitLogCommand);
+            processor.QueryBugDatabase();
+
+            return processor.Extract();
+        }
+
+        private static int RunDownloadCodeChurnFromCosmosDbToJsonFiles(DownloadFromCosmosDbCommandLineArgs a)
+        {
+            var logger = new ConsoleLoggerWithTimestamp();
+            var cosmosConnection = new CosmosConnection(new DatabaseFactory(a.CosmosEndpoint, a.CosmosDbKey, null), a.DatabaseId);
+            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, cosmosConnection, new CodeChurnDataMapper(), a.CodeChurnCosmosContainer, string.Empty);
             var jsonOutputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger, new CodeChurnDataMapper(), a.OutputType, a.OutputFile);
 
-            var codeChurnData = cosmosOutputProcessor.GetDocumentsBasedOnDateRange(a.StartDate, a.EndDate);
+            var codeChurnData= cosmosOutputProcessor.GetDocumentsBasedOnDateRange(a.StartDate.Value, a.EndDate.Value);
 
             if(codeChurnData != null && codeChurnData.Count > 0)
                 jsonOutputProcessor.ProcessOutput(codeChurnData);
 
             return 0;
-        }
-
-        private static IOutputProcessor GetOutputProcessorBasedOnOutputType(ILogger logger, OutputType outputType, string outputFile, string cosmosEndpoint, string cosmosDbKey, string cosmosDatabaseId, string codeChurnCosmosContainer, string cosmosProjectName)
-        {
-            if (outputType != OutputType.CosmosDb)
-                return new JsonOutputProcessor(new FileStreamFactory(), logger, new CodeChurnDataMapper(), outputType, outputFile);
-
-            var cosmosConnection = new CosmosConnection(new DatabaseFactory(cosmosEndpoint, cosmosDbKey, null), cosmosDatabaseId);
-            return new CosmosDbOutputProcessor(logger, cosmosConnection, new CodeChurnDataMapper(), codeChurnCosmosContainer, cosmosProjectName);
         }
     }
 }

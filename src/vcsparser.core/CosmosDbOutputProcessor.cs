@@ -20,7 +20,7 @@ namespace vcsparser.core
             this.cosmosConnection = cosmosConnection;
             this.codeChurnDataMapper = codeChurnDataMapper;
             this.codeChurnContainer = codeChurnContainer;
-            this.projectName = projectName;
+            this.projectName = projectName.Replace("\n", "").Replace("\r", "");
         }
 
         public void ProcessOutput<T>(Dictionary<DateTime, Dictionary<string, T>> dict) where T : IOutputJson
@@ -34,6 +34,7 @@ namespace vcsparser.core
 
             foreach (var list in listOfLists)
             {
+
                 foreach (var dailyCodeChurn in list.Value.Select(document => document.Value as DailyCodeChurn))
                 {
                     dailyCodeChurn.LongName = projectName + "_" + "code-churn" + "_" + list.Key.ToString(DailyCodeChurn.DATE_FORMAT);
@@ -46,7 +47,6 @@ namespace vcsparser.core
         {
             var sqlQuery = new SqlQuerySpec($"SELECT * FROM c WHERE c.Timestamp between '{ fromDateTime.ToString(DailyCodeChurn.DATE_FORMAT) }' and '{ endDateTime.ToString(DailyCodeChurn.DATE_FORMAT) }' order by c.Timestamp desc");
             var result = cosmosConnection.CreateDocumentQuery<DailyCodeChurn>(codeChurnContainer, sqlQuery).ToList();
-
             var codeChurnData = new Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>();
 
             foreach (var dailyCodeChurn in result)
@@ -73,7 +73,7 @@ namespace vcsparser.core
         {
             foreach (var dailyCodeChurn in dailyCodeChurnsList)
             {
-                var sqlQuery = new SqlQuerySpec($"SELECT * FROM c WHERE c.LongName = '{ projectName + "_" + "code-churn" + "_" + dailyCodeChurn.GetDateTimeAsDateTime().ToString(DailyCodeChurn.DATE_FORMAT) }' and c.Timestamp = '{ dailyCodeChurn.Timestamp }' and c.FileName = '{ dailyCodeChurn.FileName }'");
+                var sqlQuery = new SqlQuerySpec($"SELECT * FROM c WHERE c.LongName = '{ projectName + "_" + "code-churn" + "_" + dailyCodeChurn.GetDateTimeAsDateTime() }' and c.Timestamp = '{ dailyCodeChurn.Timestamp }' and c.FileName = '{ dailyCodeChurn.FileName }'");
 
                 var result = cosmosConnection.CreateDocumentQuery<DailyCodeChurn>(codeChurnContainer, sqlQuery).ToList();
                 if (result.Count <= 0) continue;

@@ -31,6 +31,8 @@ namespace vcsparser.core
         {
             if (outputType == OutputType.SingleFile)
                 ProcessOutputSingleFile(outputFile, dict);
+            else if (outputType == OutputType.SeparateFiles)
+                ProcessOutputSeparateFiles(outputFile, dict);
             else
                 ProcessOutputMultipleFile(outputFile, dict);
         }
@@ -47,6 +49,19 @@ namespace vcsparser.core
         {
             var result = codeChurnDataMapper.ConvertDictToOrderedList<T>(dict);
             ProcessOutputSingleFile(fileName, result);
+        }
+
+        public void ProcessOutputSeparateFiles<T>(string filePrefix, Dictionary<DateTime, Dictionary<string, T>> dict)
+            where T : IOutputJson
+        {
+            var codeChurnFilesPerDay = dict.SelectMany(x => x.Value.Select(y => y.Value as DailyCodeChurn));
+
+            foreach (var dailyCodeChurn in codeChurnFilesPerDay)
+            {
+                var fileName = $"{filePrefix}_{dailyCodeChurn.GetDateTimeAsDateTime():yyyy-MM-dd}_{dailyCodeChurn.Id}.json";
+
+                ProcessOutputSingleFile(fileName, new List<DailyCodeChurn> { dailyCodeChurn });
+            }
         }
 
         private void ProcessOutputSingleFile<T>(string fileName, IList<T> result) where T : IOutputJson
