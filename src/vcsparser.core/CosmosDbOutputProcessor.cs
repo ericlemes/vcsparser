@@ -10,17 +10,19 @@ namespace vcsparser.core
     {
         private readonly ICosmosConnection cosmosConnection;
         private readonly ICodeChurnDataMapper codeChurnDataMapper;
+        private IOutputProcessor outputProcessor;
         private readonly ILogger logger;
         private readonly string projectName;
         private readonly string codeChurnContainer;
 
-        public CosmosDbOutputProcessor(ILogger logger, ICosmosConnection cosmosConnection, ICodeChurnDataMapper codeChurnDataMapper, string codeChurnContainer, string projectName)
+        public CosmosDbOutputProcessor(IOutputProcessor outputProcessor, ILogger logger, ICosmosConnection cosmosConnection, ICodeChurnDataMapper codeChurnDataMapper, string codeChurnContainer, string projectName)
         {
             this.logger = logger;
             this.cosmosConnection = cosmosConnection;
             this.codeChurnDataMapper = codeChurnDataMapper;
             this.codeChurnContainer = codeChurnContainer;
             this.projectName = projectName;
+            this.outputProcessor = outputProcessor;
         }
 
         public void ProcessOutput<T>(Dictionary<DateTime, Dictionary<string, T>> dict) where T : IOutputJson
@@ -28,7 +30,7 @@ namespace vcsparser.core
             var listOfLists = codeChurnDataMapper.ConvertDictToOrderedListPerDay(dict);
             logger.LogToConsole(listOfLists.Count + " files with changes");
 
-            GetDocumentsBasedOnDateRange(DateTime.Parse("2020/12/10"), DateTime.Parse("2020/12/15"));
+            GetDocumentsBasedOnDateRange(DateTime.Parse("2019/12/10"), DateTime.Parse("2021/12/15"));
 
             var allDailyCodeChurnFiles = listOfLists.SelectMany(x => x.Value.Select(y => y.Value as DailyCodeChurn))
                 .ToList();
@@ -47,13 +49,41 @@ namespace vcsparser.core
 
         public List<DailyCodeChurn> GetDocumentsBasedOnDateRange(DateTime from, DateTime to)
         {
-
             var fromDateTime = from.ToString("yyyy-MM-dd").Replace("-", "/");
             var toDateTime = to.ToString("yyyy-MM-dd").Replace("-", "/");
 
-            var sqlQuery = new SqlQuerySpec($"SELECT * FROM c WHERE c.Timestamp between '{fromDateTime}' and '{toDateTime}'");
+            var sqlQuery = new SqlQuerySpec($"SELECT * FROM c WHERE c.Timestamp between '{fromDateTime}' and '{toDateTime}' order by c.Timestamp desc");
 
             var result = cosmosConnection.CreateDocumentQuery<DailyCodeChurn>(codeChurnContainer, sqlQuery).ToList();
+
+            var res = new Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>();
+
+            foreach (var dailyCodeChurn in result)
+            {
+
+                var formatedDateTime = dailyCodeChurn.Timestamp.Replace("-", "/");
+                var dateTime = DateTime.Parse(formatedDateTime);
+
+                if (res.ContainsKey(dateTime) == false)
+                {
+                    var codeChurn = new Dictionary<string, DailyCodeChurn>
+                    {
+                        { dailyCodeChurn.FileName, dailyCodeChurn }
+                    };
+
+                    res.Add(dateTime, codeChurn);
+                }
+                else
+                {
+                    var xx = res[dateTime];
+                    xx.Add(dailyCodeChurn.FileName, dailyCodeChurn);
+                }
+            }
+
+
+            //var sortedDictionary = (from entry in res orderby entry.Key ascending select entry);
+            
+            outputProcessor.ProcessOutput(res);
 
             return result;
         }

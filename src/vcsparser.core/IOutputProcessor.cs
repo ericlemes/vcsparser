@@ -10,8 +10,6 @@ namespace vcsparser.core
     public interface IOutputProcessor
     {
         void ProcessOutput<T>(Dictionary<DateTime, Dictionary<string, T>> dict) where T : IOutputJson;
-
-        //List<DailyCodeChurn> GetDocumentsBasedOnDateRange(DateTime from, DateTime to);
     }
 
     public interface IOutputJson { }

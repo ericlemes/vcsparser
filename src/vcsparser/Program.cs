@@ -107,7 +107,7 @@ namespace vcsparser
                 return new JsonFilesOutputProcessor(new FileStreamFactory(), logger, new CodeChurnDataMapper(), outputType, outputFile);
 
             var cosmosConnection = new CosmosConnection(new DatabaseFactory(cosmosEndpoint, cosmosDbKey, null), cosmosDatabaseId);
-            return new CosmosDbOutputProcessor(logger, cosmosConnection, new CodeChurnDataMapper(), codeChurnCosmosContainer, cosmosProjectName);
+            return new CosmosDbOutputProcessor(new JsonFilesOutputProcessor(new FileStreamFactory(), logger, new CodeChurnDataMapper(), outputType, outputFile),  logger, cosmosConnection, new CodeChurnDataMapper(), codeChurnCosmosContainer, cosmosProjectName);
         }
     }
 }
