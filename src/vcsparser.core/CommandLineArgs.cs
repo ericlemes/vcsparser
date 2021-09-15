@@ -44,21 +44,6 @@ namespace vcsparser.core
 
         [Option("bugdatabase-args", HelpText = "BugDatabase: Options for the dll", Separator = ' ', Required = false, Min = 1)]
         public IEnumerable<string> BugDatabaseDllArgs { get; set; }
-
-        [Option("cosmos-db-key", HelpText = "CosmosConnection: Cosmos database key", Required = false)]
-        public string CosmosDbKey { get; set; }
-
-        [Option("cosmos-db-database-id", HelpText = "CosmosConnection: Cosmos database id", Required = false)]
-        public string DatabaseId { get; set; }
-
-        [Option("cosmos-db-code-churn-cosmos-container", HelpText = "CosmosConnection: Cosmos database container name", Required = false)]
-        public string CodeChurnCosmosContainer { get; set; }
-
-        [Option("cosmos-endpoint", HelpText = "CosmosConnection: Cosmos endpoint", Required = false)]
-        public string CosmosEndpoint { get; set; }
-
-        [Option("cosmos-project-name", HelpText = "CosmosDocuments: Document's id prefix", Required = false)]
-        public string CosmosProjectName { get; set; }
     }
 
     [Verb("gitextract", HelpText = "Extracts code churn information from git log file and outputs to json")]

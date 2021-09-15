@@ -46,7 +46,7 @@ namespace vcsparser.unittests.git
             gitLogParserMock = new Mock<IGitLogParser>();
 
             outputProcessorMock = new Mock<IOutputProcessor>();
-            outputProcessorMock.Setup(m => m.ProcessOutput(args.OutputType, args.OutputFile, It.IsAny<Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>())).Callback<OutputType, string, Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>(
+            outputProcessorMock.Setup(m => m.ProcessOutput(It.IsAny<Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>())).Callback<OutputType, string, Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>(
                 (outputType, outputFile, dict) =>
                 {
                     this.processedOutput = dict;

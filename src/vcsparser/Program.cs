@@ -109,7 +109,7 @@ namespace vcsparser
             var gitLogParser = new GitLogParser();
             var logger = new ConsoleLoggerWithTimestamp();
             var cosmosConnection = new CosmosConnection(new DatabaseFactory(a.CosmosEndpoint, a.CosmosDbKey, null), a.DatabaseId);
-            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, cosmosConnection, new CodeChurnDataMapper(), a.CodeChurnCosmosContainer, a.CosmosProjectName);
+            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, cosmosConnection, a.CodeChurnCosmosContainer, a.CosmosProjectName);
             var bugDatabaseFactory = new BugDatabaseFactory();
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
@@ -127,13 +127,13 @@ namespace vcsparser
         {
             var logger = new ConsoleLoggerWithTimestamp();
             var cosmosConnection = new CosmosConnection(new DatabaseFactory(a.CosmosEndpoint, a.CosmosDbKey, null), a.DatabaseId);
-            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, cosmosConnection, new CodeChurnDataMapper(), a.CodeChurnCosmosContainer, string.Empty);
+            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, cosmosConnection, a.CodeChurnCosmosContainer, string.Empty);
             var jsonOutputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger, new CodeChurnDataMapper(), a.OutputType, a.OutputFile);
 
-            var codeChurnData= cosmosOutputProcessor.GetDocumentsBasedOnDateRange(a.StartDate.Value, a.EndDate.Value);
+            //var codeChurnData= cosmosOutputProcessor.GetDocumentsBasedOnDateRange(a.StartDate.Value, a.EndDate.Value);
 
-            if(codeChurnData != null && codeChurnData.Count > 0)
-                jsonOutputProcessor.ProcessOutput(codeChurnData);
+            //if(codeChurnData != null && codeChurnData.Count > 0)
+            //    jsonOutputProcessor.ProcessOutput(codeChurnData);
 
             return 0;
         }

@@ -58,9 +58,9 @@ namespace vcsparser.core
 
             foreach (var dailyCodeChurn in codeChurnFilesPerDay)
             {
-                var fileName = $"{filePrefix}_{dailyCodeChurn.GetDateTimeAsDateTime():yyyy-MM-dd}_{dailyCodeChurn.Id}.json";
+                //var fileName = $"{filePrefix}_{dailyCodeChurn.GetDateTimeAsDateTime():yyyy-MM-dd}_{dailyCodeChurn.Id}.json";
 
-                ProcessOutputSingleFile(fileName, new List<DailyCodeChurn> { dailyCodeChurn });
+                //ProcessOutputSingleFile(fileName, new List<DailyCodeChurn> { dailyCodeChurn });
             }
         }
 
