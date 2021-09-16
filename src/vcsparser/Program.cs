@@ -43,7 +43,7 @@ namespace vcsparser
             var commandLineParser = new CommandLineParser();
             var logger = new ConsoleLoggerWithTimestamp();
             var stopWatch = new StopWatchWrapper();
-            var outputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger, new CodeChurnDataMapper(), a.OutputType, a.OutputFile); var bugDatabaseFactory = new BugDatabaseFactory();
+            var outputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger, a.OutputType, a.OutputFile); var bugDatabaseFactory = new BugDatabaseFactory();
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
             var fileSystem = new FileSystem();
@@ -61,7 +61,7 @@ namespace vcsparser
             var commandLineParser = new CommandLineParser();
             var gitLogParser = new GitLogParser();
             var logger = new ConsoleLoggerWithTimestamp();
-            var outputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger, new CodeChurnDataMapper(), a.OutputType, a.OutputFile);
+            var outputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger, a.OutputType, a.OutputFile);
             var bugDatabaseFactory = new BugDatabaseFactory();
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
@@ -118,7 +118,7 @@ namespace vcsparser
             var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, webRequest, fileSystem, jsonParser, logger);
 
             var processor = new GitCodeChurnProcessor(commandLineParser, processWrapper, gitLogParser, cosmosOutputProcessor, bugDatabaseProcessor, logger, a.BugRegexes, a.BugDatabaseDLL, a.BugDatabaseOutputFile, a.BugDatabaseDllArgs, a.GitLogCommand);
-            processor.QueryBugDatabase();
+            processor.QueryBugDatabase(false);
 
             return processor.Extract();
         }
@@ -128,12 +128,25 @@ namespace vcsparser
             var logger = new ConsoleLoggerWithTimestamp();
             var cosmosConnection = new CosmosConnection(new DatabaseFactory(a.CosmosEndpoint, a.CosmosDbKey, null), a.DatabaseId);
             var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, cosmosConnection, a.CodeChurnCosmosContainer, string.Empty);
-            var jsonOutputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger, new CodeChurnDataMapper(), a.OutputType, a.OutputFile);
+            var jsonOutputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger, a.OutputType, a.OutputFile);
 
-            //var codeChurnData= cosmosOutputProcessor.GetDocumentsBasedOnDateRange(a.StartDate.Value, a.EndDate.Value);
-
-            //if(codeChurnData != null && codeChurnData.Count > 0)
-            //    jsonOutputProcessor.ProcessOutput(codeChurnData);
+            switch (a.DocumentType)
+            {
+                case DocumentType.BugDatabase:
+                {
+                    var data = cosmosOutputProcessor.GetDocumentsByDateRange<WorkItem>(a.StartDate.Value, a.EndDate.Value);
+                    jsonOutputProcessor.ProcessOutput(data);
+                    break;
+                }
+                case DocumentType.CodeChurn:
+                {
+                    var data = cosmosOutputProcessor.GetDocumentsByDateRange<DailyCodeChurn>(a.StartDate.Value, a.EndDate.Value);
+                    jsonOutputProcessor.ProcessOutput(data);
+                    break;
+                }
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
             return 0;
         }

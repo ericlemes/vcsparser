@@ -15,7 +15,7 @@ namespace vcsparser.core.Database.Cosmos
         public string DocumentName { get; set; }
 
         [JsonProperty("occurrenceDate")]
-        public string OccurrenceDate { get; set; }
+        public string DateTime { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("documentType")]

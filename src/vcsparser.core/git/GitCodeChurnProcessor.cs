@@ -33,6 +33,8 @@ namespace vcsparser.core.git
 
         private readonly string bugRegexes;
 
+        private readonly OutputType outputType;
+
         public GitCodeChurnProcessor(ICommandLineParser commandLineParser, IProcessWrapper processWrapper, IGitLogParser gitLogParser, IOutputProcessor outputProcessor, IBugDatabaseProcessor bugDatabaseProcessor, ILogger logger, string bugRegexes, string bugDatabaseDLL, string bugDatabaseOutputFile, IEnumerable<string> bugDatabaseDllArgs, string gitLogCommand)
         {
             this.commandLineParser = commandLineParser;
@@ -50,12 +52,12 @@ namespace vcsparser.core.git
             this.changesetProcessor = new ChangesetProcessor(bugRegexes, this.logger);
         }
 
-        public void QueryBugDatabase()
+        public void QueryBugDatabase(bool checkForOutputFile = true)
         {
             if (string.IsNullOrWhiteSpace(bugDatabaseDLL))
                 return;
-            //if (string.IsNullOrWhiteSpace(bugDatabaseOutputFile))
-            //    throw new Exception("Dll specified without known output file");
+            if (checkForOutputFile && string.IsNullOrWhiteSpace(bugDatabaseOutputFile))
+                throw new Exception("Dll specified without known output file");
 
             var bugCache = bugDatabaseProcessor.ProcessBugDatabase(bugDatabaseDLL, bugDatabaseDllArgs);
 

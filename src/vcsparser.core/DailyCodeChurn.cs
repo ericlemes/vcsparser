@@ -11,6 +11,8 @@ namespace vcsparser.core
 {
     public class DailyCodeChurn : IComparable, IOutputJson
     {
+        public DateTime OccurrenceDate => GetDateTimeAsDateTime();
+
         public DailyCodeChurn()
         {
             this.Authors = new List<DailyCodeChurnAuthor>();

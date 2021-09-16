@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using vcsparser.core.Database.Cosmos;
 
 namespace vcsparser.core
 {
@@ -197,5 +198,8 @@ namespace vcsparser.core
 
         [Option("end-date", HelpText = "Date to limit the analysis to. ", Required = true)]
         public DateTime? EndDate { get; set; }
+
+        [Option("cosmos-document-type", HelpText = "Either CodeChurn or BugDatabase", Required = true)]
+        public DocumentType DocumentType { get; set; }
     }
 }

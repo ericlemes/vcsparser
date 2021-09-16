@@ -218,7 +218,6 @@
     <Compile Include="git\GitLogParserContext.cs" />
     <Compile Include="git\IGitLogParser.cs" />
     <Compile Include="IChangesetProcessor.cs" />
-    <Compile Include="ICodeChurnDataMapper.cs" />
     <Compile Include="ICosmosDbOutputProcessor.cs" />
     <Compile Include="IExclusionsProcessor.cs" />
     <Compile Include="IInclusionsProcessor.cs" />
@@ -235,7 +234,6 @@
     <Compile Include="MeasureAggregators\LinesChangedInFixesBugDatabaseMeasureAggregator.cs" />
     <Compile Include="MeasureAggregators\NumberOfChangesWithFixesMeasureAggregator.cs" />
     <Compile Include="MeasureConverterRaw.cs" />
-    <Compile Include="CodeChurnDataMapper.cs" />
     <Compile Include="p4\Changeset.cs" />
     <Compile Include="p4\ChangesParser.cs" />
     <Compile Include="p4\PerforceCodeChurnProcessor.cs" />
