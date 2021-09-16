@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using vcsparser.core.bugdatabase;
 using vcsparser.core.Database;
 using vcsparser.core.Database.Cosmos;
+using vcsparser.core.Database.Repository;
 
 namespace vcsparser
 {
@@ -109,7 +110,8 @@ namespace vcsparser
             var gitLogParser = new GitLogParser();
             var logger = new ConsoleLoggerWithTimestamp();
             var cosmosConnection = new CosmosConnection(new DatabaseFactory(a.CosmosEndpoint, a.CosmosDbKey, null), a.DatabaseId);
-            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, cosmosConnection, a.CodeChurnCosmosContainer, a.CosmosProjectName);
+            var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
+            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, a.CosmosProjectName);
             var bugDatabaseFactory = new BugDatabaseFactory();
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
@@ -127,20 +129,21 @@ namespace vcsparser
         {
             var logger = new ConsoleLoggerWithTimestamp();
             var cosmosConnection = new CosmosConnection(new DatabaseFactory(a.CosmosEndpoint, a.CosmosDbKey, null), a.DatabaseId);
-            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, cosmosConnection, a.CodeChurnCosmosContainer, string.Empty);
+            var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
+            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, string.Empty);
             var jsonOutputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger, a.OutputType, a.OutputFile);
 
             switch (a.DocumentType)
             {
                 case DocumentType.BugDatabase:
                 {
-                    var data = cosmosOutputProcessor.GetDocumentsByDateRange<WorkItem>(a.StartDate.Value, a.EndDate.Value);
+                    var data = cosmosOutputProcessor.GetDocumentsInDateRange<WorkItem>(a.StartDate.Value, a.EndDate.Value);
                     jsonOutputProcessor.ProcessOutput(data);
                     break;
                 }
                 case DocumentType.CodeChurn:
                 {
-                    var data = cosmosOutputProcessor.GetDocumentsByDateRange<DailyCodeChurn>(a.StartDate.Value, a.EndDate.Value);
+                    var data = cosmosOutputProcessor.GetDocumentsInDateRange<DailyCodeChurn>(a.StartDate.Value, a.EndDate.Value);
                     jsonOutputProcessor.ProcessOutput(data);
                     break;
                 }

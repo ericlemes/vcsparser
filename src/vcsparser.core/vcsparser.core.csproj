@@ -209,6 +209,8 @@
     <Compile Include="Database\Cosmos\ICosmosConnection.cs" />
     <Compile Include="Database\DatabaseFactory.cs" />
     <Compile Include="Database\IDatabaseFactory.cs" />
+    <Compile Include="Database\Repository\DataDocumentRepository.cs" />
+    <Compile Include="Database\Repository\IDataDocumentRepository.cs" />
     <Compile Include="ExclusionsProcessor.cs" />
     <Compile Include="FilePrefixRemover.cs" />
     <Compile Include="FileSystemExpressionToRegexConverter.cs" />
@@ -218,7 +220,6 @@
     <Compile Include="git\GitLogParserContext.cs" />
     <Compile Include="git\IGitLogParser.cs" />
     <Compile Include="IChangesetProcessor.cs" />
-    <Compile Include="ICosmosDbOutputProcessor.cs" />
     <Compile Include="IExclusionsProcessor.cs" />
     <Compile Include="IInclusionsProcessor.cs" />
     <Compile Include="IMeasureAggregator.cs" />

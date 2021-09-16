@@ -1,24 +1,22 @@
-﻿using Microsoft.Azure.Documents;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using vcsparser.core.Database.Cosmos;
+using vcsparser.core.Database.Repository;
 
 namespace vcsparser.core
 {
-    public class CosmosDbOutputProcessor : IOutputProcessor, ICosmosDbOutputProcessor
+    public class CosmosDbOutputProcessor : IOutputProcessor
     {
-        private readonly ICosmosConnection cosmosConnection;
+        private readonly IDataDocumentRepository dataDocumentRepository;
         private readonly ILogger logger;
         private readonly string projectName;
-        private readonly string cosmosDbContainer;
 
-        public CosmosDbOutputProcessor(ILogger logger, ICosmosConnection cosmosConnection, string cosmosDbContainer, string projectName)
+        public CosmosDbOutputProcessor(ILogger logger, IDataDocumentRepository dataDocumentRepository, string projectName)
         {
             this.logger = logger;
-            this.cosmosConnection = cosmosConnection;
-            this.cosmosDbContainer = cosmosDbContainer;
+            this.dataDocumentRepository = dataDocumentRepository;
             this.projectName = projectName;
         }
 
@@ -28,16 +26,15 @@ namespace vcsparser.core
            
             logger.LogToConsole($"Found: {listOfFilesPerDay.Count} documents to upload");
 
-            DeleteExistingData(listOfFilesPerDay);
+            dataDocumentRepository.DeleteMultipleDocuments(listOfFilesPerDay);
 
             foreach (var document in listOfFilesPerDay)
-                cosmosConnection.CreateDocument(cosmosDbContainer, document).Wait();
+                dataDocumentRepository.CreateDataDocument(document);
         }
 
-        public Dictionary<DateTime, Dictionary<string, T>> GetDocumentsByDateRange<T>(DateTime fromDateTime, DateTime endDateTime) where T : IOutputJson
+        public Dictionary<DateTime, Dictionary<string, T>> GetDocumentsInDateRange<T>(DateTime fromDateTime, DateTime endDateTime) where T : IOutputJson
         {
-            var sqlQuery = new SqlQuerySpec($"SELECT * FROM c WHERE c.documentType = '{GetDocumentType<T>()}' and (c.occurrenceDate between '{ fromDateTime.ToString(DailyCodeChurn.DATE_FORMAT) }' and '{ endDateTime.ToString(DailyCodeChurn.DATE_FORMAT) }') order by c.occurrenceDate desc");
-            var documents = cosmosConnection.CreateDocumentQuery<CosmosDataDocument<T>>(cosmosDbContainer, sqlQuery).ToList();
+            var documents = dataDocumentRepository.GetDocumentsInDateRange<T>(GetDocumentType<T>(), fromDateTime, endDateTime);
             var data = new Dictionary<DateTime, Dictionary<string, T>>();
 
             foreach (var cosmosDocument in documents)
@@ -54,20 +51,6 @@ namespace vcsparser.core
             }
 
             return data;
-        }
-
-        private void DeleteExistingData<T>(List<CosmosDataDocument<T>> documentsToDelete) where T : IOutputJson
-        {
-            foreach (var documentToDelete in documentsToDelete)
-            {
-                var sqlQuery = new SqlQuerySpec($"SELECT * FROM c WHERE c.documentType= '{documentToDelete.DocumentType}' and c.documentName = '{documentToDelete.DocumentName}' and c.occurrenceDate = '{documentToDelete.DateTime:yyyy-MM-ddTHH:mm:ss}'");
-
-                var result = cosmosConnection.CreateDocumentQuery<CosmosDataDocument<T>>(cosmosDbContainer, sqlQuery).ToList();
-                if (result.Count <= 0) continue;
-
-                foreach (var codeChurnDocument in result)
-                    cosmosConnection.DeleteDocument(cosmosDbContainer, codeChurnDocument.Id).Wait();
-            }
         }
 
         private CosmosDataDocument<T> ConvertOutputJsonToCosmosDataDocument<T>(T data, DocumentType documentType, DateTime occurrenceDate) where T : IOutputJson
