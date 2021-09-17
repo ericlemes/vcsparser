@@ -23,16 +23,14 @@ namespace vcsparser.unittests
             this.outputStream = new MemoryStream();
 
             this.streamFactoryMock = new Mock<IStreamFactory>();
-            this.streamFactoryMock.Setup(m => m.createFileStream("filename", FileMode.Create, FileAccess.Write)).Returns(outputStream);
-
             this.loggerMock = new Mock<ILogger>();
+            this.streamFactoryMock.Setup(m => m.createFileStream("filename", FileMode.Create, FileAccess.Write)).Returns(outputStream);
+            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object, OutputType.SingleFile, "filename");
         }
 
         [Fact]
         public void WhenDailyCodeChurnProcessingOutputShouldWriteJsonFile()
         {
-            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object, OutputType.SingleFile, "filename");
-
             var dict = new Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>()
             {
                 { new DateTime(2018, 08, 30), new Dictionary<string, DailyCodeChurn>()
@@ -71,6 +69,7 @@ namespace vcsparser.unittests
             Assert.Equal(
                 "{\"SchemaVersion\":" + JsonOutputData<DailyCodeChurn>.CurrentVersion + "," +
                 "\"Data\":[{" +
+                "\"OccurrenceDate\":\"2018/08/30 00:00:00\"," +
                 "\"Timestamp\":\"2018/08/30 00:00:00\"," +
                 "\"FileName\":\"abc\"," +
                 "\"Extension\":\"\"," +
@@ -92,8 +91,6 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenDailyCodeChurnProcessingOutputAndNoChurnAndSingleFileShouldReturnNoOutput()
         {
-            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object, OutputType.SingleFile, "filename");
-
             var dict = new Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>()
             {
                 { new DateTime(2018, 08, 30), new Dictionary<string, DailyCodeChurn>()
@@ -130,6 +127,8 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenDailyCodeChurnProcessingOutputSplitingDateShouldWriteMultipleFiles()
         {
+            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object, OutputType.MultipleFile, "filename");
+
             var dict = new Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>();
             dict.Add(new DateTime(2018, 08, 30), new Dictionary<string, DailyCodeChurn>());
             dict[new DateTime(2018, 08, 30)].Add("abc", new DailyCodeChurn()
@@ -197,13 +196,17 @@ namespace vcsparser.unittests
                 "\"Data\":[{" +
                 "\"ClosedDate\":\"2018/08/30 00:00:00\"," +
                 "\"WorkItemId\":\"Some Work Item Id\"," +
-                "\"ChangesetId\":\"Some Change Set Id\"" +
+                "\"ChangesetId\":\"Some Change Set Id\"," +
+                "\"OccurrenceDate\":\"2018/08/30 00:00:00\"," +
+                "\"FileName\":\"Some Work Item Id_Some Change Set Id\"" +
                 "}]}", resultString);
         }
 
         [Fact]
         public void WhenWorkitemProcessingOutputAnChangeSetAndSingleFileShouldReturnNoOutput()
         {
+            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object, OutputType.SingleFile, "filename");
+
             var dict = new Dictionary<DateTime, Dictionary<string, WorkItem>>()
             {
                 { new DateTime(2018, 08, 30), new Dictionary<string, WorkItem>()
@@ -242,6 +245,8 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenWorkItemProcessingOutputSplitingDateShouldWriteMultipleFiles()
         {
+            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object, OutputType.MultipleFile, "filename");
+
             var dict = new Dictionary<DateTime, Dictionary<string, WorkItem>>();
             dict.Add(new DateTime(2018, 08, 30), new Dictionary<string, WorkItem>());
             dict[new DateTime(2018, 08, 30)].Add("Some Change Set Id 1", new WorkItem()
@@ -295,6 +300,8 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenConvertToOrderedListPerDayUnknownShouldReturnNoOutput()
         {
+            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object, OutputType.MultipleFile, "filename");
+
             var dict = new Dictionary<DateTime, Dictionary<string, SomeUnimplementedClass>>()
             {
                 { new DateTime(2018, 08, 30), new Dictionary<string, SomeUnimplementedClass>()
