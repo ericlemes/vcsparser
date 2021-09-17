@@ -16,7 +16,7 @@ namespace vcsparser.core
         SeparateFiles
     }
 
-    [Verb("p4extract", HelpText = "Extracts code churn information from p4 and outputs to json or to cosmos database")]
+    [Verb("p4extract", HelpText = "Extracts code churn information from p4 and outputs to json")]
     public class P4ExtractCommandLineArgs
     {
         [Option("changes", HelpText = "p4 changes command line to get changesets. Usually \"p4 changes -s submitted //path/to/your/depot/...@YYYY/MM/DD,YYYY/MM/DD\" or something similar", Required = true)]

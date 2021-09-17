@@ -97,6 +97,7 @@
     <Compile Include="bugdatabase\GivenATimeKeeper.cs" />
     <Compile Include="bugdatabase\GivenAWebRequest.cs" />
     <Compile Include="bugdatabase\GivenAWorkItem.cs" />
+    <Compile Include="Database\Cosmos\GivenACosmosDbOutputProcessor.cs" />
     <Compile Include="git\GivenAGitCodeChurnProcessor.cs" />
     <Compile Include="git\GivenAGitLogParser.cs" />
     <Compile Include="GivenAChangesetProcessor.cs" />
@@ -192,6 +193,7 @@
   <ItemGroup>
     <Analyzer Include="..\packages\xunit.analyzers.0.10.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

@@ -135,10 +135,11 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
         public void WhenGettingWorkItemsAndWorkItemAlreadyExistsOnDateShouldIgnoreAndNotThrow()
         {
             var fullWorkItem1 = new JObject();
+            var fullWorkItem2 = new JObject();
 
             this.requestMock.Setup(r => r.GetWorkItemList()).Returns(Task.Run(() => new JSONQuery
             {
-                WorkItems = new [] {
+                WorkItems = new JSONQueryItem[] {
                     new JSONQueryItem {
                         Id = "1",
                         Url = new Uri("http://some/url/1")
@@ -158,6 +159,8 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
                     ClosedDate = new DateTime(2019, 04, 15),
                     WorkItemId = "1"
                 });
+
+            var dict = this.azureDevOps.GetWorkItems();
         }
 
         [Fact]
