@@ -24,7 +24,6 @@ namespace vcsparser.unittests
         private Mock<IStopWatch> stopWatchMock;
         private Mock<IOutputProcessor> outputProcessorMock;
         private Mock<IBugDatabaseProcessor> bugDatabseMock;
-        private Dictionary<DateTime, Dictionary<string, DailyCodeChurn>> output;
 
         public GivenAPerforceCodeChurnProcessor()
         {
@@ -46,12 +45,7 @@ namespace vcsparser.unittests
             this.stopWatchMock = new Mock<IStopWatch>();
 
             this.outputProcessorMock = new Mock<IOutputProcessor>();
-            this.outputProcessorMock.Setup(m => m.ProcessOutput(It.IsAny<Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>())).Callback<OutputType, string, Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>(
-                (outputType, file, output) =>
-                {
-                    this.output = output;
-                }
-            );
+            
 
             this.bugDatabseMock = new Mock<IBugDatabaseProcessor>();
 
@@ -232,8 +226,13 @@ namespace vcsparser.unittests
             this.describeParserMock.Setup(m => m.Parse(describeLines2)).Returns(changeset2);
             this.describeParserMock.Setup(m => m.Parse(describeLines3)).Returns(changeset3);
 
+            var output = new Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>();
+            this.outputProcessorMock.Setup(m => m.ProcessOutput(It.IsAny<Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>())).Callback<Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>(
+                otp => { output = otp; }
+            );
+
             this.processor.Extract();
-            var result = this.output;
+            var result = output;
 
             Assert.Equal(2, result.Count);
             Assert.Equal(2, result[new DateTime(2018, 07, 05)].Count);
@@ -265,6 +264,17 @@ namespace vcsparser.unittests
             Assert.Equal(10, dailyCodeChurn.ChangesBefore);
             Assert.Equal(5, dailyCodeChurn.ChangesAfter);
             Assert.Equal(1, dailyCodeChurn.NumberOfChanges);
+        }
+
+        private Dictionary<DateTime, Dictionary<string, T>> Test<T>() where T : IOutputJson
+        {
+            var output = new Dictionary<DateTime, Dictionary<string, T>>();
+
+            this.outputProcessorMock.Setup(m => m.ProcessOutput(It.IsAny<Dictionary<DateTime, Dictionary<string, T>>>())).Callback<Dictionary<DateTime, Dictionary<string, T>>>(
+                ( otp) => { output = otp; }
+            );
+
+            return output;
         }
 
         [Fact]
