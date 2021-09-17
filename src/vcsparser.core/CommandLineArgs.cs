@@ -162,9 +162,6 @@ namespace vcsparser.core
         [Option("bugregexes", HelpText = "Regexes, separated by semi colon (;) to identify if this changeset is a bug fix")]
         public string BugRegexes { get; set; }
 
-        [Option("bugdatabase-output", HelpText = "BugDatabase: File path for single file or file prefix for multiple files.", Required = false)]
-        public string BugDatabaseOutputFile { get; set; }
-
         [Option("bugdatabase-dll", HelpText = "BugDatabase: File path to the dll to load", Required = false)]
         public string BugDatabaseDLL { get; set; }
 

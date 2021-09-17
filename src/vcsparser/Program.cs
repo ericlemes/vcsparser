@@ -69,7 +69,7 @@ namespace vcsparser
             var fileSystem = new FileSystem();
             var jsonParser = new JsonListParser<WorkItem>(new FileStreamFactory());
             var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, webRequest, fileSystem, jsonParser, logger);
-            var processor = new GitCodeChurnProcessor(commandLineParser, processWrapper, gitLogParser, outputProcessor, bugDatabaseProcessor, logger, a.BugRegexes, a.BugDatabaseDLL, a.BugDatabaseOutputFile, a.BugDatabaseDllArgs, a.GitLogCommand);
+            var processor = new GitCodeChurnProcessor(commandLineParser, processWrapper, gitLogParser, outputProcessor, bugDatabaseProcessor, logger, a);
 
             processor.QueryBugDatabase();
             return processor.Extract();
@@ -119,7 +119,7 @@ namespace vcsparser
             var jsonParser = new JsonListParser<WorkItem>(new FileStreamFactory());
             var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, webRequest, fileSystem, jsonParser, logger);
 
-            var processor = new GitCodeChurnProcessor(commandLineParser, processWrapper, gitLogParser, cosmosOutputProcessor, bugDatabaseProcessor, logger, a.BugRegexes, a.BugDatabaseDLL, a.BugDatabaseOutputFile, a.BugDatabaseDllArgs, a.GitLogCommand);
+            var processor = new GitCodeChurnProcessor(commandLineParser, processWrapper, gitLogParser, cosmosOutputProcessor, bugDatabaseProcessor, logger, a);
             processor.QueryBugDatabase(false);
 
             return processor.Extract();

@@ -46,7 +46,7 @@ namespace vcsparser.unittests
             this.stopWatchMock = new Mock<IStopWatch>();
 
             this.outputProcessorMock = new Mock<IOutputProcessor>();
-            this.outputProcessorMock.Setup(m => m.ProcessOutput(OutputType.SingleFile, It.IsAny<string>(), It.IsAny<Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>())).Callback<OutputType, string, Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>(
+            this.outputProcessorMock.Setup(m => m.ProcessOutput(It.IsAny<Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>())).Callback<OutputType, string, Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>(
                 (outputType, file, output) =>
                 {
                     this.output = output;
@@ -287,7 +287,7 @@ namespace vcsparser.unittests
 
             this.processor.Extract();
 
-            this.outputProcessorMock.Verify(m => m.ProcessOutput(OutputType.MultipleFile, It.IsAny<string>(), It.IsAny<Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>()), Times.Once());
+            this.outputProcessorMock.Verify(m => m.ProcessOutput(It.IsAny<Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>>()), Times.Once());
         }
 
         [Fact]
@@ -399,7 +399,7 @@ namespace vcsparser.unittests
             processor.QueryBugDatabase();
 
             this.outputProcessorMock
-                .Verify(o => o.ProcessOutput(this.commandLineArgs.BugDatabaseOutputType, this.commandLineArgs.BugDatabaseOutputFile, It.IsAny<Dictionary<DateTime, Dictionary<string, WorkItem>>>()),
+                .Verify(o => o.ProcessOutput(It.IsAny<Dictionary<DateTime, Dictionary<string, WorkItem>>>()),
                 Times.Once);
         }
     }

@@ -236,7 +236,7 @@ namespace vcsparser.unittests.git
             processor.QueryBugDatabase();
 
             this.outputProcessorMock
-                .Verify(o => o.ProcessOutput(args.BugDatabaseOutputType, args.BugDatabaseOutputFile, It.IsAny<Dictionary<DateTime, Dictionary<string, WorkItem>>>()),
+                .Verify(o => o.ProcessOutput(It.IsAny<Dictionary<DateTime, Dictionary<string, WorkItem>>>()),
                 Times.Once);
         }
     }

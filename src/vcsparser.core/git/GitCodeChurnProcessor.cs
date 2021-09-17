@@ -33,9 +33,14 @@ namespace vcsparser.core.git
 
         private readonly string bugRegexes;
 
-        private readonly OutputType outputType;
+        public GitCodeChurnProcessor(ICommandLineParser commandLineParser, IProcessWrapper processWrapper, IGitLogParser gitLogParser, IOutputProcessor outputProcessor, IBugDatabaseProcessor bugDatabaseProcessor, ILogger logger, GitExtractToCosmosDbCommandLineArgs commandLineArgs) : this(commandLineParser, processWrapper, gitLogParser, outputProcessor, bugDatabaseProcessor, logger, commandLineArgs.BugRegexes, commandLineArgs.BugDatabaseDLL, string.Empty, commandLineArgs.BugDatabaseDllArgs, commandLineArgs.GitLogCommand) { }
 
-        public GitCodeChurnProcessor(ICommandLineParser commandLineParser, IProcessWrapper processWrapper, IGitLogParser gitLogParser, IOutputProcessor outputProcessor, IBugDatabaseProcessor bugDatabaseProcessor, ILogger logger, string bugRegexes, string bugDatabaseDLL, string bugDatabaseOutputFile, IEnumerable<string> bugDatabaseDllArgs, string gitLogCommand)
+        public GitCodeChurnProcessor(ICommandLineParser commandLineParser, IProcessWrapper processWrapper, IGitLogParser gitLogParser, IOutputProcessor outputProcessor, IBugDatabaseProcessor bugDatabaseProcessor, ILogger logger, GitExtractCommandLineArgs commandLineArgs) : this(commandLineParser, processWrapper, gitLogParser, outputProcessor, bugDatabaseProcessor, logger, commandLineArgs.BugRegexes, commandLineArgs.BugDatabaseDLL, commandLineArgs.BugDatabaseOutputFile, commandLineArgs.BugDatabaseDllArgs, commandLineArgs.GitLogCommand)
+        {
+            this.bugDatabaseOutputFile = commandLineArgs.BugDatabaseOutputFile;
+        }
+
+        private GitCodeChurnProcessor(ICommandLineParser commandLineParser, IProcessWrapper processWrapper, IGitLogParser gitLogParser, IOutputProcessor outputProcessor, IBugDatabaseProcessor bugDatabaseProcessor, ILogger logger, string bugRegexes, string bugDatabaseDLL, string bugDatabaseOutputFile, IEnumerable<string> bugDatabaseDllArgs, string gitLogCommand)
         {
             this.commandLineParser = commandLineParser;
             this.processWrapper = processWrapper;
