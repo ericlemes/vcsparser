@@ -1,14 +1,10 @@
-﻿using Microsoft.Azure.Documents;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
-using vcsparser.core.Database.Cosmos;
 using Newtonsoft.Json;
+using vcsparser.core.Database.Cosmos;
 
-namespace vcsparser.core.Database
+namespace vcsparser.core.Factory
 {
     public class DatabaseFactory : IDatabaseFactory
     {
@@ -27,9 +23,10 @@ namespace vcsparser.core.Database
         {
             return new CosmosConnection(this, databaseId);
         }
+
         public IDocumentClient DocumentClient()
         {
-            var serviceEndPoint = new Uri(this.cosmosEndpoint);
+            var serviceEndPoint = new Uri(cosmosEndpoint);
             var connectionPolicy = new ConnectionPolicy
             {
                 ConnectionMode = ConnectionMode.Direct,
@@ -41,8 +38,8 @@ namespace vcsparser.core.Database
                     MaxRetryWaitTimeInSeconds = 30
                 }
             };
-            var consistencyLevel = ConsistencyLevel.Session;
-            return new DocumentClient(serviceEndPoint, this.cosmosKey, this.jsonSerializerSettings, connectionPolicy, consistencyLevel);
+
+            return new DocumentClient(serviceEndPoint, this.cosmosKey, this.jsonSerializerSettings, connectionPolicy, ConsistencyLevel.Session);
         }
     }
 }

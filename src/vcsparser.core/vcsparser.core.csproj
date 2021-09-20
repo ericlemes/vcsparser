@@ -229,8 +229,8 @@
     <Compile Include="Database\Cosmos\CosmosDocumentBase.cs" />
     <Compile Include="Database\Cosmos\DocumentType.cs" />
     <Compile Include="Database\Cosmos\ICosmosConnection.cs" />
-    <Compile Include="Database\DatabaseFactory.cs" />
-    <Compile Include="Database\IDatabaseFactory.cs" />
+    <Compile Include="Factory\DatabaseFactory.cs" />
+    <Compile Include="Factory\IDatabaseFactory.cs" />
     <Compile Include="Database\Repository\DataDocumentRepository.cs" />
     <Compile Include="Database\Repository\IDataDocumentRepository.cs" />
     <Compile Include="ExclusionsProcessor.cs" />
@@ -304,6 +304,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Azure.DocumentDB.Core.2.16.0\build\Microsoft.Azure.DocumentDB.Core.targets" Condition="Exists('..\packages\Microsoft.Azure.DocumentDB.Core.2.16.0\build\Microsoft.Azure.DocumentDB.Core.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

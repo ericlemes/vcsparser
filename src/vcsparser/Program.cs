@@ -12,6 +12,7 @@ using vcsparser.core.bugdatabase;
 using vcsparser.core.Database;
 using vcsparser.core.Database.Cosmos;
 using vcsparser.core.Database.Repository;
+using vcsparser.core.Factory;
 
 namespace vcsparser
 {

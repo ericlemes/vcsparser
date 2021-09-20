@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using vcsparser.core.Factory;
 
 namespace vcsparser.core.Database.Cosmos
 {
