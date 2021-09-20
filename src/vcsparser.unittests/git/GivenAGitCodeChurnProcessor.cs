@@ -201,23 +201,6 @@ namespace vcsparser.unittests.git
         }
 
         [Fact]
-        public void WhenCollectingBugDatabaseCacheAndNoOutputFileShouldThrowException()
-        {
-            args = new GitExtractCommandLineArgs()
-            {
-                BugDatabaseDLL = "some/path/to.dll"
-            };
-
-            processor = new GitCodeChurnProcessor(this.commandLineParserMock.Object, this.processWrapperMock.Object,
-               this.gitLogParserMock.Object, this.outputProcessorMock.Object, this.bugDatabaseMock.Object, this.logger.Object, args);
-
-            Action collect = () => processor.QueryBugDatabase();
-
-            var exception = Assert.Throws<Exception>(collect);
-            Assert.Equal("Dll specified without known output file", exception.Message);
-        }
-
-        [Fact]
         public void WhenCollectingBugDatabaseCacheShouldProcessOutput()
         {
             args = new GitExtractCommandLineArgs()
@@ -238,6 +221,26 @@ namespace vcsparser.unittests.git
             this.outputProcessorMock
                 .Verify(o => o.ProcessOutput(It.IsAny<Dictionary<DateTime, Dictionary<string, WorkItem>>>()),
                 Times.Once);
+        }
+
+        [Fact]
+        public void WhenCrearingGitCodeChurnProcessorWithBugDatabaseDllAndNoOutputSpecifiedShouldThrowAnException()
+        {
+            var commandLineArgs = new GitExtractCommandLineArgs
+            {
+                BugDatabaseDLL = "some/path/to.dll"
+            };
+
+            Action action = () =>
+            {
+                new GitCodeChurnProcessor(this.commandLineParserMock.Object,
+                    this.processWrapperMock.Object,
+                    this.gitLogParserMock.Object, this.outputProcessorMock.Object, this.bugDatabaseMock.Object,
+                    this.logger.Object, commandLineArgs);
+            };
+
+            var exception = Assert.Throws<Exception>(action);
+            Assert.Equal("Dll specified without known output file", exception.Message);
         }
     }
 }

@@ -37,6 +37,9 @@ namespace vcsparser.core.git
 
         public GitCodeChurnProcessor(ICommandLineParser commandLineParser, IProcessWrapper processWrapper, IGitLogParser gitLogParser, IOutputProcessor outputProcessor, IBugDatabaseProcessor bugDatabaseProcessor, ILogger logger, GitExtractCommandLineArgs commandLineArgs) : this(commandLineParser, processWrapper, gitLogParser, outputProcessor, bugDatabaseProcessor, logger, commandLineArgs.BugRegexes, commandLineArgs.BugDatabaseDLL, commandLineArgs.BugDatabaseOutputFile, commandLineArgs.BugDatabaseDllArgs, commandLineArgs.GitLogCommand)
         {
+            if (string.IsNullOrWhiteSpace(bugDatabaseDLL) == false && string.IsNullOrWhiteSpace(bugDatabaseOutputFile))
+                throw new Exception("Dll specified without known output file");
+
             this.bugDatabaseOutputFile = commandLineArgs.BugDatabaseOutputFile;
         }
 
@@ -61,11 +64,8 @@ namespace vcsparser.core.git
         {
             if (string.IsNullOrWhiteSpace(bugDatabaseDLL))
                 return;
-            if (checkForOutputFile && string.IsNullOrWhiteSpace(bugDatabaseOutputFile))
-                throw new Exception("Dll specified without known output file");
 
             var bugCache = bugDatabaseProcessor.ProcessBugDatabase(bugDatabaseDLL, bugDatabaseDllArgs);
-
             
             logger.LogToConsole(bugCache.Count + " bug database dates to output");
 
