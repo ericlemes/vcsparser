@@ -37,6 +37,14 @@ namespace vcsparser.core
             var documents = dataDocumentRepository.GetDocumentsInDateRange<T>(GetDocumentType<T>(), fromDateTime, endDateTime);
             var data = new Dictionary<DateTime, Dictionary<string, T>>();
 
+            if (documents == null || documents.Count == 0)
+            {
+                logger.LogToConsole($"Could not find any documents in range: {fromDateTime} to {endDateTime}");
+                return data;
+            }
+
+            logger.LogToConsole($"Found: {data.Count} documents in range: {fromDateTime} to {endDateTime}");
+
             foreach (var cosmosDocument in documents)
             {
                 var documentDate = DateTime.ParseExact(cosmosDocument.DateTime, DailyCodeChurn.DATE_FORMAT, CultureInfo.InvariantCulture);
