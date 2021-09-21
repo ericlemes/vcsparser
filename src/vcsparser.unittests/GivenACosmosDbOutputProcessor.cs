@@ -8,7 +8,7 @@ using vcsparser.core.Database.Cosmos;
 using vcsparser.core.Database.Repository;
 using Xunit;
 
-namespace vcsparser.unittests.Database.Cosmos
+namespace vcsparser.unittests
 {
     public class GivenACosmosDbOutputProcessor
     {

@@ -230,7 +230,9 @@
     <Compile Include="bugdatabase\GivenATimeKeeper.cs" />
     <Compile Include="bugdatabase\GivenAWebRequest.cs" />
     <Compile Include="bugdatabase\GivenAWorkItem.cs" />
-    <Compile Include="Database\Cosmos\GivenACosmosDbOutputProcessor.cs" />
+    <Compile Include="Database\Cosmos\DummyCosmosDocument.cs" />
+    <Compile Include="Database\Cosmos\GivenACosmosConnection.cs" />
+    <Compile Include="GivenACosmosDbOutputProcessor.cs" />
     <Compile Include="Database\Repository\GivenADataDocumentRepository.cs" />
     <Compile Include="Factory\GivenADatabaseFactory.cs" />
     <Compile Include="git\GivenAGitCodeChurnProcessor.cs" />
