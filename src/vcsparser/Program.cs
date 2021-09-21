@@ -121,7 +121,7 @@ namespace vcsparser
             var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, webRequest, fileSystem, jsonParser, logger);
 
             var processor = new GitCodeChurnProcessor(commandLineParser, processWrapper, gitLogParser, cosmosOutputProcessor, bugDatabaseProcessor, logger, a);
-            processor.QueryBugDatabase(false);
+            processor.QueryBugDatabase();
 
             return processor.Extract();
         }

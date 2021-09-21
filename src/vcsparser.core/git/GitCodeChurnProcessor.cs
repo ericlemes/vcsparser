@@ -60,7 +60,7 @@ namespace vcsparser.core.git
             this.changesetProcessor = new ChangesetProcessor(bugRegexes, this.logger);
         }
 
-        public void QueryBugDatabase(bool checkForOutputFile = true)
+        public void QueryBugDatabase()
         {
             if (string.IsNullOrWhiteSpace(bugDatabaseDLL))
                 return;
