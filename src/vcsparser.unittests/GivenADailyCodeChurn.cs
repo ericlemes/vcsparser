@@ -57,5 +57,13 @@ namespace vcsparser.unittests
             var churn2 = new DailyCodeChurn { FileName = "a" };
             Assert.Equal(-1, churn2.CompareTo(churn1));
         }
+
+        [Fact]
+        public void WhenGettingOccurrenceDateShouldReturnExpectedValue()
+        {
+            var dailyCodeChurn = new DailyCodeChurn { Timestamp = "2018/09/05 00:00:00" };
+
+            Assert.Equal(new DateTime(2018, 9, 5), dailyCodeChurn.OccurrenceDate);
+        }
     }
 }
