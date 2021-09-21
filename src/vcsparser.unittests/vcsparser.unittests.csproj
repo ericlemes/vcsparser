@@ -272,7 +272,7 @@
     <Compile Include="GivenAMeasureConverter.cs" />
     <Compile Include="GivenAMetric.cs" />
     <Compile Include="GivenAnEnvironmentImpl.cs" />
-    <Compile Include="GivenAnOuputProcessor.cs" />
+    <Compile Include="GivenAJsonOutputProcessor.cs" />
     <Compile Include="GivenAProcessWrapper.cs" />
     <Compile Include="GivenASonarGenericMetricsProcessor.cs" />
     <Compile Include="GivenAStopWatchWrapper.cs" />
