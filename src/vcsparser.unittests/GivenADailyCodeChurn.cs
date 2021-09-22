@@ -65,5 +65,13 @@ namespace vcsparser.unittests
 
             Assert.Equal(new DateTime(2018, 9, 5), dailyCodeChurn.OccurrenceDate);
         }
+
+
+        [Fact]
+        public void WhenComparingOccurrenceDateAndGetDateTimeASDateTimeShouldReturnTrue()
+        {
+            var dailyCodeChurn = new DailyCodeChurn { Timestamp = "2018/09/05 00:00:00" };
+            Assert.Equal(dailyCodeChurn.OccurrenceDate, dailyCodeChurn.GetDateTimeAsDateTime());
+        }
     }
 }

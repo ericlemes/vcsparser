@@ -110,7 +110,7 @@ namespace vcsparser
             var commandLineParser = new CommandLineParser();
             var gitLogParser = new GitLogParser();
             var logger = new ConsoleLoggerWithTimestamp();
-            var cosmosConnection = new CosmosConnection(new DatabaseFactory(a.CosmosEndpoint, a.CosmosDbKey, null), a.DatabaseId);
+            var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, null), a.DatabaseId);
             var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
             var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, a.CosmosProjectName);
             var bugDatabaseFactory = new BugDatabaseFactory();
@@ -129,7 +129,7 @@ namespace vcsparser
         private static int RunDownloadCodeChurnFromCosmosDbToJsonFiles(DownloadFromCosmosDbCommandLineArgs a)
         {
             var logger = new ConsoleLoggerWithTimestamp();
-            var cosmosConnection = new CosmosConnection(new DatabaseFactory(a.CosmosEndpoint, a.CosmosDbKey, null), a.DatabaseId);
+            var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId);
             var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
             var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, string.Empty);
             var jsonOutputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger, a.OutputType, a.OutputFile);

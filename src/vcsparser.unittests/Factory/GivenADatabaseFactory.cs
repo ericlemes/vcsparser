@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Azure.Documents.Client;
+﻿using Microsoft.Azure.Documents.Client;
 using Newtonsoft.Json;
+using System;
+using vcsparser.core;
 using vcsparser.core.Factory;
 using Xunit;
 
@@ -14,14 +11,19 @@ namespace vcsparser.unittests.Factory
     {
         private readonly string cosmosEndpoint = "https://somedatabase:443";
         private readonly string cosmosDBKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
+        private readonly DownloadFromCosmosDbCommandLineArgs args;
 
-        private readonly DatabaseFactory sut;
+       private readonly DatabaseFactory sut;
 
         public GivenADatabaseFactory()
         {
-            sut = new DatabaseFactory(cosmosEndpoint, cosmosDBKey, new JsonSerializerSettings());
+            args = new DownloadFromCosmosDbCommandLineArgs
+            {
+                CosmosEndpoint = cosmosEndpoint,
+                CosmosDbKey = cosmosDBKey
+            };
+            sut = new DatabaseFactory(args, new JsonSerializerSettings());
         }
-
 
         [Fact]
         public void WhenCreatingDocumentClientShouldAllPropertiesShouldHaveCorrectValues()
@@ -44,6 +46,54 @@ namespace vcsparser.unittests.Factory
                 sut.CosmosConnection("some-id");
             });
             Assert.Null(result);
+        }
+
+        [Fact]
+        public void WhenCreatingDatabaseFactoryWithoutCosmosDbKeyShouldThrowArgumentNullException()
+        {
+            var commandLineArgs = new DownloadFromCosmosDbCommandLineArgs();
+
+            Action action = () =>
+            {
+                 new DatabaseFactory(commandLineArgs, new JsonSerializerSettings());
+            };
+
+            var exception = Assert.Throws<ArgumentNullException>(action);
+            Assert.Equal("Value cannot be null.\r\nParameter name: CosmosDbKey", exception.Message);
+        }
+
+        [Fact]
+        public void WhenCreatingDatabaseFactoryWithoutCosmosEndpointShouldThrowArgumentNullException()
+        {
+            var commandLineArgs = new DownloadFromCosmosDbCommandLineArgs
+            {
+                CosmosDbKey = cosmosDBKey
+            };
+
+            Action action = () =>
+            {
+                new DatabaseFactory(commandLineArgs, new JsonSerializerSettings());
+            };
+
+            var exception = Assert.Throws<ArgumentNullException>(action);
+            Assert.Equal("Value cannot be null.\r\nParameter name: CosmosEndpoint", exception.Message);
+        }
+
+        [Fact]
+        public void WhenCreatingDatabaseFactoryWithGitExtractToCosmosDbCommandLineArgsAndNoEndpointShouldThrowArgumentNullException()
+        {
+            var commandLineArgs = new GitExtractToCosmosDbCommandLineArgs
+            {
+                CosmosDbKey = cosmosDBKey
+            };
+
+            Action action = () =>
+            {
+                new DatabaseFactory(commandLineArgs, new JsonSerializerSettings());
+            };
+
+            var exception = Assert.Throws<ArgumentNullException>(action);
+            Assert.Equal("Value cannot be null.\r\nParameter name: CosmosEndpoint", exception.Message);
         }
     }
 }

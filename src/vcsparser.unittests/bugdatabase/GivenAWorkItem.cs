@@ -61,5 +61,13 @@ namespace vcsparser.unittests.bugdatabase
 
             Assert.Equal(0, compare);
         }
+
+        [Fact]
+        public void WhenComparingOccurrenceDateAndClosedDateShouldReturnTrue()
+        {
+            var closedDate = new DateTime(2019, 04, 16);
+            var dailyCodeChurn = new WorkItem { ClosedDate = closedDate };
+            Assert.Equal(dailyCodeChurn.OccurrenceDate, dailyCodeChurn.ClosedDate);
+        }
     }
 }

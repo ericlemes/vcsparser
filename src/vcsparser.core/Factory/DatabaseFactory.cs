@@ -9,13 +9,31 @@ namespace vcsparser.core.Factory
     public class DatabaseFactory : IDatabaseFactory
     {
         private readonly string cosmosEndpoint;
-        private readonly string cosmosKey;
+        private readonly string cosmosDbKey;
         private readonly JsonSerializerSettings jsonSerializerSettings;
 
-        public DatabaseFactory(string cosmosEndpoint, string cosmosKey, JsonSerializerSettings jsonSerializerSettings)
+        public DatabaseFactory(GitExtractToCosmosDbCommandLineArgs args, JsonSerializerSettings jsonSerializerSettings)
+            : this(args.CosmosDbKey, args.CosmosEndpoint, jsonSerializerSettings)
         {
+
+        }
+
+        public DatabaseFactory(DownloadFromCosmosDbCommandLineArgs args, JsonSerializerSettings jsonSerializerSettings)
+            : this(args.CosmosDbKey, args.CosmosEndpoint, jsonSerializerSettings)
+        {
+
+        }
+
+        private DatabaseFactory(string cosmosDbKey, string cosmosEndpoint,
+            JsonSerializerSettings jsonSerializerSettings)
+        {
+            if (string.IsNullOrEmpty(cosmosDbKey))
+                throw new ArgumentNullException(nameof(cosmosDbKey));
+            if (string.IsNullOrEmpty(cosmosEndpoint))
+                throw new ArgumentNullException(nameof(cosmosEndpoint));
+
             this.cosmosEndpoint = cosmosEndpoint;
-            this.cosmosKey = cosmosKey;
+            this.cosmosDbKey = cosmosDbKey;
             this.jsonSerializerSettings = jsonSerializerSettings;
         }
 
@@ -39,7 +57,7 @@ namespace vcsparser.core.Factory
                 }
             };
 
-            return new DocumentClient(serviceEndPoint, this.cosmosKey, this.jsonSerializerSettings, connectionPolicy, ConsistencyLevel.Session);
+            return new DocumentClient(serviceEndPoint, cosmosDbKey, jsonSerializerSettings, connectionPolicy, ConsistencyLevel.Session);
         }
     }
 }

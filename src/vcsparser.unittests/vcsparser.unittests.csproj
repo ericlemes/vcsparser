@@ -242,6 +242,7 @@
     <Compile Include="GivenADailyCodeChurnProcessor.cs" />
     <Compile Include="GivenAJsonDateTimeCustomConverter.cs" />
     <Compile Include="GivenAJsonOutputData.cs" />
+    <Compile Include="GivenAJsonSerializerSettingsFactory.cs" />
     <Compile Include="GivenAJsonWorkItemParser.cs" />
     <Compile Include="GivenAMeasureConverterRaw.cs" />
     <Compile Include="GivenAnExclusionsProcessor.cs" />
