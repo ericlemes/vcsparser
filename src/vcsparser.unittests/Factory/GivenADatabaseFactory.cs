@@ -59,7 +59,7 @@ namespace vcsparser.unittests.Factory
             };
 
             var exception = Assert.Throws<ArgumentNullException>(action);
-            Assert.Equal("Value cannot be null.\r\nParameter name: CosmosDbKey", exception.Message);
+            Assert.Equal("Value cannot be null.\r\nParameter name: cosmosDbKey", exception.Message);
         }
 
         [Fact]
@@ -76,7 +76,7 @@ namespace vcsparser.unittests.Factory
             };
 
             var exception = Assert.Throws<ArgumentNullException>(action);
-            Assert.Equal("Value cannot be null.\r\nParameter name: CosmosEndpoint", exception.Message);
+            Assert.Equal("Value cannot be null.\r\nParameter name: cosmosEndpoint", exception.Message);
         }
 
         [Fact]
@@ -93,7 +93,7 @@ namespace vcsparser.unittests.Factory
             };
 
             var exception = Assert.Throws<ArgumentNullException>(action);
-            Assert.Equal("Value cannot be null.\r\nParameter name: CosmosEndpoint", exception.Message);
+            Assert.Equal("Value cannot be null.\r\nParameter name: cosmosEndpoint", exception.Message);
         }
     }
 }
