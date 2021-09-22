@@ -95,5 +95,20 @@ namespace vcsparser.unittests.Factory
             var exception = Assert.Throws<ArgumentNullException>(action);
             Assert.Equal("Value cannot be null.\r\nParameter name: cosmosEndpoint", exception.Message);
         }
+
+
+        [Fact]
+        public void WhenCreatingDatabaseFactoryWithGitExtractToCosmosDbCommandLineArgsAndWithProperParametersShouldCreateInstance()
+        {
+            var commandLineArgs = new GitExtractToCosmosDbCommandLineArgs
+            {
+                CosmosDbKey = cosmosDBKey,
+                CosmosEndpoint = cosmosEndpoint
+            };
+
+            var dbFactory = new DatabaseFactory(commandLineArgs, new JsonSerializerSettings());
+
+            Assert.NotNull(dbFactory);
+        }
     }
 }

@@ -123,7 +123,45 @@ namespace vcsparser.unittests.Database.Repository
         }
 
         [Fact]
-        public void WhenDeleteMultipleDocumentsShouldCallCosmosDbWithCorrectQueries2()
+        public void WhenDeleteMultipleDocumentsWithNoExisringDbItemsShouldNeverCallCosmosDb()
+        {
+            var closedDate = DateTime.Now.AddDays(-1);
+
+            var items = new List<WorkItem>
+            {
+                new WorkItem
+                {
+                    WorkItemId = "Id1",
+                    ClosedDate = closedDate,
+                    ChangesetId = "some-changeset-id-1"
+                }
+            };
+
+            var documentsToDelete = new List<CosmosDataDocument<WorkItem>>
+            {
+                new CosmosDataDocument<WorkItem>
+                {
+                    Data = items,
+                    DocumentType = DocumentType.BugDatabase,
+                    DocumentName = "document-name1",
+                    DateTime = closedDate.ToString("yyyy-MM-ddTHH:mm:ss")
+                }
+            };
+            var sqlQuery =
+                $"SELECT * FROM c WHERE c.documentType= '{DocumentType.BugDatabase}' and c.documentName = 'document-name2' and c.occurrenceDate = '{closedDate:yyyy-MM-ddTHH:mm:ss}'";
+
+            cosmosConnectionMock.Setup(x =>
+                    x.CreateDocumentQuery<CosmosDataDocument<WorkItem>>(It.IsAny<string>(), It.Is<SqlQuerySpec>(query => query.QueryText == sqlQuery), null))
+                .Returns(new List<CosmosDataDocument<WorkItem>>().AsEnumerable().AsQueryable());
+
+            sut.DeleteMultipleDocuments(documentsToDelete);
+
+            cosmosConnectionMock.Verify(x => x.CreateDocumentQuery<CosmosDataDocument<WorkItem>>(cosmosContainer, It.Is<SqlQuerySpec>(query => query.QueryText == sqlQuery), null), Times.Never);
+            cosmosConnectionMock.Verify(x => x.DeleteDocument(cosmosContainer, It.IsAny<string>(), null), Times.Never);
+        }
+
+        [Fact]
+        public void WhenGetDocumentsInDateRangeReturnsValuesShouldReturnExpectedValues()
         {
             var startDate = DateTime.Now.AddDays(-2); ;
             var endDate = DateTime.Now;
@@ -163,5 +201,7 @@ namespace vcsparser.unittests.Database.Repository
             Assert.True(document.ClosedDate == toCompare.ClosedDate);
             Assert.True(document.OccurrenceDate == toCompare.OccurrenceDate);
         }
+
+
     }
 }

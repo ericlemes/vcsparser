@@ -247,5 +247,38 @@ namespace vcsparser.unittests.bugdatabase
             this.changesetProcessorMock.Verify(c => c.WorkItemCache, Times.Never);
             Assert.Empty(this.changesetProcessorMock.Object.WorkItemCache);
         }
+
+
+        [Fact]
+        public void WhenProcessCacheFilesFoundNullChangesetShouldSkipIt()
+        {
+            var fileMock = new Mock<IFile>();
+            fileMock.Setup(f => f.FileName).Returns("SomeFile.json");
+
+            this.fileSystemMock
+                .Setup(f => f.GetFiles(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(new List<IFile>() { fileMock.Object });
+
+            this.workItemParser.Setup(w => w.ParseFile(It.IsAny<string>())).Returns(new List<WorkItem>()
+            {
+                new WorkItem
+                {
+                    ChangesetId = "SameChangeSetId",
+                    ClosedDate =  new DateTime(2019, 04, 11),
+                    WorkItemId = "1"
+                },
+                new WorkItem
+                {
+                    ChangesetId = null,
+                    ClosedDate =  new DateTime(2019, 04, 11),
+                    WorkItemId = "2"
+                }
+            });
+
+            this.bugDatabaseProcessor.ProcessCache("some\\path\\to\\cache", this.changesetProcessorMock.Object);
+
+            var list = Assert.Single(this.changesetProcessorMock.Object.WorkItemCache).Value;
+            Assert.Equal(1, list.Count);
+        }
     }
 }
