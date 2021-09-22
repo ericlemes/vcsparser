@@ -56,7 +56,7 @@ namespace vcsparser.core
 
             foreach (var separateFile in separateFilesList)
             {
-                var fileName = $"{filePrefix}_{separateFile.OccurrenceDate:yyyy-MM-dd}_{separateFile.FileName}.json";
+                var fileName = $"{filePrefix}_{separateFile.OccurrenceDate:yyyy-MM-dd}_{separateFile.FileName.Replace('/', '-')}.json";
 
                 ProcessOutputSingleFile(fileName, new List<T> { separateFile });
             }

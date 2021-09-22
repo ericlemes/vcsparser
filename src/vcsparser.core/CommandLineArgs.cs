@@ -187,7 +187,7 @@ namespace vcsparser.core
         [Option("output", HelpText = "File path for single file or file prefix for multiple files.", Required = true)]
         public string OutputFile { get; set; }
 
-        [Option("output-type", HelpText = "SingleFile or MultipleFile. MultipleFile dumps one file per date.", Required = true)]
+        [Option("output-type", HelpText = "SingleFile or MultipleFile. MultipleFile dumps one file per date. Separate file will produce one file per change.", Required = true)]
         public OutputType OutputType { get; set; }
 
         [Option("start-date", HelpText = "Analyzes start date", Required = true)]

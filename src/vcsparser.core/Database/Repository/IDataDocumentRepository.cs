@@ -11,6 +11,6 @@ namespace vcsparser.core.Database.Repository
 
         void CreateDataDocument<T>(CosmosDataDocument<T> document) where T : IOutputJson;
 
-        void DeleteMultipleDocuments<T>(List<CosmosDataDocument<T>> documentsToDelete) where T : IOutputJson;
+        int DeleteMultipleDocuments<T>(List<CosmosDataDocument<T>> documentsToDelete) where T : IOutputJson;
     }
 }

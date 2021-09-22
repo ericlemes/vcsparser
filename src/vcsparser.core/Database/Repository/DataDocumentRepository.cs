@@ -27,8 +27,9 @@ namespace vcsparser.core.Database.Repository
             return cosmosConnection.CreateDocumentQuery<CosmosDataDocument<T>>(cosmosDbContainer, sqlQuery).ToList();
         }
 
-        public void DeleteMultipleDocuments<T>(List<CosmosDataDocument<T>> documentsToDelete) where T : IOutputJson
+        public int DeleteMultipleDocuments<T>(List<CosmosDataDocument<T>> documentsToDelete) where T : IOutputJson
         {
+            var deletedDocuments = 0;
             foreach (var documentToDelete in documentsToDelete)
             {
                 var sqlQuery = new SqlQuerySpec($"SELECT * FROM c WHERE c.documentType= '{documentToDelete.DocumentType}' and c.documentName = '{documentToDelete.DocumentName}' and c.occurrenceDate = '{documentToDelete.DateTime:yyyy-MM-ddTHH:mm:ss}'");
@@ -37,8 +38,14 @@ namespace vcsparser.core.Database.Repository
                 if (result.Count <= 0) continue;
 
                 foreach (var cosmosDataDocuments in result)
+                {
+                    deletedDocuments++;
                     cosmosConnection.DeleteDocument(cosmosDbContainer, cosmosDataDocuments.Id).Wait();
+
+                }
             }
+
+            return deletedDocuments;
         }
     }
 }

@@ -26,7 +26,9 @@ namespace vcsparser.core
            
             logger.LogToConsole($"Found: {listOfFilesPerDay.Count} documents to upload");
 
-            dataDocumentRepository.DeleteMultipleDocuments(listOfFilesPerDay);
+            var documentsDeleted = dataDocumentRepository.DeleteMultipleDocuments(listOfFilesPerDay);
+
+            logger.LogToConsole($"Deleted: {listOfFilesPerDay.Count} existing documents");
 
             foreach (var document in listOfFilesPerDay)
                 dataDocumentRepository.CreateDataDocument(document);
@@ -47,7 +49,7 @@ namespace vcsparser.core
 
             foreach (var cosmosDocument in documents)
             {
-                var documentDate = DateTime.ParseExact(cosmosDocument.DateTime, DailyCodeChurn.DATE_FORMAT, CultureInfo.InvariantCulture);
+                var documentDate = DateTime.ParseExact(cosmosDocument.DateTime, CosmosDataDocument<T>.DATE_FORMAT, CultureInfo.InvariantCulture);
                 if (!data.ContainsKey(documentDate))
                 {
                     var outputData = cosmosDocument.Data.ToDictionary(fileData => fileData.FileName);
