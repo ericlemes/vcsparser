@@ -45,7 +45,7 @@ namespace vcsparser
             var commandLineParser = new CommandLineParser();
             var logger = new ConsoleLoggerWithTimestamp();
             var stopWatch = new StopWatchWrapper();
-            var outputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger, a.OutputType, a.OutputFile); var bugDatabaseFactory = new BugDatabaseFactory();
+            var outputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger); var bugDatabaseFactory = new BugDatabaseFactory();
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
             var fileSystem = new FileSystem();
@@ -63,7 +63,7 @@ namespace vcsparser
             var commandLineParser = new CommandLineParser();
             var gitLogParser = new GitLogParser();
             var logger = new ConsoleLoggerWithTimestamp();
-            var outputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger, a.OutputType, a.OutputFile);
+            var outputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger);
             var bugDatabaseFactory = new BugDatabaseFactory();
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
@@ -132,20 +132,20 @@ namespace vcsparser
             var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId);
             var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
             var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, string.Empty);
-            var jsonOutputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger, a.OutputType, a.OutputFile);
+            var jsonOutputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger);
 
             switch (a.DocumentType)
             {
                 case DocumentType.BugDatabase:
                 {
                     var data = cosmosOutputProcessor.GetDocumentsInDateRange<WorkItem>(a.StartDate.Value, a.EndDate.Value);
-                    jsonOutputProcessor.ProcessOutput(data);
+                    jsonOutputProcessor.ProcessOutput(a.OutputType, a.OutputFile, data);
                     break;
                 }
                 case DocumentType.CodeChurn:
                 {
                     var data = cosmosOutputProcessor.GetDocumentsInDateRange<DailyCodeChurn>(a.StartDate.Value, a.EndDate.Value);
-                    jsonOutputProcessor.ProcessOutput(data);
+                    jsonOutputProcessor.ProcessOutput(a.OutputType, a.OutputFile, data);
                     break;
                 }
                 default:

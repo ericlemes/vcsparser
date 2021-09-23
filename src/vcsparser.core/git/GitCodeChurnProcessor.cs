@@ -23,6 +23,10 @@ namespace vcsparser.core.git
 
         private readonly ILogger logger;
 
+        private readonly string outputFile;
+
+        private readonly OutputType outputType;
+
         private readonly string bugDatabaseDLL;
 
         private readonly string bugDatabaseOutputFile;
@@ -33,17 +37,20 @@ namespace vcsparser.core.git
 
         private readonly string bugRegexes;
 
-        public GitCodeChurnProcessor(ICommandLineParser commandLineParser, IProcessWrapper processWrapper, IGitLogParser gitLogParser, IOutputProcessor outputProcessor, IBugDatabaseProcessor bugDatabaseProcessor, ILogger logger, GitExtractToCosmosDbCommandLineArgs commandLineArgs) : this(commandLineParser, processWrapper, gitLogParser, outputProcessor, bugDatabaseProcessor, logger, commandLineArgs.BugRegexes, commandLineArgs.BugDatabaseDLL, string.Empty, commandLineArgs.BugDatabaseDllArgs, commandLineArgs.GitLogCommand) { }
+        private readonly OutputType bugDatabaseOutputType;
 
-        public GitCodeChurnProcessor(ICommandLineParser commandLineParser, IProcessWrapper processWrapper, IGitLogParser gitLogParser, IOutputProcessor outputProcessor, IBugDatabaseProcessor bugDatabaseProcessor, ILogger logger, GitExtractCommandLineArgs commandLineArgs) : this(commandLineParser, processWrapper, gitLogParser, outputProcessor, bugDatabaseProcessor, logger, commandLineArgs.BugRegexes, commandLineArgs.BugDatabaseDLL, commandLineArgs.BugDatabaseOutputFile, commandLineArgs.BugDatabaseDllArgs, commandLineArgs.GitLogCommand)
+        public GitCodeChurnProcessor(ICommandLineParser commandLineParser, IProcessWrapper processWrapper, IGitLogParser gitLogParser, IOutputProcessor outputProcessor, IBugDatabaseProcessor bugDatabaseProcessor, ILogger logger, GitExtractToCosmosDbCommandLineArgs commandLineArgs) : this(commandLineParser, processWrapper, gitLogParser, outputProcessor, bugDatabaseProcessor, logger, string.Empty, OutputType.CosmosDb, commandLineArgs.BugRegexes, commandLineArgs.BugDatabaseDLL, string.Empty, commandLineArgs.BugDatabaseDllArgs, commandLineArgs.GitLogCommand) { }
+
+        public GitCodeChurnProcessor(ICommandLineParser commandLineParser, IProcessWrapper processWrapper, IGitLogParser gitLogParser, IOutputProcessor outputProcessor, IBugDatabaseProcessor bugDatabaseProcessor, ILogger logger, GitExtractCommandLineArgs commandLineArgs) : this(commandLineParser, processWrapper, gitLogParser, outputProcessor, bugDatabaseProcessor, logger, commandLineArgs.OutputFile, commandLineArgs.OutputType, commandLineArgs.BugRegexes, commandLineArgs.BugDatabaseDLL, commandLineArgs.BugDatabaseOutputFile, commandLineArgs.BugDatabaseDllArgs, commandLineArgs.GitLogCommand)
         {
             if (string.IsNullOrWhiteSpace(bugDatabaseDLL) == false && string.IsNullOrWhiteSpace(bugDatabaseOutputFile))
                 throw new Exception("Dll specified without known output file");
 
             this.bugDatabaseOutputFile = commandLineArgs.BugDatabaseOutputFile;
+            this.bugDatabaseOutputType = commandLineArgs.BugDatabaseOutputType;
         }
 
-        private GitCodeChurnProcessor(ICommandLineParser commandLineParser, IProcessWrapper processWrapper, IGitLogParser gitLogParser, IOutputProcessor outputProcessor, IBugDatabaseProcessor bugDatabaseProcessor, ILogger logger, string bugRegexes, string bugDatabaseDLL, string bugDatabaseOutputFile, IEnumerable<string> bugDatabaseDllArgs, string gitLogCommand)
+        private GitCodeChurnProcessor(ICommandLineParser commandLineParser, IProcessWrapper processWrapper, IGitLogParser gitLogParser, IOutputProcessor outputProcessor, IBugDatabaseProcessor bugDatabaseProcessor, ILogger logger, string outputFile, OutputType outputType, string bugRegexes, string bugDatabaseDLL, string bugDatabaseOutputFile, IEnumerable<string> bugDatabaseDllArgs, string gitLogCommand)
         {
             this.commandLineParser = commandLineParser;
             this.processWrapper = processWrapper;
@@ -51,6 +58,8 @@ namespace vcsparser.core.git
             this.outputProcessor = outputProcessor;
             this.bugDatabaseProcessor = bugDatabaseProcessor;
             this.logger = logger;
+            this.outputType = outputType;
+            this.outputFile = outputFile;
             this.bugDatabaseDLL = bugDatabaseDLL;
             this.bugDatabaseOutputFile = bugDatabaseOutputFile;
             this.bugDatabaseDllArgs = bugDatabaseDllArgs;
@@ -69,7 +78,7 @@ namespace vcsparser.core.git
             
             logger.LogToConsole(bugCache.Count + " bug database dates to output");
 
-            this.outputProcessor.ProcessOutput(bugCache);
+            this.outputProcessor.ProcessOutput(bugDatabaseOutputType, bugDatabaseOutputFile, bugCache);
         }
 
         public int Extract()
@@ -93,7 +102,7 @@ namespace vcsparser.core.git
                 logger.LogToConsole(String.Format("Changesets with bugs: {0}/{1}", this.changesetProcessor.ChangesetsWithBugs, changesets.Count));
             logger.LogToConsole(this.changesetProcessor.Output.Count + " dates to output");
 
-            this.outputProcessor.ProcessOutput(this.changesetProcessor.Output);
+            this.outputProcessor.ProcessOutput(outputType, outputFile, this.changesetProcessor.Output);
             return 0;
         }
     }

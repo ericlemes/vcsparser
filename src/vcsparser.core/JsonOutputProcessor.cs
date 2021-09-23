@@ -14,18 +14,14 @@ namespace vcsparser.core
     {
         private readonly IStreamFactory streamFactory;
         private readonly ILogger logger;
-        private readonly OutputType outputType;
-        private readonly string outputFile;
 
-        public JsonOutputProcessor(IStreamFactory streamFactory, ILogger logger, OutputType outputType, string outputFile)
+        public JsonOutputProcessor(IStreamFactory streamFactory, ILogger logger)
         {
             this.streamFactory = streamFactory;
             this.logger = logger;
-            this.outputType = outputType;
-            this.outputFile = outputFile;
         }
 
-        public void ProcessOutput<T>(Dictionary<DateTime, Dictionary<string, T>> dict) where T : IOutputJson
+        public void ProcessOutput<T>(OutputType outputType, string outputFile, Dictionary<DateTime, Dictionary<string, T>> dict) where T : IOutputJson
         {
             if (outputType == OutputType.SingleFile)
                 ProcessOutputSingleFile(outputFile, dict);

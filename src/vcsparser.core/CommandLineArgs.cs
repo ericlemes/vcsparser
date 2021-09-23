@@ -13,7 +13,8 @@ namespace vcsparser.core
     {
         SingleFile,
         MultipleFile,
-        SeparateFiles
+        SeparateFiles,
+        CosmosDb
     }
 
     [Verb("p4extract", HelpText = "Extracts code churn information from p4 and outputs to json")]

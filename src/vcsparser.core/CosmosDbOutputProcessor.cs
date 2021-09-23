@@ -20,7 +20,7 @@ namespace vcsparser.core
             this.projectName = projectName;
         }
 
-        public void ProcessOutput<T>(Dictionary<DateTime, Dictionary<string, T>> dict) where T : IOutputJson
+        public void ProcessOutput<T>(OutputType outputType, string outputFile, Dictionary<DateTime, Dictionary<string, T>> dict) where T : IOutputJson
         {
             var listOfFilesPerDay = (from data in dict from valueValue in data.Value.Values select ConvertOutputJsonToCosmosDataDocument(valueValue, GetDocumentType<T>(), data.Key)).ToList();
            
@@ -28,7 +28,7 @@ namespace vcsparser.core
 
             var documentsDeleted = dataDocumentRepository.DeleteMultipleDocuments(listOfFilesPerDay);
 
-            logger.LogToConsole($"Deleted: {listOfFilesPerDay.Count} existing documents");
+            logger.LogToConsole($"Deleted: {documentsDeleted} existing documents");
 
             foreach (var document in listOfFilesPerDay)
                 dataDocumentRepository.CreateDataDocument(document);

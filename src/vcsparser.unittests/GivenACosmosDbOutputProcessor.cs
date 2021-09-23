@@ -59,7 +59,7 @@ namespace vcsparser.unittests
                 { dateTime, new Dictionary<string, DailyCodeChurn> { {fileName, codeChurn}  } }
             };
 
-            sut.ProcessOutput(dict);
+            sut.ProcessOutput(OutputType.CosmosDb, string.Empty, dict);
             dataDocumentRepositoryMock.Verify(x => x.DeleteMultipleDocuments(It.Is<List<CosmosDataDocument<DailyCodeChurn>>>(items => 
                 items.Any(y => CompareDailyCodeChurn(y.Data[0], codeChurn)))), Times.Once);
 

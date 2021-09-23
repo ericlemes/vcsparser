@@ -23,9 +23,11 @@ namespace vcsparser.unittests
             this.outputStream = new MemoryStream();
 
             this.streamFactoryMock = new Mock<IStreamFactory>();
-            this.loggerMock = new Mock<ILogger>();
             this.streamFactoryMock.Setup(m => m.createFileStream("filename", FileMode.Create, FileAccess.Write)).Returns(outputStream);
-            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object, OutputType.SingleFile, "filename");
+
+            this.loggerMock = new Mock<ILogger>();
+
+            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object);
         }
 
         [Fact]
@@ -63,7 +65,7 @@ namespace vcsparser.unittests
                 }
             };
 
-            this.jsonOutputProcessor.ProcessOutput(dict);
+            this.jsonOutputProcessor.ProcessOutput(OutputType.SingleFile, "filename", dict);
             var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.ToArray());
             Assert.NotEmpty(resultString);
             Assert.Equal(
@@ -108,8 +110,6 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenDailyCodeChurnProcessingOutputAndNoChurnAndMultipleFilesShouldReturnNoOutput()
         {
-            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object, OutputType.MultipleFile, "filename");
-
             var dict = new Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>()
             {
                 { new DateTime(2018, 08, 30), new Dictionary<string, DailyCodeChurn>()
@@ -119,7 +119,7 @@ namespace vcsparser.unittests
                 }
             };
 
-            this.jsonOutputProcessor.ProcessOutput(dict);
+            this.jsonOutputProcessor.ProcessOutput(OutputType.MultipleFile, "filename", dict);
             var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.GetBuffer());
             Assert.Empty(resultString);
         }
@@ -127,8 +127,6 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenDailyCodeChurnProcessingOutputSplitingDateShouldWriteMultipleFiles()
         {
-            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object, OutputType.MultipleFile, "filename");
-
             var dict = new Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>();
             dict.Add(new DateTime(2018, 08, 30), new Dictionary<string, DailyCodeChurn>());
             dict[new DateTime(2018, 08, 30)].Add("abc", new DailyCodeChurn()
@@ -169,8 +167,6 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenWorkItemProcessingOutputShouldWriteJsonFile()
         {
-            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object, OutputType.SingleFile, "filename");
-
             var dict = new Dictionary<DateTime, Dictionary<string, WorkItem>>()
             {
                 { new DateTime(2018, 08, 30), new Dictionary<string, WorkItem>()
@@ -188,7 +184,7 @@ namespace vcsparser.unittests
                 }
             };
 
-            this.jsonOutputProcessor.ProcessOutput(dict);
+            this.jsonOutputProcessor.ProcessOutput(OutputType.SingleFile, "filename", dict);
             var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.ToArray());
             Assert.NotEmpty(resultString);
             Assert.Equal(
@@ -198,15 +194,13 @@ namespace vcsparser.unittests
                 "\"WorkItemId\":\"Some Work Item Id\"," +
                 "\"ChangesetId\":\"Some Change Set Id\"," +
                 "\"OccurrenceDate\":\"2018/08/30 00:00:00\"," +
-                "\"FileName\":\"Some Work Item Id_Some Change Set Id\"" +
+                "\"FileName\":\"Some Work Item Id_Some Change Set Id\""+
                 "}]}", resultString);
         }
 
         [Fact]
         public void WhenWorkitemProcessingOutputAnChangeSetAndSingleFileShouldReturnNoOutput()
         {
-            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object, OutputType.SingleFile, "filename");
-
             var dict = new Dictionary<DateTime, Dictionary<string, WorkItem>>()
             {
                 { new DateTime(2018, 08, 30), new Dictionary<string, WorkItem>()
@@ -226,8 +220,6 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenWorkItemProcessingOutputAndNoChangeSetAndMultipleFilesShouldReturnNoOutput()
         {
-            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object, OutputType.MultipleFile, "filename");
-
             var dict = new Dictionary<DateTime, Dictionary<string, WorkItem>>()
             {
                 { new DateTime(2018, 08, 30), new Dictionary<string, WorkItem>()
@@ -237,7 +229,7 @@ namespace vcsparser.unittests
                 }
             };
 
-            this.jsonOutputProcessor.ProcessOutput(dict);
+            this.jsonOutputProcessor.ProcessOutput(OutputType.MultipleFile, "filename", dict);
             var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.GetBuffer());
             Assert.Empty(resultString);
         }
@@ -245,8 +237,6 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenWorkItemProcessingOutputSplitingDateShouldWriteMultipleFiles()
         {
-            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object, OutputType.MultipleFile, "filename");
-
             var dict = new Dictionary<DateTime, Dictionary<string, WorkItem>>();
             dict.Add(new DateTime(2018, 08, 30), new Dictionary<string, WorkItem>());
             dict[new DateTime(2018, 08, 30)].Add("Some Change Set Id 1", new WorkItem()
@@ -300,8 +290,6 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenConvertToOrderedListPerDayUnknownShouldReturnNoOutput()
         {
-            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object, OutputType.MultipleFile, "filename");
-
             var dict = new Dictionary<DateTime, Dictionary<string, SomeUnimplementedClass>>()
             {
                 { new DateTime(2018, 08, 30), new Dictionary<string, SomeUnimplementedClass>()
@@ -319,7 +307,7 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenConvertToOrderedListAsSeparateFilesShouldReturnExpectedOutput()
         {
-            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object, OutputType.SeparateFiles, "filename");
+            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object);
 
             var dict = new Dictionary<DateTime, Dictionary<string, WorkItem>>();
             dict.Add(new DateTime(2018, 08, 30), new Dictionary<string, WorkItem>());
@@ -355,7 +343,7 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenProcessingSeparateFilesOutputShouldWriteJsonFile()
         {
-            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object, OutputType.SeparateFiles, "filename");
+            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object);
 
             var dict = new Dictionary<DateTime, Dictionary<string, WorkItem>>();
             dict.Add(new DateTime(2018, 08, 30), new Dictionary<string, WorkItem>());
@@ -370,7 +358,7 @@ namespace vcsparser.unittests
 
             this.streamFactoryMock.Setup(m => m.createFileStream("filename_2018-08-30_Some Work Item Id_Some Change Set Id.json", FileMode.Create, FileAccess.Write)).Returns(output);
 
-            this.jsonOutputProcessor.ProcessOutput(dict);
+            this.jsonOutputProcessor.ProcessOutput(OutputType.SeparateFiles, "filename", dict);
             var resultString = Encoding.UTF8.GetString(output.ToArray());
             Assert.NotEmpty(resultString);
             Assert.Equal(
@@ -383,7 +371,6 @@ namespace vcsparser.unittests
                 "\"FileName\":\"Some Work Item Id_Some Change Set Id\"" +
                 "}]}", resultString);
         }
-
     }
 
     class SomeUnimplementedClass : IOutputJson

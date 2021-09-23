@@ -9,7 +9,7 @@ namespace vcsparser.core
 {
     public interface IOutputProcessor
     {
-        void ProcessOutput<T>(Dictionary<DateTime, Dictionary<string, T>> dict) where T : IOutputJson;
+        void ProcessOutput<T>(OutputType outputType, string outputFile, Dictionary<DateTime, Dictionary<string, T>> dict) where T : IOutputJson;
     }
 
     public interface IOutputJson
