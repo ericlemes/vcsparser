@@ -91,10 +91,9 @@ namespace vcsparser.unittests.Database.Cosmos
         }
 
         [Fact]
-        public async void WhenCreateDocumentAndOptionsNullShouldCreateOptionsAndReturnResponse()
+        public void WhenCreateDocumentAndOptionsNullShouldCreateOptionsAndReturnResponse()
         {
-            var result = await sut.CreateDocument(someCollectionId, someDummyDocument);
-            await Task.Yield();
+            var result = sut.CreateDocument(someCollectionId, someDummyDocument).Result;
 
             documentClient.Verify(x =>x.CreateDocumentAsync(someCollectionUri, someDummyDocument, It.IsAny<RequestOptions>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
             
@@ -139,10 +138,9 @@ namespace vcsparser.unittests.Database.Cosmos
 
 
         [Fact]
-        public async void WhenDeleteDocumentByDocumentIdAndOptionsNullShouldDeleteDocumentAsync()
+        public void WhenDeleteDocumentByDocumentIdAndOptionsNullShouldDeleteDocumentAsync()
         {
-            await sut.DeleteDocument(someCollectionId, someDocumentId);
-            await Task.Yield();
+            sut.DeleteDocument(someCollectionId, someDocumentId).Wait();
 
             documentClient.Verify(x =>x.DeleteDocumentAsync(someDocumentUri, It.Is<RequestOptions>(o =>
                 o.PartitionKey.Equals(new PartitionKey(someDocumentId))
@@ -150,9 +148,9 @@ namespace vcsparser.unittests.Database.Cosmos
         }
 
         [Fact]
-        public async void WhenDeleteDocumentByDocumentIdShouldDeleteDocumentAsync()
+        public void WhenDeleteDocumentByDocumentIdShouldDeleteDocumentAsync()
         {
-            await sut.DeleteDocument(someCollectionId, someDocumentId, someRequestOptions);
+            sut.DeleteDocument(someCollectionId, someDocumentId, someRequestOptions).Wait();
 
             documentClient.Verify(x=> x.DeleteDocumentAsync(someDocumentUri, someRequestOptions, It.IsAny<CancellationToken>()), Times.Once);
         }
