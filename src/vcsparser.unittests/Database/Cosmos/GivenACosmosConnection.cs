@@ -142,7 +142,6 @@ namespace vcsparser.unittests.Database.Cosmos
         public void WhenDeleteDocumentByDocumentIdAndOptionsNullShouldDeleteDocumentAsync()
         {
             sut.DeleteDocument(someCollectionId, someDocumentId).Wait();
-            Thread.Sleep(200);
 
             documentClient.Verify(x =>x.DeleteDocumentAsync(someDocumentUri, It.Is<RequestOptions>(o =>
                 o.PartitionKey.Equals(new PartitionKey(someDocumentId))
