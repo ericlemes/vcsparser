@@ -71,7 +71,6 @@ namespace vcsparser.unittests
             Assert.Equal(
                 "{\"SchemaVersion\":" + JsonOutputData<DailyCodeChurn>.CurrentVersion + "," +
                 "\"Data\":[{" +
-                "\"OccurrenceDate\":\"2018/08/30 00:00:00\"," +
                 "\"Timestamp\":\"2018/08/30 00:00:00\"," +
                 "\"FileName\":\"abc\"," +
                 "\"Extension\":\"\"," +
@@ -192,9 +191,7 @@ namespace vcsparser.unittests
                 "\"Data\":[{" +
                 "\"ClosedDate\":\"2018/08/30 00:00:00\"," +
                 "\"WorkItemId\":\"Some Work Item Id\"," +
-                "\"ChangesetId\":\"Some Change Set Id\"," +
-                "\"OccurrenceDate\":\"2018/08/30 00:00:00\"," +
-                "\"FileName\":\"Some Work Item Id_Some Change Set Id\""+
+                "\"ChangesetId\":\"Some Change Set Id\"" +
                 "}]}", resultString);
         }
 
@@ -366,9 +363,7 @@ namespace vcsparser.unittests
                 "\"Data\":[{" +
                 "\"ClosedDate\":\"2018/08/30 00:00:00\"," +
                 "\"WorkItemId\":\"Some Work Item Id\"," +
-                "\"ChangesetId\":\"Some Change Set Id\"," +
-                "\"OccurrenceDate\":\"2018/08/30 00:00:00\"," +
-                "\"FileName\":\"Some Work Item Id_Some Change Set Id\"" +
+                "\"ChangesetId\":\"Some Change Set Id\"" +
                 "}]}", resultString);
         }
 
@@ -401,8 +396,9 @@ namespace vcsparser.unittests
     {
         public string SomeData { get; set; }
 
-        public DateTime OccurrenceDate { get; set; }
-
-        public string FileName { get; set; }
+        public string GetFileLongName()
+        {
+            return SomeData;
+        }
     }
 }

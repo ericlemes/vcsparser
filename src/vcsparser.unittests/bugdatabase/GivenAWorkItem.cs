@@ -63,11 +63,11 @@ namespace vcsparser.unittests.bugdatabase
         }
 
         [Fact]
-        public void WhenComparingOccurrenceDateAndClosedDateShouldReturnTrue()
+        public void WhenComparingGetFileLongNameShouldReturnExpectedValue()
         {
             var closedDate = new DateTime(2019, 04, 16);
-            var dailyCodeChurn = new WorkItem { ClosedDate = closedDate };
-            Assert.Equal(dailyCodeChurn.OccurrenceDate, dailyCodeChurn.ClosedDate);
+            var dailyCodeChurn = new WorkItem { ClosedDate = closedDate, ChangesetId = "some-changeset-id", WorkItemId = "12345"};
+            Assert.Equal("2019-04-16_12345_some-changeset-id", dailyCodeChurn.GetFileLongName());
         }
     }
 }

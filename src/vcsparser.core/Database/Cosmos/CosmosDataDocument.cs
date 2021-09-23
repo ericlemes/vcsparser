@@ -11,8 +11,8 @@ namespace vcsparser.core.Database.Cosmos
         [JsonProperty("data")]
         public List<T> Data { get; set; }
 
-        [JsonProperty("documentName")]
-        public string DocumentName { get; set; }
+        [JsonProperty("projectName")]
+        public string ProjectName { get; set; }
 
         [JsonProperty("occurrenceDate")]
         public string DateTime { get; set; }

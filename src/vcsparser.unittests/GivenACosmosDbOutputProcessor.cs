@@ -130,9 +130,7 @@ namespace vcsparser.unittests
 
         private bool CompareWorkitems(WorkItem item1, WorkItem item2)
         {
-            return item1.FileName == item2.FileName
-                   && item1.OccurrenceDate == item2.OccurrenceDate
-                   && item1.WorkItemId == item2.WorkItemId
+            return item1.WorkItemId == item2.WorkItemId
                    && item1.ChangesetId == item2.ChangesetId
                    && item1.ClosedDate == item2.ClosedDate;
         }
@@ -140,11 +138,9 @@ namespace vcsparser.unittests
         private bool CompareDailyCodeChurn(DailyCodeChurn item1, DailyCodeChurn item2)
         {
             return item1.FileName == item2.FileName 
-                   && item1.OccurrenceDate == item2.OccurrenceDate 
                    && item1.Added == item2.Added 
                    && item1.AddedWithFixes == item2.AddedWithFixes
                    && item1.Authors.Count == item2.Authors.Count 
-                   && item1.OccurrenceDate == item2.OccurrenceDate
                    && item1.BugDatabase == item2.BugDatabase
                    && item1.ChangesAfter == item2.ChangesAfter
                    && item1.ChangesAfterWithFixes == item2.ChangesAfterWithFixes

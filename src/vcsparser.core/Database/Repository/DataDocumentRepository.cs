@@ -32,7 +32,7 @@ namespace vcsparser.core.Database.Repository
             var deletedDocuments = 0;
             foreach (var documentToDelete in documentsToDelete)
             {
-                var sqlQuery = new SqlQuerySpec($"SELECT * FROM c WHERE c.documentType= '{documentToDelete.DocumentType}' and c.documentName = '{documentToDelete.DocumentName}' and c.occurrenceDate = '{documentToDelete.DateTime:yyyy-MM-ddTHH:mm:ss}'");
+                var sqlQuery = new SqlQuerySpec($"SELECT * FROM c WHERE c.documentType= '{documentToDelete.DocumentType}' and c.projectName = '{documentToDelete.ProjectName}' and c.occurrenceDate = '{documentToDelete.DateTime:yyyy-MM-ddTHH:mm:ss}'");
 
                 var result = cosmosConnection.CreateDocumentQuery<CosmosDataDocument<T>>(cosmosDbContainer, sqlQuery, null).ToList();if (result.Count <= 0) continue;
 

@@ -14,9 +14,6 @@ namespace vcsparser.core.bugdatabase
         public DateTime ClosedDate { get; set; }
         public string WorkItemId { get; set; }
         public string ChangesetId { get; set; }
-        public DateTime OccurrenceDate => ClosedDate;
-
-        public string FileName =>$"{WorkItemId}_{ChangesetId}";
 
         public int CompareTo(object obj)
         {
@@ -27,6 +24,10 @@ namespace vcsparser.core.bugdatabase
                 return dates;
             else
                 return this.WorkItemId.CompareTo(dest.WorkItemId);
+        }
+        public string GetFileLongName()
+        {
+            return $"{ClosedDate:yyyy-MM-dd}_{WorkItemId}_{ChangesetId}";
         }
     }
 }

@@ -59,19 +59,12 @@ namespace vcsparser.unittests
         }
 
         [Fact]
-        public void WhenGettingOccurrenceDateShouldReturnExpectedValue()
+        public void WhenGettingGetFileLongNameShouldReturnExpectedValue()
         {
-            var dailyCodeChurn = new DailyCodeChurn { Timestamp = "2018/09/05 00:00:00" };
+            var dailyCodeChurn = new DailyCodeChurn { Timestamp = "2018/09/05 00:00:00", FileName = "some-file-name"};
 
-            Assert.Equal(new DateTime(2018, 9, 5), dailyCodeChurn.OccurrenceDate);
+            Assert.Equal("2018-09-05_some-file-name", dailyCodeChurn.GetFileLongName());
         }
 
-
-        [Fact]
-        public void WhenComparingOccurrenceDateAndGetDateTimeASDateTimeShouldReturnTrue()
-        {
-            var dailyCodeChurn = new DailyCodeChurn { Timestamp = "2018/09/05 00:00:00" };
-            Assert.Equal(dailyCodeChurn.OccurrenceDate, dailyCodeChurn.GetDateTimeAsDateTime());
-        }
     }
 }

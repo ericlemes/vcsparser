@@ -11,8 +11,6 @@ namespace vcsparser.core
 {
     public class DailyCodeChurn : IComparable, IOutputJson
     {
-        public DateTime OccurrenceDate => GetDateTimeAsDateTime();
-
         public DailyCodeChurn()
         {
             this.Authors = new List<DailyCodeChurnAuthor>();
@@ -86,6 +84,11 @@ namespace vcsparser.core
         public DateTime GetDateTimeAsDateTime()
         {
             return DateTime.ParseExact(this.Timestamp, DATE_FORMAT, CultureInfo.InvariantCulture);
+        }
+
+        public string GetFileLongName()
+        {
+            return $"{GetDateTimeAsDateTime():yyyy-MM-dd}_{FileName.Replace('/', '-')}";
         }
     }
 }

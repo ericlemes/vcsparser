@@ -66,7 +66,7 @@ namespace vcsparser.unittests.Database.Repository
                 {
                     Data = workItems1,
                     DocumentType = DocumentType.BugDatabase,
-                    DocumentName = "document-name1",
+                    ProjectName = "document-name1",
                     DateTime = closedDate1.ToString("yyyy-MM-ddTHH:mm:ss")
                 }
             };
@@ -77,7 +77,7 @@ namespace vcsparser.unittests.Database.Repository
                 {
                     Data = workItems2,
                     DocumentType = DocumentType.BugDatabase,
-                    DocumentName = "document-name2",
+                    ProjectName = "document-name2",
                     DateTime = closedDate2.ToString("yyyy-MM-ddTHH:mm:ss")
                 }
             };
@@ -88,7 +88,7 @@ namespace vcsparser.unittests.Database.Repository
                 {
                     Data = workItems1,
                     DocumentType = DocumentType.BugDatabase,
-                    DocumentName = "document-name1",
+                    ProjectName = "document-name1",
                     DateTime = closedDate1.ToString("yyyy-MM-ddTHH:mm:ss")
                 },
 
@@ -96,16 +96,16 @@ namespace vcsparser.unittests.Database.Repository
                 {
                     Data = workItems2,
                     DocumentType = DocumentType.BugDatabase,
-                    DocumentName = "document-name2",
+                    ProjectName = "document-name2",
                     DateTime = closedDate2.ToString("yyyy-MM-ddTHH:mm:ss")
                 }
             };
 
             var sqlQuery1 =
-                $"SELECT * FROM c WHERE c.documentType= '{DocumentType.BugDatabase}' and c.documentName = 'document-name1' and c.occurrenceDate = '{closedDate1:yyyy-MM-ddTHH:mm:ss}'";
+                $"SELECT * FROM c WHERE c.documentType= '{DocumentType.BugDatabase}' and c.projectName = 'document-name1' and c.occurrenceDate = '{closedDate1:yyyy-MM-ddTHH:mm:ss}'";
 
             var sqlQuery2 =
-                $"SELECT * FROM c WHERE c.documentType= '{DocumentType.BugDatabase}' and c.documentName = 'document-name2' and c.occurrenceDate = '{closedDate2:yyyy-MM-ddTHH:mm:ss}'";
+                $"SELECT * FROM c WHERE c.documentType= '{DocumentType.BugDatabase}' and c.projectName = 'document-name2' and c.occurrenceDate = '{closedDate2:yyyy-MM-ddTHH:mm:ss}'";
 
             cosmosConnectionMock.Setup(x =>
                     x.CreateDocumentQuery<CosmosDataDocument<WorkItem>>(It.IsAny<string>(), It.Is<SqlQuerySpec>(query => query.QueryText == sqlQuery1), null))
@@ -143,7 +143,7 @@ namespace vcsparser.unittests.Database.Repository
                 {
                     Data = items,
                     DocumentType = DocumentType.BugDatabase,
-                    DocumentName = "document-name1",
+                    ProjectName = "document-name1",
                     DateTime = closedDate.ToString("yyyy-MM-ddTHH:mm:ss")
                 }
             };
@@ -196,10 +196,8 @@ namespace vcsparser.unittests.Database.Repository
             var toCompare = toReturn[0].Data[0];
 
             Assert.True(document.ChangesetId == toCompare.ChangesetId);
-            Assert.True(document.FileName == toCompare.FileName);
             Assert.True(document.WorkItemId == toCompare.WorkItemId);
             Assert.True(document.ClosedDate == toCompare.ClosedDate);
-            Assert.True(document.OccurrenceDate == toCompare.OccurrenceDate);
         }
 
 

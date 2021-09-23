@@ -52,12 +52,12 @@ namespace vcsparser.core
                 var documentDate = DateTime.ParseExact(cosmosDocument.DateTime, CosmosDataDocument<T>.DATE_FORMAT, CultureInfo.InvariantCulture);
                 if (!data.ContainsKey(documentDate))
                 {
-                    var outputData = cosmosDocument.Data.ToDictionary(fileData => fileData.FileName);
+                    var outputData = cosmosDocument.Data.ToDictionary(fileData => fileData.GetFileLongName());
                     data.Add(documentDate, outputData);
                 }
                 else
                     foreach (var existingData in cosmosDocument.Data)
-                        data[documentDate].Add(existingData.FileName, existingData);
+                        data[documentDate].Add(existingData.GetFileLongName(), existingData);
             }
 
             return data;
@@ -65,7 +65,7 @@ namespace vcsparser.core
 
         private CosmosDataDocument<T> ConvertOutputJsonToCosmosDataDocument<T>(T data, DocumentType documentType, DateTime occurrenceDate) where T : IOutputJson
         {
-            return new CosmosDataDocument<T> { Data = new List<T> { data }, DocumentName = $"{projectName}_{documentType}_{occurrenceDate:yyyy-MM-dd}", DocumentType = documentType, DateTime = occurrenceDate.ToString(CosmosDataDocument<T>.DATE_FORMAT, CultureInfo.InvariantCulture)};
+            return new CosmosDataDocument<T> { Data = new List<T> { data }, ProjectName = projectName, DocumentType = documentType, DateTime = occurrenceDate.ToString(CosmosDataDocument<T>.DATE_FORMAT, CultureInfo.InvariantCulture)};
         }
 
         private DocumentType GetDocumentType<T>()

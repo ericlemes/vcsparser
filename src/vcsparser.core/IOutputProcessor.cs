@@ -14,8 +14,6 @@ namespace vcsparser.core
 
     public interface IOutputJson
     {
-        DateTime OccurrenceDate { get; }
-
-        string FileName { get; }
+        string GetFileLongName();
     }
 }
