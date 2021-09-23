@@ -27,7 +27,7 @@ namespace vcsparser.core
                 ProcessOutputSingleFile(outputFile, dict);
             else if (outputType == OutputType.SeparateFiles)
                 ProcessOutputSeparateFiles(outputFile, dict);
-            else
+            else if (outputType == OutputType.MultipleFile)
                 ProcessOutputMultipleFile(outputFile, dict);
         }
 

@@ -371,6 +371,30 @@ namespace vcsparser.unittests
                 "\"FileName\":\"Some Work Item Id_Some Change Set Id\"" +
                 "}]}", resultString);
         }
+
+        [Fact]
+        public void WhenProcessingOutputTypeCosmosDbShouldDoNothing()
+        {
+            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object);
+
+            var dict = new Dictionary<DateTime, Dictionary<string, WorkItem>>();
+            dict.Add(new DateTime(2018, 08, 30), new Dictionary<string, WorkItem>());
+            dict[new DateTime(2018, 08, 30)].Add("Some Change Set Id", new WorkItem()
+            {
+                ChangesetId = "Some Change Set Id",
+                ClosedDate = new DateTime(2018, 08, 30),
+                WorkItemId = "Some Work Item Id"
+            });
+
+            var output = new MemoryStream();
+
+            this.streamFactoryMock.Setup(m => m.createFileStream("filename_2018-08-30_Some Work Item Id_Some Change Set Id.json", FileMode.Create, FileAccess.Write)).Returns(output);
+
+            this.jsonOutputProcessor.ProcessOutput(OutputType.CosmosDb, "filename", dict);
+            var resultString = Encoding.UTF8.GetString(output.ToArray());
+
+            Assert.Empty(resultString);
+        }
     }
 
     class SomeUnimplementedClass : IOutputJson
