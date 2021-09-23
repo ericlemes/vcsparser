@@ -315,6 +315,43 @@ namespace vcsparser.unittests
             var resultString = UTF8Encoding.UTF8.GetString(this.outputStream.GetBuffer());
             Assert.Empty(resultString);
         }
+
+        [Fact]
+        public void WhenConvertToOrderedListAsSeparateFilesShouldReturnExpectedOutput()
+        {
+            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object, OutputType.SeparateFiles, "filename");
+
+            var dict = new Dictionary<DateTime, Dictionary<string, WorkItem>>();
+            dict.Add(new DateTime(2018, 08, 30), new Dictionary<string, WorkItem>());
+            dict[new DateTime(2018, 08, 30)].Add("Some Change Set Id 1", new WorkItem()
+            {
+                ChangesetId = "Some Change Set Id 1",
+                ClosedDate = new DateTime(2018, 08, 30),
+                WorkItemId = "Some Work Item Id 1"
+            });
+            dict.Add(new DateTime(2018, 08, 31), new Dictionary<string, WorkItem>());
+            dict[new DateTime(2018, 08, 31)].Add("Some Change Set Id 2", new WorkItem()
+            {
+                ChangesetId = "Some Change Set Id 2",
+                ClosedDate = new DateTime(2018, 08, 31),
+                WorkItemId = "Some Work Item Id 2"
+            });
+
+            var output1 = new MemoryStream();
+            var output2 = new MemoryStream();
+
+            this.streamFactoryMock.Setup(m => m.createFileStream("filename_2018-08-30_Some Work Item Id 1_Some Change Set Id 1.json", FileMode.Create, FileAccess.Write)).Returns(output1);
+            this.streamFactoryMock.Setup(m => m.createFileStream("filename_2018-08-31_Some Work Item Id 2_Some Change Set Id 2.json", FileMode.Create, FileAccess.Write)).Returns(output2);
+
+            this.jsonOutputProcessor.ProcessOutputSeparateFiles("filename", dict);
+
+            var resultString1 = UTF8Encoding.UTF8.GetString(output1.ToArray());
+            var resultString2 = UTF8Encoding.UTF8.GetString(output2.ToArray());
+
+            Assert.NotEmpty(resultString1);
+            Assert.NotEmpty(resultString2);
+        }
+
     }
 
     class SomeUnimplementedClass : IOutputJson
