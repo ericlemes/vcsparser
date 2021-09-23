@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Moq;
+using Moq.Language.Flow;
 using Newtonsoft.Json;
 using vcsparser.core.Database.Cosmos;
 using vcsparser.core.Factory;
@@ -141,6 +142,7 @@ namespace vcsparser.unittests.Database.Cosmos
         public void WhenDeleteDocumentByDocumentIdAndOptionsNullShouldDeleteDocumentAsync()
         {
             sut.DeleteDocument(someCollectionId, someDocumentId).Wait();
+            Thread.Sleep(200);
 
             documentClient.Verify(x =>x.DeleteDocumentAsync(someDocumentUri, It.Is<RequestOptions>(o =>
                 o.PartitionKey.Equals(new PartitionKey(someDocumentId))
