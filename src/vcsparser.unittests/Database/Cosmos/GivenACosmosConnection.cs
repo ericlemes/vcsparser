@@ -94,6 +94,7 @@ namespace vcsparser.unittests.Database.Cosmos
         public async void WhenCreateDocumentAndOptionsNullShouldCreateOptionsAndReturnResponse()
         {
             var result = await sut.CreateDocument(someCollectionId, someDummyDocument);
+            await Task.Yield();
 
             documentClient.Verify(x =>x.CreateDocumentAsync(someCollectionUri, someDummyDocument, It.IsAny<RequestOptions>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
             
@@ -141,6 +142,7 @@ namespace vcsparser.unittests.Database.Cosmos
         public async void WhenDeleteDocumentByDocumentIdAndOptionsNullShouldDeleteDocumentAsync()
         {
             await sut.DeleteDocument(someCollectionId, someDocumentId);
+            await Task.Yield();
 
             documentClient.Verify(x =>x.DeleteDocumentAsync(someDocumentUri, It.Is<RequestOptions>(o =>
                 o.PartitionKey.Equals(new PartitionKey(someDocumentId))
