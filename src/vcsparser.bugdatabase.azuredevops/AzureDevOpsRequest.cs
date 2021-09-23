@@ -48,6 +48,8 @@ namespace vcsparser.bugdatabase.azuredevops
             }
         }
 
+        [ExcludeFromCodeCoverage]
+        //This method is ignored because OpenCover can't cover all branches for async methods
         public async Task<JSONQuery> GetWorkItemList()
         {
             var content = new StringContent(JsonQuery, Encoding.UTF8, WebRequest.MEDIA_JSON);
