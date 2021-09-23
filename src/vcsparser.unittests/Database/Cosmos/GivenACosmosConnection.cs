@@ -91,9 +91,9 @@ namespace vcsparser.unittests.Database.Cosmos
         }
 
         [Fact]
-        public void WhenCreateDocumentAndOptionsNullShouldCreateOptionsAndReturnResponse()
+        public async void WhenCreateDocumentAndOptionsNullShouldCreateOptionsAndReturnResponse()
         {
-            var result = sut.CreateDocument(someCollectionId, someDummyDocument).Result;
+            var result = await sut.CreateDocument(someCollectionId, someDummyDocument);
 
             documentClient.Verify(x =>x.CreateDocumentAsync(someCollectionUri, someDummyDocument, It.IsAny<RequestOptions>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
             
@@ -101,9 +101,9 @@ namespace vcsparser.unittests.Database.Cosmos
         }
 
         [Fact]
-        public void WhenCreateDocumentShouldReturnResponse()
+        public async void WhenCreateDocumentShouldReturnResponse()
         {
-            var result = sut.CreateDocument(someCollectionId, someDummyDocument, someRequestOptions).Result;
+            var result = await sut.CreateDocument(someCollectionId, someDummyDocument, someRequestOptions);
 
             documentClient.Verify(x=>x.CreateDocumentAsync(someCollectionUri, someDummyDocument, someRequestOptions, It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Once);
 
@@ -138,9 +138,9 @@ namespace vcsparser.unittests.Database.Cosmos
 
 
         [Fact]
-        public void WhenDeleteDocumentByDocumentIdAndOptionsNullShouldDeleteDocumentAsync()
+        public async void WhenDeleteDocumentByDocumentIdAndOptionsNullShouldDeleteDocumentAsync()
         {
-            sut.DeleteDocument(someCollectionId, someDocumentId).Wait();
+            await sut.DeleteDocument(someCollectionId, someDocumentId);
 
             documentClient.Verify(x =>x.DeleteDocumentAsync(someDocumentUri, It.Is<RequestOptions>(o =>
                 o.PartitionKey.Equals(new PartitionKey(someDocumentId))
@@ -148,9 +148,9 @@ namespace vcsparser.unittests.Database.Cosmos
         }
 
         [Fact]
-        public void WhenDeleteDocumentByDocumentIdShouldDeleteDocumentAsync()
+        public async void WhenDeleteDocumentByDocumentIdShouldDeleteDocumentAsync()
         {
-            sut.DeleteDocument(someCollectionId, someDocumentId, someRequestOptions).Wait();
+            await sut.DeleteDocument(someCollectionId, someDocumentId, someRequestOptions);
 
             documentClient.Verify(x=> x.DeleteDocumentAsync(someDocumentUri, someRequestOptions, It.IsAny<CancellationToken>()), Times.Once);
         }
