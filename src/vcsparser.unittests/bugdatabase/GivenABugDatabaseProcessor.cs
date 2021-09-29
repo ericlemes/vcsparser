@@ -278,7 +278,7 @@ namespace vcsparser.unittests.bugdatabase
             this.bugDatabaseProcessor.ProcessCache("some\\path\\to\\cache", this.changesetProcessorMock.Object);
 
             var list = Assert.Single(this.changesetProcessorMock.Object.WorkItemCache).Value;
-            Assert.Equal(1, list.Count);
+            Assert.Single(list);
         }
     }
 }
