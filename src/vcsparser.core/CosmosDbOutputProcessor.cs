@@ -24,11 +24,11 @@ namespace vcsparser.core
         {
             var listOfFilesPerDay = (from data in dict from valueValue in data.Value.Values select ConvertOutputJsonToCosmosDataDocument(valueValue, GetDocumentType<T>(), data.Key)).ToList();
            
-            logger.LogToConsole($"Found: {listOfFilesPerDay.Count} documents to upload");
+            logger.LogToConsole($"Found: {listOfFilesPerDay.Count} documents of '{GetDocumentType<T>()}' type to upload");
 
             var documentsDeleted = dataDocumentRepository.DeleteMultipleDocuments(listOfFilesPerDay);
 
-            logger.LogToConsole($"Deleted: {documentsDeleted} existing documents");
+            logger.LogToConsole($"Deleted: {documentsDeleted} existing documents of '{GetDocumentType<T>()}' type");
 
             foreach (var document in listOfFilesPerDay)
                 dataDocumentRepository.CreateDataDocument(document);
