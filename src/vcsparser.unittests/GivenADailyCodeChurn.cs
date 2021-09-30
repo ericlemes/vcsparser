@@ -57,5 +57,14 @@ namespace vcsparser.unittests
             var churn2 = new DailyCodeChurn { FileName = "a" };
             Assert.Equal(-1, churn2.CompareTo(churn1));
         }
+
+        [Fact]
+        public void WhenGettingGetFileLongNameShouldReturnExpectedValue()
+        {
+            var dailyCodeChurn = new DailyCodeChurn { Timestamp = "2018/09/05 00:00:00", FileName = "some-file-name"};
+
+            Assert.Equal("2018-09-05_some-file-name", dailyCodeChurn.GetFileLongName());
+        }
+
     }
 }

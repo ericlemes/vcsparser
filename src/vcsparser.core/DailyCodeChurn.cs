@@ -86,5 +86,9 @@ namespace vcsparser.core
             return DateTime.ParseExact(this.Timestamp, DATE_FORMAT, CultureInfo.InvariantCulture);
         }
 
+        public string GetFileLongName()
+        {
+            return $"{GetDateTimeAsDateTime():yyyy-MM-dd}_{FileName.Replace('/', '-')}";
+        }
     }
 }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using vcsparser.core.Database.Cosmos;
 using Xunit;
 
 namespace vcsparser.unittests
@@ -250,6 +251,110 @@ namespace vcsparser.unittests
                 (IEnumerable<Error> errs) => {
                     throw new Exception("Should not fail.");
                 });
+        }
+
+        [Fact]
+        public void WhenParsingGitExtractToCosmosDbCommandLineArgsShouldReturnExpectedValues()
+        {
+            var args = new List<string>()
+            {
+                "gitextract-to-cosmosdb",
+                "--cosmos-db-key",
+                "cosmos-db-key",
+                "--cosmos-db-database-id",
+                "cosmos-db-database-id",
+                "--cosmos-db-code-churn-cosmos-container",
+                "cosmos-db-code-churn-cosmos-container",
+                "--cosmos-endpoint",
+                "cosmos-endpoint",
+                "--cosmos-project-name",
+                "cosmos-project-name",
+                "--gitlogcommand",
+                "gitlogcommand",
+                "--bugregexes",
+                "bugregexes",
+                "--bugdatabase-dll",
+                "bugdatabase-dll",
+                "--bugdatabase-args",
+                "bugdatabase-args1 bugdatabase-args2",
+            };
+
+            Parser.Default.ParseArguments<GitExtractToCosmosDbCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
+                .MapResult(
+                    (GitExtractToCosmosDbCommandLineArgs a) => {
+                        Assert.Equal("cosmos-db-key", a.CosmosDbKey);
+                        Assert.Equal("cosmos-db-database-id", a.DatabaseId);
+                        Assert.Equal("cosmos-db-code-churn-cosmos-container", a.CodeChurnCosmosContainer);
+                        Assert.Equal("cosmos-endpoint", a.CosmosEndpoint);
+                        Assert.Equal("cosmos-project-name", a.CosmosProjectName);
+                        Assert.Equal("gitlogcommand", a.GitLogCommand);
+                        Assert.Equal("bugregexes", a.BugRegexes);
+                        Assert.Equal("bugdatabase-dll", a.BugDatabaseDLL);
+
+                        var bugDatabaseDllArgsList = a.BugDatabaseDllArgs.ToList();
+                        Assert.Equal("bugdatabase-args1", bugDatabaseDllArgsList[0]);
+                        Assert.Equal("bugdatabase-args2", bugDatabaseDllArgsList[1]);
+                        return 0;
+                    },
+                    (SonarGenericMetricsCommandLineArgs a) =>
+                    {
+                        Assert.Null(a.EndDate);
+                        return 0;
+                    },
+                    (IEnumerable<Error> errs) => {
+                        throw new Exception("Should not fail.");
+                    } );
+        }
+
+        [Fact]
+        public void WhenParsingDownloadFromCosmosDbCommandLineArgsShouldReturnExpectedValues()
+        {
+            var args = new List<string>()
+            {
+                "cosmosdb-download-data",
+                "--cosmos-db-key",
+                "cosmos-db-key",
+                "--cosmos-db-database-id",
+                "cosmos-db-database-id",
+                "--cosmos-db-code-churn-cosmos-container",
+                "cosmos-db-code-churn-cosmos-container",
+                "--cosmos-endpoint",
+                "cosmos-endpoint",
+                "--output",
+                "output",
+                "--output-type",
+                "SeparateFiles",
+                "--start-date",
+                "2018-09-14",
+                "--end-date",
+                "2021-09-14",
+                "--cosmos-document-type",
+                "CodeChurn",
+            };
+
+            Parser.Default.ParseArguments<DownloadFromCosmosDbCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
+                .MapResult(
+                    (DownloadFromCosmosDbCommandLineArgs a) => {
+                        Assert.Equal("cosmos-db-key", a.CosmosDbKey);
+                        Assert.Equal("cosmos-db-database-id", a.DatabaseId);
+                        Assert.Equal("cosmos-db-code-churn-cosmos-container", a.CodeChurnCosmosContainer);
+                        Assert.Equal("cosmos-endpoint", a.CosmosEndpoint);
+                        Assert.Equal("output", a.OutputFile);
+                        Assert.Equal(OutputType.SeparateFiles, a.OutputType);
+                        Assert.Equal(new DateTime(2018, 09, 14), a.StartDate);
+                        Assert.Equal(new DateTime(2021, 09, 14), a.EndDate);
+                        Assert.Equal(DocumentType.CodeChurn, a.DocumentType);
+
+                        return 0;
+                    },
+                    (SonarGenericMetricsCommandLineArgs a) =>
+                    {
+                        Assert.Null(a.EndDate);
+                        return 0;
+                    },
+                    (IEnumerable<Error> errs) => {
+                        throw new Exception("Should not fail.");
+                    });
         }
     }
 }

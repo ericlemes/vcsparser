@@ -12,5 +12,8 @@ namespace vcsparser.core
         void ProcessOutput<T>(OutputType outputType, string outputFile, Dictionary<DateTime, Dictionary<string, T>> dict) where T : IOutputJson;
     }
 
-    public interface IOutputJson { }
+    public interface IOutputJson
+    {
+        string GetFileLongName();
+    }
 }

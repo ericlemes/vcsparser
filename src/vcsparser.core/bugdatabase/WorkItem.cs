@@ -25,5 +25,9 @@ namespace vcsparser.core.bugdatabase
             else
                 return this.WorkItemId.CompareTo(dest.WorkItemId);
         }
+        public string GetFileLongName()
+        {
+            return $"{ClosedDate:yyyy-MM-dd}_{WorkItemId}_{ChangesetId}";
+        }
     }
 }

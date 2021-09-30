@@ -61,5 +61,13 @@ namespace vcsparser.unittests.bugdatabase
 
             Assert.Equal(0, compare);
         }
+
+        [Fact]
+        public void WhenComparingGetFileLongNameShouldReturnExpectedValue()
+        {
+            var closedDate = new DateTime(2019, 04, 16);
+            var dailyCodeChurn = new WorkItem { ClosedDate = closedDate, ChangesetId = "some-changeset-id", WorkItemId = "12345"};
+            Assert.Equal("2019-04-16_12345_some-changeset-id", dailyCodeChurn.GetFileLongName());
+        }
     }
 }

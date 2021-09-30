@@ -9,6 +9,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using vcsparser.core.bugdatabase;
+using vcsparser.core.Database;
+using vcsparser.core.Database.Cosmos;
+using vcsparser.core.Database.Repository;
+using vcsparser.core.Factory;
 
 namespace vcsparser
 {
@@ -21,12 +25,14 @@ namespace vcsparser
                 config.HelpWriter = Console.Error;
                 config.EnableDashDash = true;
             });
-            var result = parser.ParseArguments<P4ExtractCommandLineArgs, GitExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs, DailyCodeChurnCommandLineArgs>(args)
+            var result = parser.ParseArguments<P4ExtractCommandLineArgs, GitExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs, DailyCodeChurnCommandLineArgs, GitExtractToCosmosDbCommandLineArgs, DownloadFromCosmosDbCommandLineArgs >(args)
                 .MapResult(
                     (P4ExtractCommandLineArgs a) => RunPerforceCodeChurnProcessor(a),
                     (GitExtractCommandLineArgs a) => RunGitCodeChurnProcessor(a),
                     (SonarGenericMetricsCommandLineArgs a) => RunSonarGenericMetrics(a),
                     (DailyCodeChurnCommandLineArgs a) => RunDailyCodeChurn(a),
+                    (GitExtractToCosmosDbCommandLineArgs a) => RunGitToCosmosDbCodeChurnProcessor(a),
+                    (DownloadFromCosmosDbCommandLineArgs a) => RunDownloadCodeChurnFromCosmosDbToJsonFiles(a),
                     err => 1); 
             return result;
         }
@@ -39,8 +45,7 @@ namespace vcsparser
             var commandLineParser = new CommandLineParser();
             var logger = new ConsoleLoggerWithTimestamp();
             var stopWatch = new StopWatchWrapper();
-            var outputProcessor = new OutputProcessor(new FileStreamFactory(), logger);
-            var bugDatabaseFactory = new BugDatabaseFactory();
+            var outputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger); var bugDatabaseFactory = new BugDatabaseFactory();
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
             var fileSystem = new FileSystem();
@@ -58,7 +63,7 @@ namespace vcsparser
             var commandLineParser = new CommandLineParser();
             var gitLogParser = new GitLogParser();
             var logger = new ConsoleLoggerWithTimestamp();
-            var outputProcessor = new OutputProcessor(new FileStreamFactory(), logger);
+            var outputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger);
             var bugDatabaseFactory = new BugDatabaseFactory();
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
@@ -95,6 +100,57 @@ namespace vcsparser
 
             var processor = new DailyCodeChurnProcessor(fileSystem, jsonParser, logger, exclusionsProcessor, inclusionsProcessor, jsonExporter);
             processor.Process(a);
+
+            return 0;
+        }
+
+        private static int RunGitToCosmosDbCodeChurnProcessor(GitExtractToCosmosDbCommandLineArgs a)
+        {
+            var processWrapper = new ProcessWrapper();
+            var commandLineParser = new CommandLineParser();
+            var gitLogParser = new GitLogParser();
+            var logger = new ConsoleLoggerWithTimestamp();
+            var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId);
+            var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
+            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, a.CosmosProjectName);
+            var bugDatabaseFactory = new BugDatabaseFactory();
+            var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
+            var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
+            var fileSystem = new FileSystem();
+            var jsonParser = new JsonListParser<WorkItem>(new FileStreamFactory());
+            var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, webRequest, fileSystem, jsonParser, logger);
+
+            var processor = new GitCodeChurnProcessor(commandLineParser, processWrapper, gitLogParser, cosmosOutputProcessor, bugDatabaseProcessor, logger, a);
+            processor.QueryBugDatabase();
+
+            return processor.Extract();
+        }
+
+        private static int RunDownloadCodeChurnFromCosmosDbToJsonFiles(DownloadFromCosmosDbCommandLineArgs a)
+        {
+            var logger = new ConsoleLoggerWithTimestamp();
+            var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId);
+            var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
+            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, string.Empty);
+            var jsonOutputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger);
+
+            switch (a.DocumentType)
+            {
+                case DocumentType.BugDatabase:
+                {
+                    var data = cosmosOutputProcessor.GetDocumentsInDateRange<WorkItem>(a.StartDate.Value, a.EndDate.Value);
+                    jsonOutputProcessor.ProcessOutput(a.OutputType, a.OutputFile, data);
+                    break;
+                }
+                case DocumentType.CodeChurn:
+                {
+                    var data = cosmosOutputProcessor.GetDocumentsInDateRange<DailyCodeChurn>(a.StartDate.Value, a.EndDate.Value);
+                    jsonOutputProcessor.ProcessOutput(a.OutputType, a.OutputFile, data);
+                    break;
+                }
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
             return 0;
         }

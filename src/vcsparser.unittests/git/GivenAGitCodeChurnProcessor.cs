@@ -208,12 +208,10 @@ namespace vcsparser.unittests.git
                 BugDatabaseDLL = "some/path/to.dll"
             };
 
-            processor = new GitCodeChurnProcessor(this.commandLineParserMock.Object, this.processWrapperMock.Object,
-               this.gitLogParserMock.Object, this.outputProcessorMock.Object, this.bugDatabaseMock.Object, this.logger.Object, args);
+            Action action = () => new GitCodeChurnProcessor(this.commandLineParserMock.Object, this.processWrapperMock.Object,
+                this.gitLogParserMock.Object, this.outputProcessorMock.Object, this.bugDatabaseMock.Object, this.logger.Object, args);
 
-            Action collect = () => processor.QueryBugDatabase();
-
-            var exception = Assert.Throws<Exception>(collect);
+            var exception = Assert.Throws<Exception>(action);
             Assert.Equal("Dll specified without known output file", exception.Message);
         }
 
@@ -238,6 +236,44 @@ namespace vcsparser.unittests.git
             this.outputProcessorMock
                 .Verify(o => o.ProcessOutput(args.BugDatabaseOutputType, args.BugDatabaseOutputFile, It.IsAny<Dictionary<DateTime, Dictionary<string, WorkItem>>>()),
                 Times.Once);
+        }
+
+        [Fact]
+        public void WhenCrearingGitCodeChurnProcessorWithBugDatabaseDllAndNoOutputSpecifiedShouldThrowAnException()
+        {
+            var commandLineArgs = new GitExtractCommandLineArgs
+            {
+                BugDatabaseDLL = "some/path/to.dll"
+            };
+
+            Action action = () =>
+            {
+                new GitCodeChurnProcessor(this.commandLineParserMock.Object,
+                    this.processWrapperMock.Object,
+                    this.gitLogParserMock.Object, this.outputProcessorMock.Object, this.bugDatabaseMock.Object,
+                    this.logger.Object, commandLineArgs);
+            };
+
+            var exception = Assert.Throws<Exception>(action);
+            Assert.Equal("Dll specified without known output file", exception.Message);
+        }
+
+        [Fact]
+        public void WhenUsingGitExtractToCosmosDbCommandLineArgsAndExtractingShouldLogChangesetsWithBugs()
+        {
+            var args = new GitExtractToCosmosDbCommandLineArgs()
+            {
+                GitLogCommand = "git log blah",
+                BugDatabaseDLL = "some/path/to.dll",
+                BugRegexes = "bug+"
+            };
+
+            processor = new GitCodeChurnProcessor(this.commandLineParserMock.Object, this.processWrapperMock.Object,
+                this.gitLogParserMock.Object, this.outputProcessorMock.Object, this.bugDatabaseMock.Object, this.logger.Object, args);
+
+            processor.Extract();
+
+            this.logger.Verify(m => m.LogToConsole("Changesets with bugs: 0/0"));
         }
     }
 }

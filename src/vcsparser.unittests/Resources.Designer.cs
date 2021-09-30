@@ -19,7 +19,7 @@ namespace vcsparser.unittests {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -79,6 +79,7 @@ namespace vcsparser.unittests {
         ///   Looks up a localized string similar to Change 141284 by author.name@author.name_workspace-machine on 2018/06/29 18:57:47
         ///
         ///	Long description of the change set
+        ///	with multiple lines
         ///
         ///Affected files ...
         ///
@@ -88,9 +89,7 @@ namespace vcsparser.unittests {
         ///... //depot/Dir1/Dir2/UI5/UIHelpers.cpp#132 edit
         ///... //depot/Dir1/Dir2/UI5/UIHelpers.h#72 edit
         ///
-        ///Differences ...
-        ///
-        ///==== //d [rest of string was truncated]&quot;;.
+        ///Diffe [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string DescribeFile1 {
             get {
@@ -143,8 +142,7 @@ namespace vcsparser.unittests {
         ///
         ///commit 31b45b8417418c3562d19eab8830ed786ac40f40
         ///Author:     Author Name &lt;author@email.com&gt;
-        ///AuthorDate: 2018-09-18T16:48:22+01:00
-        ///Commit:      [rest of string was truncated]&quot;;.
+        ///AuthorDate: 2018-09-18T16:48:22+0 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GitExample1 {
             get {
@@ -161,7 +159,7 @@ namespace vcsparser.unittests {
         ///
         ///    Commit message 1
         ///
-        ///-	-	src/dir1/File1.cs
+        ///-	-	src/dir-with-dashes/File1.cs
         ///.
         /// </summary>
         internal static string GitExample2 {
@@ -187,9 +185,7 @@ namespace vcsparser.unittests {
         ///Commit:     Eric Lemes &lt;ericlemes@gmail.com&gt;
         ///CommitDate: 2018-10-02 14:24:17 +0100
         ///
-        ///    Renates test1 to test2
-        ///
-        ///0	0	t [rest of string was truncated]&quot;;.
+        ///    Renates test1 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GitExample3 {
             get {
@@ -198,7 +194,22 @@ namespace vcsparser.unittests {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to commit a6050ba9b8a09b972193832395fa51b3ca582068
+        ///Author:     Eric Lemes &lt;ericlemes@gmail.com&gt;
+        ///AuthorDate: 2018-10-02 14:24:42 +0100
+        ///Commit:     Eric Lemes &lt;ericlemes@gmail.com&gt;
+        ///CommitDate: 2018-10-02 14:24:42 +0100
+        ///
+        ///    Adds new test1 with 3 lines.
+        ///
+        ///3	0	test1.txt
+        ///
+        ///commit cdd4e75b9228de601391c216c7f02eb13006f4c1
+        ///Merge: a10ab01 ccfda51
+        ///Author:     Eric Lemes &lt;ericlemes@gmail.com&gt;
+        ///AuthorDate: 2018-10-02 14:24:17 +0100
+        ///Commit:     Eric Lemes &lt;ericlemes@gmail.com&gt;
+        ///CommitDate: 2018-10-02 14:24:17 +0 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GitExample4 {
             get {
