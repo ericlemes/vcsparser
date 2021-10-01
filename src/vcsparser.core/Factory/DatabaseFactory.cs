@@ -8,32 +8,17 @@ namespace vcsparser.core.Factory
 {
     public class DatabaseFactory : IDatabaseFactory
     {
-        private readonly string cosmosEndpoint;
-        private readonly string cosmosDbKey;
+        private readonly ICosmosCommandLineArgs cosmosCommandLineArgs;
         private readonly JsonSerializerSettings jsonSerializerSettings;
 
-        public DatabaseFactory(GitExtractToCosmosDbCommandLineArgs args, JsonSerializerSettings jsonSerializerSettings)
-            : this(args.CosmosDbKey, args.CosmosEndpoint, jsonSerializerSettings)
+        public DatabaseFactory(ICosmosCommandLineArgs args, JsonSerializerSettings jsonSerializerSettings)
         {
+            if (string.IsNullOrEmpty(args.CosmosDbKey))
+                throw new ArgumentNullException(nameof(args.CosmosDbKey));
+            if (string.IsNullOrEmpty(args.CosmosEndpoint))
+                throw new ArgumentNullException(nameof(args.CosmosEndpoint));
 
-        }
-
-        public DatabaseFactory(DownloadFromCosmosDbCommandLineArgs args, JsonSerializerSettings jsonSerializerSettings)
-            : this(args.CosmosDbKey, args.CosmosEndpoint, jsonSerializerSettings)
-        {
-
-        }
-
-        private DatabaseFactory(string cosmosDbKey, string cosmosEndpoint,
-            JsonSerializerSettings jsonSerializerSettings)
-        {
-            if (string.IsNullOrEmpty(cosmosDbKey))
-                throw new ArgumentNullException(nameof(cosmosDbKey));
-            if (string.IsNullOrEmpty(cosmosEndpoint))
-                throw new ArgumentNullException(nameof(cosmosEndpoint));
-
-            this.cosmosEndpoint = cosmosEndpoint;
-            this.cosmosDbKey = cosmosDbKey;
+            this.cosmosCommandLineArgs = args;
             this.jsonSerializerSettings = jsonSerializerSettings;
         }
 
@@ -44,7 +29,7 @@ namespace vcsparser.core.Factory
 
         public IDocumentClient DocumentClient()
         {
-            var serviceEndPoint = new Uri(cosmosEndpoint);
+            var serviceEndPoint = new Uri(cosmosCommandLineArgs.CosmosEndpoint);
             var connectionPolicy = new ConnectionPolicy
             {
                 ConnectionMode = ConnectionMode.Direct,
@@ -57,7 +42,7 @@ namespace vcsparser.core.Factory
                 }
             };
 
-            return new DocumentClient(serviceEndPoint, cosmosDbKey, jsonSerializerSettings, connectionPolicy, ConsistencyLevel.Session);
+            return new DocumentClient(serviceEndPoint, cosmosCommandLineArgs.CosmosDbKey, jsonSerializerSettings, connectionPolicy, ConsistencyLevel.Session);
         }
     }
 }

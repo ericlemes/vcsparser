@@ -77,7 +77,7 @@ namespace vcsparser.core
     }
 
     [Verb("sonargenericmetrics", HelpText = "Process json files in intermediate code churn format and outputs to Sonar Generic Metrics JSON format")]
-    public class SonarGenericMetricsCommandLineArgs
+    public class SonarGenericMetricsCommandLineArgs : ISonarGenericMetrics
     {
         public SonarGenericMetricsCommandLineArgs()
         {
@@ -140,7 +140,7 @@ namespace vcsparser.core
     }
 
     [Verb("gitextract-to-cosmosdb", HelpText = "Extracts code churn information from git log file and outputs to azure cosmos database")]
-    public class GitExtractToCosmosDbCommandLineArgs
+    public class GitExtractToCosmosDbCommandLineArgs : ICosmosCommandLineArgs
     {
         [Option("cosmos-db-key", HelpText = "CosmosConnection: Cosmos database key", Required = true)]
         public string CosmosDbKey { get; set; }
@@ -171,7 +171,7 @@ namespace vcsparser.core
     }
 
     [Verb("cosmosdb-download-data", HelpText = "Process code churn documents that are stored in azure cosmos database")]
-    public class DownloadFromCosmosDbCommandLineArgs
+    public class DownloadFromCosmosDbCommandLineArgs : ICosmosCommandLineArgs
     {
         [Option("cosmos-db-key", HelpText = "CosmosConnection: Cosmos database key", Required = true)]
         public string CosmosDbKey { get; set; }
@@ -199,5 +199,89 @@ namespace vcsparser.core
 
         [Option("cosmos-document-type", HelpText = "Either CodeChurn or BugDatabase", Required = true)]
         public DocumentType DocumentType { get; set; }
+    }
+
+    [Verb("sonargenericmetrics-cosmosdb", HelpText = "Process cosmos db documents and outputs to Sonar Generic Metrics JSON format")]
+    public class SonarGenericMetricsCosmosDbCommandLineArgs : ICosmosCommandLineArgs, ISonarGenericMetrics
+    {
+        public SonarGenericMetricsCosmosDbCommandLineArgs()
+        {
+            this.Generate1Day = "";
+            this.Generate1Year = "";
+            this.Generate30Days = "";
+            this.Generate3Months = "";
+            this.Generate6Months = "";
+            this.Generate7Days = "";
+        }
+
+        [Option("fileprefixtoremove", HelpText = "Prefix to remove from file. Usually repository root")]
+        public string FilePrefixToRemove { get; set; }
+
+        [Option("end-date", HelpText = "Date to limit the analysis to. ", Required = false)]
+        public DateTime? EndDate { get; set; }
+
+        [Option("generate1year", HelpText = "Generates 1 year churn data. ", Default = "true")]
+        public string Generate1Year { get; set; }
+
+        [Option("generate6months", HelpText = "Generates 6 months churn data. ", Default = "true")]
+        public string Generate6Months { get; set; }
+
+        [Option("generate3months", HelpText = "Generates 3 months churn data. ", Default = "true")]
+        public string Generate3Months { get; set; }
+
+        [Option("generate30days", HelpText = "Generates 30 days churn data. ", Default = "true")]
+        public string Generate30Days { get; set; }
+
+        [Option("generate7days", HelpText = "Generates 7 days churn data. ", Default = "true")]
+        public string Generate7Days { get; set; }
+
+        [Option("generate1day", HelpText = "Generates 1 day churn data. ", Default = "true")]
+        public string Generate1Day { get; set; }
+
+        [Option("cosmos-db-key", HelpText = "CosmosConnection: Cosmos database key", Required = true)]
+        public string CosmosDbKey { get; set; }
+
+        [Option("cosmos-db-database-id", HelpText = "CosmosConnection: Cosmos database id", Required = true)]
+        public string DatabaseId { get; set; }
+
+        [Option("cosmos-db-code-churn-cosmos-container", HelpText = "CosmosConnection: Cosmos database container name", Required = true)]
+        public string CodeChurnCosmosContainer { get; set; }
+
+        [Option("cosmos-endpoint", HelpText = "CosmosConnection: Cosmos endpoint", Required = true)]
+        public string CosmosEndpoint { get; set; }
+
+        [Option("outputfile", HelpText = "File to generate json output", Required = true)]
+        public string OutputFile { get; set; }
+
+        [Option("start-date", HelpText = "Analyzes start date", Required = true)]
+        public DateTime? StartDate { get; set; }
+    }
+
+    public interface ICosmosCommandLineArgs
+    {
+        string CosmosDbKey { get; set; }
+
+        string CosmosEndpoint { get; set; }
+    }
+
+    public interface ISonarGenericMetrics
+    {
+        string FilePrefixToRemove { get; set; }
+
+        string OutputFile { get; set; }
+
+        DateTime? EndDate { get; set; }
+
+        string Generate1Year { get; set; }
+
+        string Generate6Months { get; set; }
+
+        string Generate3Months { get; set; }
+
+        string Generate30Days { get; set; }
+
+        string Generate7Days { get; set; }
+
+        string Generate1Day { get; set; }
     }
 }

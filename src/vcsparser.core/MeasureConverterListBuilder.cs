@@ -30,7 +30,7 @@ namespace vcsparser.core
             this.environment = environment;
         }
 
-        public List<IMeasureConverter> Build(SonarGenericMetricsCommandLineArgs a)
+        public List<IMeasureConverter> Build(ISonarGenericMetrics a)
         {
             List<IMeasureConverter> result = new List<IMeasureConverter>();
             if (a.Generate1Day.ToLower() == "true")
@@ -50,7 +50,7 @@ namespace vcsparser.core
             return result;
         }
 
-        private DateTime getEndDate(SonarGenericMetricsCommandLineArgs a)
+        private DateTime getEndDate(ISonarGenericMetrics a)
         {
             DateTime endDate;
             if (a.EndDate == null)
@@ -72,7 +72,7 @@ namespace vcsparser.core
             };
         }
 
-        private void CreateMeasureConvertersForPeriod(List<IMeasureConverter> result, DateTime startDate, DateTime endDate, string metricKeySuffix, string suffixLongDescription, SonarGenericMetricsCommandLineArgs a)
+        private void CreateMeasureConvertersForPeriod(List<IMeasureConverter> result, DateTime startDate, DateTime endDate, string metricKeySuffix, string suffixLongDescription, ISonarGenericMetrics a)
         {
             var metricChanges = CreateMetric(CHANGES_METRIC_KEY + metricKeySuffix,
                 "Number of changes (" + suffixLongDescription + ")", "Number of changes (" + suffixLongDescription + ")");
@@ -95,14 +95,14 @@ namespace vcsparser.core
             result.Add(new MeasureConverter<int>(startDate, endDate, metricChangesWithFixesBugDatabase, new LinesChangedInFixesBugDatabaseMeasureAggregator(), a.FilePrefixToRemove));
         }
 
-        private void CreateConvertersForData(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)
+        private void CreateConvertersForData(List<IMeasureConverter> result, ISonarGenericMetrics a)
         {
             var metricChanges = CreateMetric(AUTHORS_DATA, "Authors Data", "Authors Data", "DATA");
 
             result.Add(new MeasureConverterRaw<List<AuthorsData>>(metricChanges, new AuthorsDataAggregator(), a.FilePrefixToRemove));
         }
 
-        private void CreateConvertersFor1Day(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)
+        private void CreateConvertersFor1Day(List<IMeasureConverter> result, ISonarGenericMetrics a)
         {
             var endDate = getEndDate(a);
             var startDate = endDate.AddDays(-1);
@@ -110,7 +110,7 @@ namespace vcsparser.core
             CreateMeasureConvertersForPeriod(result, startDate, endDate, "_1d", "1 day", a);
         }
 
-        private void CreateConvertersFor1Year(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)
+        private void CreateConvertersFor1Year(List<IMeasureConverter> result, ISonarGenericMetrics a)
         {
             var endDate = getEndDate(a);
             var startDate = endDate.AddDays(-1).AddYears(-1);
@@ -118,7 +118,7 @@ namespace vcsparser.core
             CreateMeasureConvertersForPeriod(result, startDate, endDate, "_1y", "1 year", a);
         }
 
-        private void CreateConvertersFor30Days(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)
+        private void CreateConvertersFor30Days(List<IMeasureConverter> result, ISonarGenericMetrics a)
         {
             var endDate = getEndDate(a);
             var startDate = endDate.AddDays(-31);
@@ -126,7 +126,7 @@ namespace vcsparser.core
             CreateMeasureConvertersForPeriod(result, startDate, endDate, "_30d", "30 days", a);
         }
 
-        private void CreateConvertersFor3Months(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)
+        private void CreateConvertersFor3Months(List<IMeasureConverter> result, ISonarGenericMetrics a)
         {
             var endDate = getEndDate(a);
             var startDate = endDate.AddDays(-1).AddMonths(-3);
@@ -134,7 +134,7 @@ namespace vcsparser.core
             CreateMeasureConvertersForPeriod(result, startDate, endDate, "_3m", "3 months", a);
         }
 
-        private void CreateConvertersFor6Months(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)
+        private void CreateConvertersFor6Months(List<IMeasureConverter> result, ISonarGenericMetrics a)
         {
             var endDate = getEndDate(a);
             var startDate = endDate.AddDays(-1).AddMonths(-6);
@@ -142,7 +142,7 @@ namespace vcsparser.core
             CreateMeasureConvertersForPeriod(result, startDate, endDate, "_6m", "6 months", a);
         }
 
-        private void CreateConvertersFor7Days(List<IMeasureConverter> result, SonarGenericMetricsCommandLineArgs a)
+        private void CreateConvertersFor7Days(List<IMeasureConverter> result, ISonarGenericMetrics a)
         {
             var endDate = getEndDate(a);
             var startDate = endDate.AddDays(-8);

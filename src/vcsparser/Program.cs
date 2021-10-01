@@ -25,7 +25,7 @@ namespace vcsparser
                 config.HelpWriter = Console.Error;
                 config.EnableDashDash = true;
             });
-            var result = parser.ParseArguments<P4ExtractCommandLineArgs, GitExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs, DailyCodeChurnCommandLineArgs, GitExtractToCosmosDbCommandLineArgs, DownloadFromCosmosDbCommandLineArgs >(args)
+            var result = parser.ParseArguments<P4ExtractCommandLineArgs, GitExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs, DailyCodeChurnCommandLineArgs, GitExtractToCosmosDbCommandLineArgs, DownloadFromCosmosDbCommandLineArgs, SonarGenericMetricsCosmosDbCommandLineArgs>(args)
                 .MapResult(
                     (P4ExtractCommandLineArgs a) => RunPerforceCodeChurnProcessor(a),
                     (GitExtractCommandLineArgs a) => RunGitCodeChurnProcessor(a),
@@ -33,6 +33,7 @@ namespace vcsparser
                     (DailyCodeChurnCommandLineArgs a) => RunDailyCodeChurn(a),
                     (GitExtractToCosmosDbCommandLineArgs a) => RunGitToCosmosDbCodeChurnProcessor(a),
                     (DownloadFromCosmosDbCommandLineArgs a) => RunDownloadCodeChurnFromCosmosDbToJsonFiles(a),
+                    (SonarGenericMetricsCosmosDbCommandLineArgs a) => RunSonarGenericMetricsFromCosmosDb(a),
                     err => 1); 
             return result;
         }
@@ -151,6 +152,26 @@ namespace vcsparser
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+            return 0;
+        }
+
+
+        private static int RunSonarGenericMetricsFromCosmosDb(SonarGenericMetricsCosmosDbCommandLineArgs a)
+        {
+            var logger = new ConsoleLoggerWithTimestamp();
+            var jsonParser = new JsonListParser<DailyCodeChurn>(new FileStreamFactory());
+            var jsonExporter = new JsonExporter(new FileStreamFactory());
+
+            var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId);
+            var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
+            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, string.Empty);
+
+            var data = cosmosOutputProcessor.GetDocumentsInDateRange<DailyCodeChurn>(a.StartDate.Value, a.EndDate.Value);
+
+            var converters = new MeasureConverterListBuilder(new EnvironmentImpl()).Build(a);
+            var processor = new SonarGenericMetricsProcessor(jsonParser, converters, jsonExporter, new ConsoleLoggerWithTimestamp());
+            processor.Process(a, data);
 
             return 0;
         }

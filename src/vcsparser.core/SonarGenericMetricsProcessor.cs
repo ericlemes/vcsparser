@@ -1,25 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using vcsparser.core;
+using System.Linq;
 
 namespace vcsparser.core
 {
     public class SonarGenericMetricsProcessor
     {
-        private IFileSystem fileSystem;
+        private readonly IFileSystem fileSystem;
 
-        private IJsonListParser<DailyCodeChurn> dailyCodeChurnParser;
+        private readonly IJsonListParser<DailyCodeChurn> dailyCodeChurnParser;
 
-        private List<IMeasureConverter> measureConverters;
+        private readonly List<IMeasureConverter> measureConverters;
 
-        private IJsonExporter jsonExporter;
+        private readonly IJsonExporter jsonExporter;
 
-        private ILogger logger;
+        private readonly ILogger logger;
 
         public SonarGenericMetricsProcessor(IFileSystem fileSystem, IJsonListParser<DailyCodeChurn> dailyCodeChurnParser, List<IMeasureConverter> measureConverters,
-            IJsonExporter jsonExporter, ILogger logger)
+            IJsonExporter jsonExporter, ILogger logger) : this(dailyCodeChurnParser, measureConverters, jsonExporter, logger)
         {
             this.fileSystem = fileSystem;
+        }
+
+        public SonarGenericMetricsProcessor(IJsonListParser<DailyCodeChurn> dailyCodeChurnParser, List<IMeasureConverter> measureConverters,
+            IJsonExporter jsonExporter, ILogger logger)
+        {
             this.dailyCodeChurnParser = dailyCodeChurnParser;
             this.measureConverters = measureConverters;
             this.jsonExporter = jsonExporter;
@@ -29,22 +34,45 @@ namespace vcsparser.core
         public void Process(SonarGenericMetricsCommandLineArgs a)
         {
             var files = fileSystem.GetFiles(a.InputDir, "*.json");
-            SonarMeasuresJson outputJson = new SonarMeasuresJson();            
+            var outputJson = new SonarMeasuresJson();            
 
             foreach(var file in files)
             {
                 this.logger.LogToConsole(String.Format("Processing {0}", file.FileName));
                 var codeChurnList = this.dailyCodeChurnParser.ParseFile(file.FileName);
-                foreach(var converter in measureConverters)
-                {
-                    foreach (var codeChurn in codeChurnList)
-                        converter.ProcessFileMeasure(codeChurn, outputJson);
-                    
-                    converter.ProcessProjectMeasure(outputJson);
-                }
+                
+                ProcessDailyCodeChurnList(codeChurnList, outputJson);
             }
 
             this.jsonExporter.Export(outputJson, a.OutputFile);
+        }
+   
+
+        public void Process(SonarGenericMetricsCosmosDbCommandLineArgs a, Dictionary<DateTime, Dictionary<string, DailyCodeChurn>> data)
+        {
+            var outputJson = new SonarMeasuresJson();
+            var documentsPerDay = data
+                .Select(x => x.Value)
+                //.Select(y => y.Value)
+                .ToList();
+
+            foreach (var document in documentsPerDay)
+            {
+                ProcessDailyCodeChurnList(document.Values.ToList(), outputJson);
+            }
+
+            this.jsonExporter.Export(outputJson, a.OutputFile);
+        }
+
+        private void ProcessDailyCodeChurnList(IList<DailyCodeChurn> codeChurnList, SonarMeasuresJson outputJson)
+        {
+            foreach (var converter in measureConverters)
+            {
+                foreach (var codeChurn in codeChurnList)
+                    converter.ProcessFileMeasure(codeChurn, outputJson);
+
+                converter.ProcessProjectMeasure(outputJson);
+            }
         }
     }
 }
