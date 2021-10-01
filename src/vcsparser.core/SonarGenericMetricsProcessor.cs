@@ -38,7 +38,7 @@ namespace vcsparser.core
 
             foreach(var file in files)
             {
-                this.logger.LogToConsole(String.Format("Processing {0}", file.FileName));
+                this.logger.LogToConsole($"Processing {file.FileName}");
                 var codeChurnList = this.dailyCodeChurnParser.ParseFile(file.FileName);
                 
                 ProcessDailyCodeChurnList(codeChurnList, outputJson);
@@ -53,12 +53,14 @@ namespace vcsparser.core
             var outputJson = new SonarMeasuresJson();
             var documentsPerDay = data
                 .Select(x => x.Value)
-                //.Select(y => y.Value)
                 .ToList();
 
             foreach (var document in documentsPerDay)
             {
-                ProcessDailyCodeChurnList(document.Values.ToList(), outputJson);
+                this.logger.LogToConsole($"Processing {document}");
+                var codeChurnList = document.Values.ToList();
+
+                ProcessDailyCodeChurnList(codeChurnList, outputJson);
             }
 
             this.jsonExporter.Export(outputJson, a.OutputFile);

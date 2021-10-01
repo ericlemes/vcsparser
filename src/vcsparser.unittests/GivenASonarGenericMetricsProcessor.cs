@@ -11,6 +11,8 @@ namespace vcsparser.unittests
 {
     public class GivenASonarGenericMetricsProcessor
     {
+        private readonly string SomeFileName = "some-file-name";
+
         private Mock<IFileSystem> fileSystemMock;
 
         private SonarGenericMetricsProcessor processor;
@@ -112,6 +114,26 @@ namespace vcsparser.unittests
         {
             processor.Process(this.commandLineArgs);
             this.jsonExporterMock.Verify(m => m.Export(It.IsAny<SonarMeasuresJson>(), this.commandLineArgs.OutputFile));
+        }
+
+        [Fact]
+        public void WhenProcessingSonarGenericMetricsCosmosDbCommandLineArgsShouldProcessMeasureConverters()
+        {
+            var sonarGenericMetricsCosmosDbCommandLineArgs = new SonarGenericMetricsCosmosDbCommandLineArgs();
+            var mockedData = new Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>
+            {
+                {
+                    new DateTime(), new Dictionary<string, DailyCodeChurn>
+                    {
+                        { SomeFileName, dailyCodeChurn1[0] }
+                    }
+                }
+            };
+
+            processor.Process(sonarGenericMetricsCosmosDbCommandLineArgs, mockedData);
+
+            this.measureConverter1Mock.Verify(m => m.ProcessFileMeasure(dailyCodeChurn1[0], It.IsAny<SonarMeasuresJson>()), Times.Once());
+            this.measureConverter1Mock.Verify(m => m.ProcessProjectMeasure(It.IsAny<SonarMeasuresJson>()), Times.Exactly(1));
         }
     }
 }

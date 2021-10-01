@@ -268,8 +268,6 @@ namespace vcsparser.core
     {
         string FilePrefixToRemove { get; set; }
 
-        string OutputFile { get; set; }
-
         DateTime? EndDate { get; set; }
 
         string Generate1Year { get; set; }
