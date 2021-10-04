@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 
 namespace vcsparser.core
 {
@@ -53,7 +54,20 @@ namespace vcsparser.core
             var outputJson = new SonarMeasuresJson();
             var documentsPerDay = data
                 .Select(x => x.Value)
+                .Reverse()
                 .ToList();
+
+            for (var i = documentsPerDay.Count - 1; i >= 0; i--)
+            {
+                var documentPerDay = documentsPerDay[i];
+
+                var sortedValues = (from entry in documentPerDay orderby entry.Value.FileName select entry).ToList();
+                documentPerDay.Clear();
+
+                foreach (var sortedValue in sortedValues)
+                    documentPerDay.Add(sortedValue.Key, sortedValue.Value);
+
+            }
 
             foreach (var document in documentsPerDay)
             {

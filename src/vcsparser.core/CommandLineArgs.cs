@@ -194,7 +194,7 @@ namespace vcsparser.core
         [Option("start-date", HelpText = "Analyzes start date", Required = true)]
         public DateTime? StartDate { get; set; }
 
-        [Option("end-date", HelpText = "Date to limit the analysis to. ", Required = true)]
+        [Option("enddate", HelpText = "Date to limit the analysis to. ", Required = true)]
         public DateTime? EndDate { get; set; }
 
         [Option("cosmos-document-type", HelpText = "Either CodeChurn or BugDatabase", Required = true)]
@@ -216,9 +216,6 @@ namespace vcsparser.core
 
         [Option("fileprefixtoremove", HelpText = "Prefix to remove from file. Usually repository root")]
         public string FilePrefixToRemove { get; set; }
-
-        [Option("end-date", HelpText = "Date to limit the analysis to. ", Required = false)]
-        public DateTime? EndDate { get; set; }
 
         [Option("generate1year", HelpText = "Generates 1 year churn data. ", Default = "true")]
         public string Generate1Year { get; set; }
@@ -255,31 +252,8 @@ namespace vcsparser.core
 
         [Option("start-date", HelpText = "Analyzes start date", Required = true)]
         public DateTime? StartDate { get; set; }
-    }
 
-    public interface ICosmosCommandLineArgs
-    {
-        string CosmosDbKey { get; set; }
-
-        string CosmosEndpoint { get; set; }
-    }
-
-    public interface ISonarGenericMetrics
-    {
-        string FilePrefixToRemove { get; set; }
-
-        DateTime? EndDate { get; set; }
-
-        string Generate1Year { get; set; }
-
-        string Generate6Months { get; set; }
-
-        string Generate3Months { get; set; }
-
-        string Generate30Days { get; set; }
-
-        string Generate7Days { get; set; }
-
-        string Generate1Day { get; set; }
+        [Option("enddate", HelpText = "Date to limit the analysis to. ", Required = false)]
+        public DateTime? EndDate { get; set; }
     }
 }

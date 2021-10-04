@@ -326,7 +326,7 @@ namespace vcsparser.unittests
                 "SeparateFiles",
                 "--start-date",
                 "2018-09-14",
-                "--end-date",
+                "--enddate",
                 "2021-09-14",
                 "--cosmos-document-type",
                 "CodeChurn",
@@ -389,7 +389,7 @@ namespace vcsparser.unittests
                 "cosmos-endpoint",
                 "--start-date",
                 "2018-09-14",
-                "--end-date",
+                "--enddate",
                 "2021-09-14"
             };
 

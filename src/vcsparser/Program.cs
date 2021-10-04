@@ -135,6 +135,9 @@ namespace vcsparser
             var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, string.Empty);
             var jsonOutputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger);
 
+            if (a.EndDate == null)
+                a.EndDate = DateTime.UtcNow;
+
             switch (a.DocumentType)
             {
                 case DocumentType.BugDatabase:
@@ -166,6 +169,9 @@ namespace vcsparser
             var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId);
             var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
             var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, string.Empty);
+
+            if (a.EndDate == null)
+                a.EndDate = DateTime.UtcNow;
 
             var data = cosmosOutputProcessor.GetDocumentsInDateRange<DailyCodeChurn>(a.StartDate.Value, a.EndDate.Value);
 
