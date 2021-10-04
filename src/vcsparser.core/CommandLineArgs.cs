@@ -201,7 +201,7 @@ namespace vcsparser.core
         public DocumentType DocumentType { get; set; }
     }
 
-    [Verb("sonargenericmetrics-cosmosdb", HelpText = "Process cosmos db documents and outputs to Sonar Generic Metrics JSON format")]
+    [Verb("sonargenericmetrics-cosmosdb", HelpText = "Process cosmos db documents and produce file in Sonar Generic Metrics JSON format")]
     public class SonarGenericMetricsCosmosDbCommandLineArgs : ICosmosCommandLineArgs, ISonarGenericMetrics
     {
         public SonarGenericMetricsCosmosDbCommandLineArgs()
