@@ -169,13 +169,14 @@ namespace vcsparser
             var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId);
             var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
             var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, string.Empty);
+            var environment = new EnvironmentImpl();
 
             if (a.EndDate == null)
-                a.EndDate = DateTime.UtcNow;
+                a.EndDate = environment.GetCurrentDateTime();
 
             var data = cosmosOutputProcessor.GetDocumentsInDateRange<DailyCodeChurn>(a.StartDate.Value, a.EndDate.Value);
 
-            var converters = new MeasureConverterListBuilder(new EnvironmentImpl()).Build(a);
+            var converters = new MeasureConverterListBuilder(environment).Build(a);
             var processor = new SonarGenericMetricsProcessor(jsonParser, converters, jsonExporter, new ConsoleLoggerWithTimestamp());
             processor.Process(a, data);
 
