@@ -330,6 +330,8 @@ namespace vcsparser.unittests
                 "2021-09-14",
                 "--cosmos-document-type",
                 "CodeChurn",
+                "--cosmos-project-name",
+                "some-project-name"
             };
 
             Parser.Default.ParseArguments<DownloadFromCosmosDbCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
@@ -340,6 +342,7 @@ namespace vcsparser.unittests
                         Assert.Equal("cosmos-db-code-churn-cosmos-container", a.CodeChurnCosmosContainer);
                         Assert.Equal("cosmos-endpoint", a.CosmosEndpoint);
                         Assert.Equal("output", a.OutputFile);
+                        Assert.Equal("some-project-name", a.CosmosProjectName);
                         Assert.Equal(OutputType.SeparateFiles, a.OutputType);
                         Assert.Equal(new DateTime(2018, 09, 14), a.StartDate);
                         Assert.Equal(new DateTime(2021, 09, 14), a.EndDate);
@@ -390,7 +393,9 @@ namespace vcsparser.unittests
                 "--start-date",
                 "2018-09-14",
                 "--enddate",
-                "2021-09-14"
+                "2021-09-14",
+                "--cosmos-project-name",
+                "some-project-name"
             };
 
             Parser.Default.ParseArguments<SonarGenericMetricsCosmosDbCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
@@ -415,6 +420,7 @@ namespace vcsparser.unittests
                     Assert.Equal("cosmos-db-database-id", a.DatabaseId);
                     Assert.Equal("cosmos-db-code-churn-cosmos-container", a.CodeChurnCosmosContainer);
                     Assert.Equal("cosmos-endpoint", a.CosmosEndpoint);
+                    Assert.Equal("some-project-name", a.CosmosProjectName);
                     return 0;
                 },
                 (IEnumerable<Error> errs) => {

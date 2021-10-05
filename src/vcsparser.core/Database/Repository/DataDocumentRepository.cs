@@ -21,9 +21,9 @@ namespace vcsparser.core.Database.Repository
             cosmosConnection.CreateDocument(cosmosDbContainer, document).Wait();
         }
 
-        public List<CosmosDataDocument<T>> GetDocumentsInDateRange<T>(DocumentType documentType, DateTime fromDateTime, DateTime endDateTime) where T : IOutputJson
+        public List<CosmosDataDocument<T>> GetDocumentsInDateRange<T>(string projectName, DocumentType documentType, DateTime fromDateTime, DateTime endDateTime) where T : IOutputJson
         {
-            var sqlQuery = new SqlQuerySpec($"SELECT * FROM c WHERE c.documentType = '{documentType}' and (c.occurrenceDate between '{ fromDateTime.ToString(CosmosDataDocument<T>.DATE_FORMAT) }' and '{ endDateTime.ToString(CosmosDataDocument<T>.DATE_FORMAT) }') order by c.occurrenceDate desc");
+            var sqlQuery = new SqlQuerySpec($"SELECT * FROM c WHERE c.projectName = '{projectName}' and c.documentType = '{documentType}' and (c.occurrenceDate between '{ fromDateTime.ToString(CosmosDataDocument<T>.DATE_FORMAT) }' and '{ endDateTime.ToString(CosmosDataDocument<T>.DATE_FORMAT) }') order by c.occurrenceDate desc");
             return cosmosConnection.CreateDocumentQuery<CosmosDataDocument<T>>(cosmosDbContainer, sqlQuery).ToList();
         }
 

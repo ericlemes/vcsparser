@@ -132,7 +132,7 @@ namespace vcsparser
             var logger = new ConsoleLoggerWithTimestamp();
             var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId);
             var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
-            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, string.Empty);
+            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository,a.CosmosProjectName);
             var jsonOutputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger);
 
             if (a.EndDate == null)
@@ -168,7 +168,7 @@ namespace vcsparser
 
             var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId);
             var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
-            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, string.Empty);
+            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, a.CosmosProjectName);
             var environment = new EnvironmentImpl();
 
             if (a.EndDate == null)

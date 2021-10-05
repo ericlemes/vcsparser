@@ -199,6 +199,9 @@ namespace vcsparser.core
 
         [Option("cosmos-document-type", HelpText = "Either CodeChurn or BugDatabase", Required = true)]
         public DocumentType DocumentType { get; set; }
+
+        [Option("cosmos-project-name", HelpText = "CosmosConnection: project's id to query", Required = true)]
+        public string CosmosProjectName { get; set; }
     }
 
     [Verb("sonargenericmetrics-cosmosdb", HelpText = "Process cosmos db documents and produce file in Sonar Generic Metrics JSON format")]
@@ -255,5 +258,9 @@ namespace vcsparser.core
 
         [Option("enddate", HelpText = "Date to limit the analysis to. ", Required = false)]
         public DateTime? EndDate { get; set; }
+
+
+        [Option("cosmos-project-name", HelpText = "CosmosConnection: project's id to query", Required = true)]
+        public string CosmosProjectName { get; set; }
     }
 }
