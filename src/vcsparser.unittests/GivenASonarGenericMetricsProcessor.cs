@@ -119,21 +119,31 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenProcessingSonarGenericMetricsCosmosDbCommandLineArgsShouldProcessMeasureConverters()
         {
+            var codeChurn = new DailyCodeChurn
+            {
+                FileName = SomeFileName,
+                NumberOfChanges = 12,
+                ChangesBefore = 2,
+                Added = 1,
+                Deleted = 4
+            };
+
             var sonarGenericMetricsCosmosDbCommandLineArgs = new SonarGenericMetricsCosmosDbCommandLineArgs();
             var mockedData = new Dictionary<DateTime, Dictionary<string, DailyCodeChurn>>
             {
                 {
                     new DateTime(), new Dictionary<string, DailyCodeChurn>
                     {
-                        { SomeFileName, dailyCodeChurn1[0] }
+                        { SomeFileName, codeChurn }
                     }
                 }
             };
+            processor = new SonarGenericMetricsProcessor(parserMock.Object,measureConverters, jsonExporterMock.Object, new Mock<ILogger>().Object, new DataConverter());
 
             processor.Process(sonarGenericMetricsCosmosDbCommandLineArgs, mockedData);
 
-            this.measureConverter1Mock.Verify(m => m.ProcessFileMeasure(dailyCodeChurn1[0], It.IsAny<SonarMeasuresJson>()), Times.Once());
-            this.measureConverter1Mock.Verify(m => m.ProcessProjectMeasure(It.IsAny<SonarMeasuresJson>()), Times.Exactly(1));
+            this.measureConverter1Mock.Verify(m => m.ProcessFileMeasure(codeChurn, It.IsAny<SonarMeasuresJson>()), Times.Once());
+            this.measureConverter1Mock.Verify(m => m.ProcessProjectMeasure(It.IsAny<SonarMeasuresJson>()), Times.Once());
         }
     }
 }

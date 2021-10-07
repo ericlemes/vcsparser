@@ -151,6 +151,7 @@
     <Compile Include="Database\Cosmos\CosmosDocumentBase.cs" />
     <Compile Include="Database\Cosmos\DocumentType.cs" />
     <Compile Include="Database\Cosmos\ICosmosConnection.cs" />
+    <Compile Include="DataConverter.cs" />
     <Compile Include="Factory\DatabaseFactory.cs" />
     <Compile Include="Factory\IDatabaseFactory.cs" />
     <Compile Include="Database\Repository\DataDocumentRepository.cs" />
@@ -165,6 +166,7 @@
     <Compile Include="git\IGitLogParser.cs" />
     <Compile Include="IChangesetProcessor.cs" />
     <Compile Include="ICosmosCommandLineArgs.cs" />
+    <Compile Include="IDataConverter.cs" />
     <Compile Include="IExclusionsProcessor.cs" />
     <Compile Include="IInclusionsProcessor.cs" />
     <Compile Include="IMeasureAggregator.cs" />

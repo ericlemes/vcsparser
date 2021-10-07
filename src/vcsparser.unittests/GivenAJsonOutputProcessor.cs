@@ -27,7 +27,7 @@ namespace vcsparser.unittests
 
             this.loggerMock = new Mock<ILogger>();
 
-            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object);
+            this.jsonOutputProcessor = new JsonOutputProcessor(new DataConverter(), streamFactoryMock.Object, loggerMock.Object);
         }
 
         [Fact]
@@ -304,7 +304,7 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenConvertToOrderedListAsSeparateFilesShouldReturnExpectedOutput()
         {
-            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object);
+            this.jsonOutputProcessor = new JsonOutputProcessor(new DataConverter(), streamFactoryMock.Object, loggerMock.Object);
 
             var dict = new Dictionary<DateTime, Dictionary<string, WorkItem>>();
             dict.Add(new DateTime(2018, 08, 30), new Dictionary<string, WorkItem>());
@@ -340,7 +340,7 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenProcessingSeparateFilesOutputShouldWriteJsonFile()
         {
-            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object);
+            this.jsonOutputProcessor = new JsonOutputProcessor(new DataConverter(), streamFactoryMock.Object, loggerMock.Object);
 
             var dict = new Dictionary<DateTime, Dictionary<string, WorkItem>>();
             dict.Add(new DateTime(2018, 08, 30), new Dictionary<string, WorkItem>());
@@ -370,7 +370,7 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenProcessingOutputTypeCosmosDbShouldDoNothing()
         {
-            this.jsonOutputProcessor = new JsonOutputProcessor(streamFactoryMock.Object, loggerMock.Object);
+            this.jsonOutputProcessor = new JsonOutputProcessor(new DataConverter(), streamFactoryMock.Object, loggerMock.Object);
 
             var dict = new Dictionary<DateTime, Dictionary<string, WorkItem>>();
             dict.Add(new DateTime(2018, 08, 30), new Dictionary<string, WorkItem>());

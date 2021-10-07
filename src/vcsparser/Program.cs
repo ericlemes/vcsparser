@@ -46,7 +46,7 @@ namespace vcsparser
             var commandLineParser = new CommandLineParser();
             var logger = new ConsoleLoggerWithTimestamp();
             var stopWatch = new StopWatchWrapper();
-            var outputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger); var bugDatabaseFactory = new BugDatabaseFactory();
+            var outputProcessor = new JsonOutputProcessor(new DataConverter(), new FileStreamFactory(), logger); var bugDatabaseFactory = new BugDatabaseFactory();
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
             var fileSystem = new FileSystem();
@@ -64,7 +64,7 @@ namespace vcsparser
             var commandLineParser = new CommandLineParser();
             var gitLogParser = new GitLogParser();
             var logger = new ConsoleLoggerWithTimestamp();
-            var outputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger);
+            var outputProcessor = new JsonOutputProcessor(new DataConverter(), new FileStreamFactory(), logger);
             var bugDatabaseFactory = new BugDatabaseFactory();
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
@@ -133,22 +133,22 @@ namespace vcsparser
             var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId);
             var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
             var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository,a.CosmosProjectName);
-            var jsonOutputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger);
+            var jsonOutputProcessor = new JsonOutputProcessor(new DataConverter(), new FileStreamFactory(), logger);
+            var environment = new EnvironmentImpl();
 
-            if (a.EndDate == null)
-                a.EndDate = DateTime.UtcNow;
+            var endDate = a.EndDate ?? (a.EndDate = environment.GetCurrentDateTime());
 
             switch (a.DocumentType)
             {
                 case DocumentType.BugDatabase:
                 {
-                    var data = cosmosOutputProcessor.GetDocumentsInDateRange<WorkItem>(a.StartDate.Value, a.EndDate.Value);
+                    var data = cosmosOutputProcessor.GetDocumentsInDateRange<WorkItem>(a.StartDate.Value, endDate.Value);
                     jsonOutputProcessor.ProcessOutput(a.OutputType, a.OutputFile, data);
                     break;
                 }
                 case DocumentType.CodeChurn:
                 {
-                    var data = cosmosOutputProcessor.GetDocumentsInDateRange<DailyCodeChurn>(a.StartDate.Value, a.EndDate.Value);
+                    var data = cosmosOutputProcessor.GetDocumentsInDateRange<DailyCodeChurn>(a.StartDate.Value, endDate.Value);
                     jsonOutputProcessor.ProcessOutput(a.OutputType, a.OutputFile, data);
                     break;
                 }
@@ -171,15 +171,15 @@ namespace vcsparser
             var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, a.CosmosProjectName);
             var environment = new EnvironmentImpl();
 
-            if (a.EndDate == null)
-                a.EndDate = environment.GetCurrentDateTime();
-
-            var data = cosmosOutputProcessor.GetDocumentsInDateRange<DailyCodeChurn>(a.StartDate.Value, a.EndDate.Value);
-
             var converters = new MeasureConverterListBuilder(environment).Build(a);
-            var processor = new SonarGenericMetricsProcessor(jsonParser, converters, jsonExporter, new ConsoleLoggerWithTimestamp());
-            processor.Process(a, data);
+            var endDate = a.EndDate ?? (a.EndDate = environment.GetCurrentDateTime());
 
+            var data = cosmosOutputProcessor.GetDocumentsInDateRange<DailyCodeChurn>(a.StartDate.Value, endDate.Value);
+
+            var processor = new SonarGenericMetricsProcessor(jsonParser, converters, jsonExporter,
+                new ConsoleLoggerWithTimestamp(), new DataConverter());
+
+            processor.Process(a, data);
             return 0;
         }
     }

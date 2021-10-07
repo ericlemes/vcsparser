@@ -194,7 +194,7 @@ namespace vcsparser.core
         [Option("start-date", HelpText = "Analyzes start date", Required = true)]
         public DateTime? StartDate { get; set; }
 
-        [Option("enddate", HelpText = "Date to limit the analysis to. ", Required = true)]
+        [Option("enddate", HelpText = "Date to limit the analysis to. ", Required = false)]
         public DateTime? EndDate { get; set; }
 
         [Option("cosmos-document-type", HelpText = "Either CodeChurn or BugDatabase", Required = true)]
