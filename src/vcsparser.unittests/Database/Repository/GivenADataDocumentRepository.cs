@@ -12,6 +12,7 @@ namespace vcsparser.unittests.Database.Repository
 {
     public class GivenADataDocumentRepository
     {
+        private readonly string someProjectName = "some-project-name";
         private readonly string cosmosContainer = "some-cosmos-container";
         private readonly DataDocumentRepository sut;
         private readonly Mock<ICosmosConnection> cosmosConnectionMock;
@@ -165,7 +166,7 @@ namespace vcsparser.unittests.Database.Repository
         {
             var startDate = DateTime.Now.AddDays(-2); ;
             var endDate = DateTime.Now;
-            var sqlQuery = new SqlQuerySpec($"SELECT * FROM c WHERE c.documentType = '{DocumentType.BugDatabase}' and (c.occurrenceDate between '{ startDate.ToString(CosmosDataDocument<WorkItem>.DATE_FORMAT) }' and '{ endDate.ToString(CosmosDataDocument<WorkItem>.DATE_FORMAT) }') order by c.occurrenceDate desc");
+            var sqlQuery = new SqlQuerySpec($"SELECT * FROM c WHERE c.projectName = '{someProjectName}' and c.documentType = '{DocumentType.BugDatabase}' and (c.occurrenceDate between '{ startDate.ToString(CosmosDataDocument<WorkItem>.DATE_FORMAT) }' and '{ endDate.ToString(CosmosDataDocument<WorkItem>.DATE_FORMAT) }') order by c.occurrenceDate desc");
             
             var toReturn = new List<CosmosDataDocument<WorkItem>>
             {
@@ -187,7 +188,7 @@ namespace vcsparser.unittests.Database.Repository
             cosmosConnectionMock.Setup(x => x.CreateDocumentQuery<CosmosDataDocument<WorkItem>>(cosmosContainer, It.Is<SqlQuerySpec>(query => query.QueryText == sqlQuery.QueryText), null))
                 .Returns(toReturn.AsQueryable());
 
-            var result = sut.GetDocumentsInDateRange<WorkItem>(DocumentType.BugDatabase, startDate, endDate);
+            var result = sut.GetDocumentsInDateRange<WorkItem>(someProjectName, DocumentType.BugDatabase, startDate, endDate);
 
             cosmosConnectionMock.Verify(x => x.CreateDocumentQuery<CosmosDataDocument<WorkItem>>(cosmosContainer, It.Is<SqlQuerySpec>(query => query.QueryText == sqlQuery.QueryText), null), Times.Once);
 

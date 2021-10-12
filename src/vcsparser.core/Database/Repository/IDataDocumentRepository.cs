@@ -6,7 +6,7 @@ namespace vcsparser.core.Database.Repository
 {
     public interface IDataDocumentRepository
     {
-        List<CosmosDataDocument<T>> GetDocumentsInDateRange<T>(DocumentType documentType, DateTime fromDateTime,
+        List<CosmosDataDocument<T>> GetDocumentsInDateRange<T>(string projectName, DocumentType documentType, DateTime fromDateTime,
             DateTime endDateTime) where T : IOutputJson;
 
         void CreateDataDocument<T>(CosmosDataDocument<T> document) where T : IOutputJson;

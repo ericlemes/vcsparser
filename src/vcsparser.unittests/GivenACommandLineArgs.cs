@@ -326,10 +326,12 @@ namespace vcsparser.unittests
                 "SeparateFiles",
                 "--start-date",
                 "2018-09-14",
-                "--end-date",
+                "--enddate",
                 "2021-09-14",
                 "--cosmos-document-type",
                 "CodeChurn",
+                "--cosmos-project-name",
+                "some-project-name"
             };
 
             Parser.Default.ParseArguments<DownloadFromCosmosDbCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
@@ -340,6 +342,7 @@ namespace vcsparser.unittests
                         Assert.Equal("cosmos-db-code-churn-cosmos-container", a.CodeChurnCosmosContainer);
                         Assert.Equal("cosmos-endpoint", a.CosmosEndpoint);
                         Assert.Equal("output", a.OutputFile);
+                        Assert.Equal("some-project-name", a.CosmosProjectName);
                         Assert.Equal(OutputType.SeparateFiles, a.OutputType);
                         Assert.Equal(new DateTime(2018, 09, 14), a.StartDate);
                         Assert.Equal(new DateTime(2021, 09, 14), a.EndDate);
@@ -355,6 +358,74 @@ namespace vcsparser.unittests
                     (IEnumerable<Error> errs) => {
                         throw new Exception("Should not fail.");
                     });
+        }
+
+        [Fact]
+        public void WhenParsingSonarGenericMetricsCosmosDbCommandLineArgsShouldReturnExpectedValues()
+        {
+            var args = new List<string>()
+            {
+                "sonargenericmetrics-cosmosdb",
+                "--fileprefixtoremove",
+                "prefix",
+                "--outputfile",
+                "outputfile",
+                "--generate1year",
+                "false",
+                "--generate6months",
+                "false",
+                "--generate3months",
+                "false",
+                "--generate30days",
+                "false",
+                "--generate7days",
+                "false",
+                "--generate1day",
+                "false",
+                "--cosmos-db-key",
+                "cosmos-db-key",
+                "--cosmos-db-database-id",
+                "cosmos-db-database-id",
+                "--cosmos-db-code-churn-cosmos-container",
+                "cosmos-db-code-churn-cosmos-container",
+                "--cosmos-endpoint",
+                "cosmos-endpoint",
+                "--start-date",
+                "2018-09-14",
+                "--enddate",
+                "2021-09-14",
+                "--cosmos-project-name",
+                "some-project-name"
+            };
+
+            Parser.Default.ParseArguments<SonarGenericMetricsCosmosDbCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
+                .MapResult(
+                (SonarGenericMetricsCosmosDbCommandLineArgs a) =>
+                {
+                    return 0;
+                },
+                (SonarGenericMetricsCosmosDbCommandLineArgs a) =>
+                {
+                    Assert.Equal("prefix", a.FilePrefixToRemove);
+                    Assert.Equal("outputfile", a.OutputFile);
+                    Assert.Equal(new DateTime(2018, 09, 14), a.EndDate);
+                    Assert.Equal(new DateTime(2018, 09, 14), a.StartDate);
+                    Assert.False(a.Generate1Year.ToLower() == "true");
+                    Assert.False(a.Generate6Months.ToLower() == "true");
+                    Assert.False(a.Generate3Months.ToLower() == "true");
+                    Assert.False(a.Generate30Days.ToLower() == "true");
+                    Assert.False(a.Generate7Days.ToLower() == "true");
+                    Assert.False(a.Generate1Day.ToLower() == "true");
+                    Assert.Equal("cosmos-db-key", a.CosmosDbKey);
+                    Assert.Equal("cosmos-db-database-id", a.DatabaseId);
+                    Assert.Equal("cosmos-db-code-churn-cosmos-container", a.CodeChurnCosmosContainer);
+                    Assert.Equal("cosmos-endpoint", a.CosmosEndpoint);
+                    Assert.Equal("some-project-name", a.CosmosProjectName);
+                    return 0;
+                },
+                (IEnumerable<Error> errs) => {
+                    throw new Exception("Should not fail.");
+                });
         }
     }
 }

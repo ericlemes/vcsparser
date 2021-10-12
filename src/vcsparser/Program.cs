@@ -25,7 +25,7 @@ namespace vcsparser
                 config.HelpWriter = Console.Error;
                 config.EnableDashDash = true;
             });
-            var result = parser.ParseArguments<P4ExtractCommandLineArgs, GitExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs, DailyCodeChurnCommandLineArgs, GitExtractToCosmosDbCommandLineArgs, DownloadFromCosmosDbCommandLineArgs >(args)
+            var result = parser.ParseArguments<P4ExtractCommandLineArgs, GitExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs, DailyCodeChurnCommandLineArgs, GitExtractToCosmosDbCommandLineArgs, DownloadFromCosmosDbCommandLineArgs, SonarGenericMetricsCosmosDbCommandLineArgs>(args)
                 .MapResult(
                     (P4ExtractCommandLineArgs a) => RunPerforceCodeChurnProcessor(a),
                     (GitExtractCommandLineArgs a) => RunGitCodeChurnProcessor(a),
@@ -33,6 +33,7 @@ namespace vcsparser
                     (DailyCodeChurnCommandLineArgs a) => RunDailyCodeChurn(a),
                     (GitExtractToCosmosDbCommandLineArgs a) => RunGitToCosmosDbCodeChurnProcessor(a),
                     (DownloadFromCosmosDbCommandLineArgs a) => RunDownloadCodeChurnFromCosmosDbToJsonFiles(a),
+                    (SonarGenericMetricsCosmosDbCommandLineArgs a) => RunSonarGenericMetricsFromCosmosDb(a),
                     err => 1); 
             return result;
         }
@@ -45,7 +46,7 @@ namespace vcsparser
             var commandLineParser = new CommandLineParser();
             var logger = new ConsoleLoggerWithTimestamp();
             var stopWatch = new StopWatchWrapper();
-            var outputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger); var bugDatabaseFactory = new BugDatabaseFactory();
+            var outputProcessor = new JsonOutputProcessor(new DataConverter(), new FileStreamFactory(), logger); var bugDatabaseFactory = new BugDatabaseFactory();
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
             var fileSystem = new FileSystem();
@@ -63,7 +64,7 @@ namespace vcsparser
             var commandLineParser = new CommandLineParser();
             var gitLogParser = new GitLogParser();
             var logger = new ConsoleLoggerWithTimestamp();
-            var outputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger);
+            var outputProcessor = new JsonOutputProcessor(new DataConverter(), new FileStreamFactory(), logger);
             var bugDatabaseFactory = new BugDatabaseFactory();
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
@@ -131,20 +132,23 @@ namespace vcsparser
             var logger = new ConsoleLoggerWithTimestamp();
             var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId);
             var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
-            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, string.Empty);
-            var jsonOutputProcessor = new JsonOutputProcessor(new FileStreamFactory(), logger);
+            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository,a.CosmosProjectName);
+            var jsonOutputProcessor = new JsonOutputProcessor(new DataConverter(), new FileStreamFactory(), logger);
+            var environment = new EnvironmentImpl();
+
+            var endDate = a.EndDate ?? (a.EndDate = environment.GetCurrentDateTime());
 
             switch (a.DocumentType)
             {
                 case DocumentType.BugDatabase:
                 {
-                    var data = cosmosOutputProcessor.GetDocumentsInDateRange<WorkItem>(a.StartDate.Value, a.EndDate.Value);
+                    var data = cosmosOutputProcessor.GetDocumentsInDateRange<WorkItem>(a.StartDate.Value, endDate.Value);
                     jsonOutputProcessor.ProcessOutput(a.OutputType, a.OutputFile, data);
                     break;
                 }
                 case DocumentType.CodeChurn:
                 {
-                    var data = cosmosOutputProcessor.GetDocumentsInDateRange<DailyCodeChurn>(a.StartDate.Value, a.EndDate.Value);
+                    var data = cosmosOutputProcessor.GetDocumentsInDateRange<DailyCodeChurn>(a.StartDate.Value, endDate.Value);
                     jsonOutputProcessor.ProcessOutput(a.OutputType, a.OutputFile, data);
                     break;
                 }
@@ -152,6 +156,30 @@ namespace vcsparser
                     throw new ArgumentOutOfRangeException();
             }
 
+            return 0;
+        }
+
+
+        private static int RunSonarGenericMetricsFromCosmosDb(SonarGenericMetricsCosmosDbCommandLineArgs a)
+        {
+            var logger = new ConsoleLoggerWithTimestamp();
+            var jsonParser = new JsonListParser<DailyCodeChurn>(new FileStreamFactory());
+            var jsonExporter = new JsonExporter(new FileStreamFactory());
+
+            var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId);
+            var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
+            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, a.CosmosProjectName);
+            var environment = new EnvironmentImpl();
+
+            var converters = new MeasureConverterListBuilder(environment).Build(a);
+            var endDate = a.EndDate ?? (a.EndDate = environment.GetCurrentDateTime());
+
+            var data = cosmosOutputProcessor.GetDocumentsInDateRange<DailyCodeChurn>(a.StartDate.Value, endDate.Value);
+
+            var processor = new SonarGenericMetricsProcessor(jsonParser, converters, jsonExporter,
+                new ConsoleLoggerWithTimestamp(), new DataConverter());
+
+            processor.Process(a, data);
             return 0;
         }
     }

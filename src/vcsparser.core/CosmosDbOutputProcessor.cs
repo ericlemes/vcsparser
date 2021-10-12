@@ -36,16 +36,16 @@ namespace vcsparser.core
 
         public Dictionary<DateTime, Dictionary<string, T>> GetDocumentsInDateRange<T>(DateTime fromDateTime, DateTime endDateTime) where T : IOutputJson
         {
-            var documents = dataDocumentRepository.GetDocumentsInDateRange<T>(GetDocumentType<T>(), fromDateTime, endDateTime);
+            var documents = dataDocumentRepository.GetDocumentsInDateRange<T>(projectName, GetDocumentType<T>(), fromDateTime, endDateTime);
             var data = new Dictionary<DateTime, Dictionary<string, T>>();
 
             if (documents == null || documents.Count == 0)
             {
-                logger.LogToConsole($"Could not find any documents in range: {fromDateTime} to {endDateTime}");
+                logger.LogToConsole($"Could not find any documents in range: {fromDateTime} to {endDateTime} for project: {projectName}");
                 return data;
             }
 
-            logger.LogToConsole($"Found: {data.Count} documents in range: {fromDateTime} to {endDateTime}");
+            logger.LogToConsole($"Found: {data.Count} documents in range: {fromDateTime} to {endDateTime} for project: {projectName}");
 
             foreach (var cosmosDocument in documents)
             {

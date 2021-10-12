@@ -75,7 +75,7 @@ namespace vcsparser.unittests
 
             var result = sut.GetDocumentsInDateRange<WorkItem>(startDate, endDate);
 
-            dataDocumentRepositoryMock.Verify(x => x.GetDocumentsInDateRange<WorkItem>(DocumentType.BugDatabase, startDate, endDate), Times.Once);
+            dataDocumentRepositoryMock.Verify(x => x.GetDocumentsInDateRange<WorkItem>(ProjectName, DocumentType.BugDatabase, startDate, endDate), Times.Once);
             Assert.Empty(result);
         }
 
@@ -116,12 +116,12 @@ namespace vcsparser.unittests
                 },
             };
             dataDocumentRepositoryMock
-                .Setup(x => x.GetDocumentsInDateRange<WorkItem>(DocumentType.BugDatabase, It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .Setup(x => x.GetDocumentsInDateRange<WorkItem>(ProjectName, DocumentType.BugDatabase, It.IsAny<DateTime>(), It.IsAny<DateTime>()))
                 .Returns(cosmosDataDocuments);
 
             var result = sut.GetDocumentsInDateRange<WorkItem>(startDate, endDate);
 
-            dataDocumentRepositoryMock.Verify(x => x.GetDocumentsInDateRange<WorkItem>(DocumentType.BugDatabase, startDate, endDate), Times.Once);
+            dataDocumentRepositoryMock.Verify(x => x.GetDocumentsInDateRange<WorkItem>(ProjectName, DocumentType.BugDatabase, startDate, endDate), Times.Once);
             Assert.Single(result);
             var resultWorkItems = result.Values.ToList();
             Assert.True(CompareWorkitems(resultWorkItems[0].Values.ToList()[0], workItems[0]));
