@@ -260,7 +260,7 @@ namespace vcsparser.core
         public DateTime? EndDate { get; set; }
 
 
-        [Option("cosmos-project-name", HelpText = "CosmosConnection: project's id to query", Required = true)]
+        [Option("cosmos-project-name", HelpText = "CosmosConnection: project's name to query", Required = true)]
         public string CosmosProjectName { get; set; }
     }
 }
