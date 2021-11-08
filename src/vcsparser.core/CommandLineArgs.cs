@@ -253,14 +253,38 @@ namespace vcsparser.core
         [Option("outputfile", HelpText = "File to generate json output", Required = true)]
         public string OutputFile { get; set; }
 
-        [Option("start-date", HelpText = "Analyzes start date", Required = true)]
+        [Option("start-date", HelpText = "Analyzes start date", Required = false)]
         public DateTime? StartDate { get; set; }
 
         [Option("enddate", HelpText = "Date to limit the analysis to. ", Required = false)]
         public DateTime? EndDate { get; set; }
 
+        [Option("cosmos-project-name", HelpText = "CosmosConnection: project's name to query", Required = true)]
+        public string CosmosProjectName { get; set; }
+    }
+
+    [Verb("data-from-files-to-cosmos-db", HelpText = "Extracts code churn information from json files and outputs to cosmos db")]
+    public class DataFromFilesToCosmosDbCommandLineArgs : ICosmosCommandLineArgs
+    {
+        [Option("path", HelpText = "Folder path for multiple files", Required = true)]
+        public string Path { get; set; }
+
+        [Option("cosmos-db-key", HelpText = "CosmosConnection: Cosmos database key", Required = true)]
+        public string CosmosDbKey { get; set; }
+
+        [Option("cosmos-endpoint", HelpText = "CosmosConnection: Cosmos endpoint", Required = true)]
+        public string CosmosEndpoint { get; set; }
+
+        [Option("cosmos-db-code-churn-cosmos-container", HelpText = "CosmosConnection: Cosmos database container name", Required = true)]
+        public string CodeChurnCosmosContainer { get; set; }
+
+        [Option("cosmos-db-database-id", HelpText = "CosmosConnection: Cosmos database id", Required = true)]
+        public string DatabaseId { get; set; }
 
         [Option("cosmos-project-name", HelpText = "CosmosConnection: project's name to query", Required = true)]
         public string CosmosProjectName { get; set; }
+
+        [Option("cosmos-document-type", HelpText = "Either CodeChurn or BugDatabase", Required = true)]
+        public DocumentType DocumentType { get; set; }
     }
 }

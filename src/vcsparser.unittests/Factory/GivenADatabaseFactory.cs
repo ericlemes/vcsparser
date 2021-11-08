@@ -11,6 +11,7 @@ namespace vcsparser.unittests.Factory
     {
         private readonly string cosmosEndpoint = "https://somedatabase:443";
         private readonly string cosmosDBKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
+        private readonly int someBatchBulkSize = 600;
         private readonly DownloadFromCosmosDbCommandLineArgs args;
 
        private readonly DatabaseFactory sut;
@@ -43,7 +44,7 @@ namespace vcsparser.unittests.Factory
         {
             var result = Record.Exception(() =>
             {
-                sut.CosmosConnection("some-id");
+                sut.CosmosConnection("some-id", someBatchBulkSize);
             });
             Assert.Null(result);
         }
