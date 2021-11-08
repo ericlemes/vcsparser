@@ -12,13 +12,15 @@ namespace vcsparser.core
     {
         private readonly IDataDocumentRepository dataDocumentRepository;
         private readonly ILogger logger;
+        private readonly IDataConverter dataConverter;
         private readonly string projectName;
         private readonly int batchSize;
 
-        public CosmosDbOutputProcessor(ILogger logger, IDataDocumentRepository dataDocumentRepository, string projectName, int batchSize)
+        public CosmosDbOutputProcessor(ILogger logger, IDataDocumentRepository dataDocumentRepository, IDataConverter dataConverter, string projectName, int batchSize)
         {
             this.logger = logger;
             this.dataDocumentRepository = dataDocumentRepository;
+            this.dataConverter = dataConverter;
             this.projectName = projectName;
             this.batchSize = batchSize;
         }
@@ -29,19 +31,20 @@ namespace vcsparser.core
 
             logger.LogToConsole($"Started inserting documents for ('{projectName}') project of '({DocumentTypeHelper.GetDocumentType<T>()}') type.");
 
-            var listOfFilesPerDay = (from data in dict from valueValue in data.Value.Values select ConvertOutputJsonToCosmosDataDocument(valueValue, DocumentTypeHelper.GetDocumentType<T>(), data.Key)).OrderBy(x => x.DateTime) .ToList();
+            var listOfFilesPerDay = dataConverter.ConvertDictToOrderedListPerDay(dict);
+            var cosmosDocumentsToInsert = (from x in listOfFilesPerDay from valueValue in x.Value.Values select ConvertOutputJsonToCosmosDataDocument(valueValue, DocumentTypeHelper.GetDocumentType<T>(), x.Key)).ToList();
 
-            if (listOfFilesPerDay.Count >= batchSize)
+            if (cosmosDocumentsToInsert.Count >= batchSize)
             {
                 logger.LogToConsole("Inserting documents with batches.");
 
                 BatchDeleteDocuments<T>(dict.First().Key, dict.Last().Key);
-                BatchInsertDocuments(listOfFilesPerDay);
+                BatchInsertDocuments(cosmosDocumentsToInsert);
             }
             else
             {
-                DeleteDocuments(listOfFilesPerDay);
-                InsertDocuments(listOfFilesPerDay);
+                DeleteDocuments(cosmosDocumentsToInsert);
+                InsertDocuments(cosmosDocumentsToInsert);
             }
 
             logger.LogToConsole($"Finished inserting documents to cosmos for ('{projectName}') project of '({DocumentTypeHelper.GetDocumentType<T>()}') type.");

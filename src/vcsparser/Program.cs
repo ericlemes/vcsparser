@@ -114,7 +114,7 @@ namespace vcsparser
             var logger = new ConsoleLoggerWithTimestamp();
             var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId, Properties.Settings.Default.CosmosBulkBatchSize);
             var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
-            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, a.CosmosProjectName, Properties.Settings.Default.CosmosBulkBatchSize);
+            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, new DataConverter(), a.CosmosProjectName, Properties.Settings.Default.CosmosBulkBatchSize);
             var bugDatabaseFactory = new BugDatabaseFactory();
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
@@ -133,7 +133,7 @@ namespace vcsparser
             var logger = new ConsoleLoggerWithTimestamp();
             var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId, Properties.Settings.Default.CosmosBulkBatchSize);
             var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
-            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository,a.CosmosProjectName, Properties.Settings.Default.CosmosBulkBatchSize);
+            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, new DataConverter(), a.CosmosProjectName, Properties.Settings.Default.CosmosBulkBatchSize);
             var jsonOutputProcessor = new JsonOutputProcessor(new DataConverter(), new FileStreamFactory(), logger);
             var environment = new EnvironmentImpl();
 
@@ -169,7 +169,7 @@ namespace vcsparser
 
             var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId, Properties.Settings.Default.CosmosBulkBatchSize);
             var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
-            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, a.CosmosProjectName, Properties.Settings.Default.CosmosBulkBatchSize);
+            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, new DataConverter(), a.CosmosProjectName, Properties.Settings.Default.CosmosBulkBatchSize);
             var environment = new EnvironmentImpl();
 
             var converters = new MeasureConverterListBuilder(environment).Build(a);
@@ -200,7 +200,7 @@ namespace vcsparser
             var logger = new ConsoleLoggerWithTimestamp();
             var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId, Properties.Settings.Default.CosmosBulkBatchSize);
             var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
-            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, a.CosmosProjectName, Properties.Settings.Default.CosmosBulkBatchSize);
+            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, new DataConverter(), a.CosmosProjectName, Properties.Settings.Default.CosmosBulkBatchSize);
 
             IDataFromFileToCosmosDb codeChurnFromFileToCosmosDb;
 

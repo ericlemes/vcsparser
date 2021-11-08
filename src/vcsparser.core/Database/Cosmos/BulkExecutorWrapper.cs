@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.CosmosDB.BulkExecutor;
@@ -7,6 +8,7 @@ using Microsoft.Azure.CosmosDB.BulkExecutor.BulkDelete;
 
 namespace vcsparser.core.Database.Cosmos
 {
+    [ExcludeFromCodeCoverage]
     public class BulkExecutorWrapper : IBulkExecutorWrapper
     {
         private readonly BulkExecutor bulkExecutor;
