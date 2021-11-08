@@ -128,7 +128,7 @@ namespace vcsparser.unittests.Factory
         [Fact]
         public void WhenBulkExecutorShouldDoesNotThrowExceptions()
         {
-            var exception = Record.Exception(() => sut.BulkExecutor(new Mock<IDocumentClient>().Object, new Mock<DocumentCollection>().Object));
+            var exception = Record.Exception(() => sut.BulkExecutor(sut.DocumentClient(), new Mock<DocumentCollection>().Object));
 
             Assert.Null(exception);
         }
