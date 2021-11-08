@@ -126,8 +126,8 @@ namespace vcsparser.unittests
             dataDocumentRepositoryMock.Verify(x => x.GetDocumentsInDateRange<WorkItem>(ProjectName, DocumentType.BugDatabase, startDate, endDate), Times.Once);
             Assert.Single(result);
             var resultWorkItems = result.Values.ToList();
-            Assert.True(CompareWorkitems(resultWorkItems[0].Values.ToList()[0], workItems[0]));
-            Assert.True(CompareWorkitems(resultWorkItems[0].Values.ToList()[1], workItems2[0]));
+            Assert.True(CompareWorkItems(resultWorkItems[0].Values.ToList()[0], workItems[0]));
+            Assert.True(CompareWorkItems(resultWorkItems[0].Values.ToList()[1], workItems2[0]));
         }
 
         [Fact]
@@ -216,7 +216,7 @@ namespace vcsparser.unittests
             Assert.Single(result);
         }
 
-        private bool CompareWorkitems(WorkItem item1, WorkItem item2)
+        private bool CompareWorkItems(WorkItem item1, WorkItem item2)
         {
             return item1.WorkItemId == item2.WorkItemId
                    && item1.ChangesetId == item2.ChangesetId
