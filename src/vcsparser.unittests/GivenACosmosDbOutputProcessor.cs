@@ -189,6 +189,20 @@ namespace vcsparser.unittests
             dataDocumentRepositoryMock.Verify(x => x.BatchDeleteDocuments(dict.First().Key, dict.Last().Key, ProjectName, DocumentType.CodeChurn), Times.Exactly(1));
         }
 
+        [Fact]
+        public void WhenGetAllDocumentsByProjectNameAndDocumentTypeShouldReturnExpectedNumberOfDocuments()
+        {
+            var data = new List<CosmosDataDocument<DailyCodeChurn>> {new CosmosDataDocument<DailyCodeChurn>()};
+
+            dataDocumentRepositoryMock.Setup(x =>
+                    x.GetAllDocumentsByProjectAndDocumentType<DailyCodeChurn>(ProjectName, DocumentType.CodeChurn))
+                .Returns(data);
+
+            var result = sut.GetAllDocumentsByProjectNameAndDocumentType<DailyCodeChurn>();
+
+            Assert.Single(result);
+        }
+
         private bool CompareWorkitems(WorkItem item1, WorkItem item2)
         {
             return item1.WorkItemId == item2.WorkItemId

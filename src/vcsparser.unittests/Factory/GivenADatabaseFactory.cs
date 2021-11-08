@@ -1,7 +1,11 @@
-﻿using Microsoft.Azure.Documents.Client;
+﻿using Microsoft.Azure.CosmosDB.BulkExecutor;
+using Microsoft.Azure.Documents.Client;
+using Moq;
 using Newtonsoft.Json;
 using System;
+using Microsoft.Azure.Documents;
 using vcsparser.core;
+using vcsparser.core.Database.Cosmos;
 using vcsparser.core.Factory;
 using Xunit;
 
@@ -110,6 +114,23 @@ namespace vcsparser.unittests.Factory
             var dbFactory = new DatabaseFactory(commandLineArgs, new JsonSerializerSettings());
 
             Assert.NotNull(dbFactory);
+        }
+
+
+        [Fact]
+        public void WhenBulkExecutorWrapperShouldDoesNotThrowExceptions()
+        {
+            var exception = Record.Exception(() => sut.BulkExecutorWrapper(new Mock<IBulkExecutor>().Object));
+
+            Assert.Null(exception);
+        }
+
+        [Fact]
+        public void WhenBulkExecutorShouldDoesNotThrowExceptions()
+        {
+            var exception = Record.Exception(() => sut.BulkExecutor(new Mock<IDocumentClient>().Object, new Mock<DocumentCollection>().Object));
+
+            Assert.Null(exception);
         }
     }
 }

@@ -106,25 +106,6 @@ namespace vcsparser.core.Database.Cosmos
             }
         }
 
-        private IEnumerable<IEnumerable<CosmosDocumentBase>> CreateDocumentBatches(int numberOfBatches, int numberOfDocumentsPerBatch, IEnumerable<CosmosDocumentBase> documents)
-        {
-            var documentBatches = new List<List<CosmosDocumentBase>>();
-            for (var i = 0; i < numberOfBatches; i++)
-            {
-                var batchIndex = i * numberOfDocumentsPerBatch;
-                var batch = new List<CosmosDocumentBase>();
-                for (var j = 0; j < numberOfDocumentsPerBatch; j++)
-                {
-                    var documentIndex = batchIndex + j;
-                    if (documentIndex >= documents.Count())
-                        break;
-                    batch.Add(documents.ElementAt(documentIndex));
-                }
-                documentBatches.Add(batch);
-            }
-            return documentBatches;
-        }
-
         public DocumentCollection CreateDocumentCollectionQuery(string collectionId, FeedOptions options = null)
         {
             if (options == null)
@@ -151,6 +132,24 @@ namespace vcsparser.core.Database.Cosmos
             {
                 PostBulkExecutor();
             }
+        }
+        private IEnumerable<IEnumerable<CosmosDocumentBase>> CreateDocumentBatches(int numberOfBatches, int numberOfDocumentsPerBatch, IEnumerable<CosmosDocumentBase> documents)
+        {
+            var documentBatches = new List<List<CosmosDocumentBase>>();
+            for (var i = 0; i < numberOfBatches; i++)
+            {
+                var batchIndex = i * numberOfDocumentsPerBatch;
+                var batch = new List<CosmosDocumentBase>();
+                for (var j = 0; j < numberOfDocumentsPerBatch; j++)
+                {
+                    var documentIndex = batchIndex + j;
+                    if (documentIndex >= documents.Count())
+                        break;
+                    batch.Add(documents.ElementAt(documentIndex));
+                }
+                documentBatches.Add(batch);
+            }
+            return documentBatches;
         }
 
         private async Task<IBulkExecutor> GetAndInitializeBulkExecutor(string collectionId)

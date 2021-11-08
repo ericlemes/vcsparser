@@ -160,7 +160,7 @@
     <Compile Include="bugdatabase\GivenAWorkItem.cs" />
     <Compile Include="Database\Cosmos\DummyCosmosDocument.cs" />
     <Compile Include="Database\Cosmos\GivenACosmosConnection.cs" />
-    <Compile Include="GivenACodeChurnFromFileToCosmosDb.cs" />
+    <Compile Include="GivenADataFromFileToCosmosDb.cs" />
     <Compile Include="GivenACosmosDbOutputProcessor.cs" />
     <Compile Include="Database\Repository\GivenADataDocumentRepository.cs" />
     <Compile Include="Factory\GivenADatabaseFactory.cs" />

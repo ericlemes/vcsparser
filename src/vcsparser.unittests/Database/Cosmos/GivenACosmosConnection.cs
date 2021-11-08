@@ -278,5 +278,14 @@ namespace vcsparser.unittests.Database.Cosmos
             Assert.Equal(numberOfDocumentsInserted, result.NumberOfDocumentsInserted);
             Assert.Equal(numberOfBatches, result.NumberOfBatches);
         }
+
+        [Fact]
+        public void WhenCreateDocumentCollectionQueryAndHasCollectionShouldReturnDocumentCollection()
+        {
+            var result = sut.CreateDocumentCollectionQuery(someCollectionId, someFeedOptions);
+
+            documentClient.Verify(x => x.CreateDocumentCollectionQuery(someDatabaseUri, someFeedOptions), Times.Exactly(1));
+            Assert.Equal(result, someDocumentCollection);
+        }
     }
 }
