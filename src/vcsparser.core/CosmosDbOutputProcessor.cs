@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using vcsparser.core.Database.Cosmos;
@@ -150,6 +151,7 @@ namespace vcsparser.core
             logger.LogToConsole($"Finished deleting of ('{projectName}') {deleteSummary.NumberOfDocumentsDeleted} existing documents in {deleteSummary.TotalTimeTaken} sec(s) of ('{DocumentTypeHelper.GetDocumentType<T>()}') type.");
         }
 
+        [ExcludeFromCodeCoverage]
         private void LogBatchDetails(CosmosBulkImportSummary batchSummary)
         {
             logger.LogToConsole($"Inserted batch {batchSummary.NumberOfBatchesCompleted}/{batchSummary.NumberOfBatches} " +
