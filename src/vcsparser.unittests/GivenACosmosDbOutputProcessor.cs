@@ -192,7 +192,20 @@ namespace vcsparser.unittests
         [Fact]
         public void WhenGetAllDocumentsByProjectNameAndDocumentTypeShouldReturnExpectedNumberOfDocuments()
         {
-            var data = new List<CosmosDataDocument<DailyCodeChurn>> {new CosmosDataDocument<DailyCodeChurn>()};
+            var dateTime = new DateTime(2018, 08, 30);
+
+            var data = new List<CosmosDataDocument<DailyCodeChurn>> {new CosmosDataDocument<DailyCodeChurn>
+            {
+                DateTime = dateTime.ToString(DailyCodeChurn.DATE_FORMAT),
+                Data = new List<DailyCodeChurn>
+                {
+                    new DailyCodeChurn
+                    {
+                        FileName = "some-file-name",
+                        Timestamp = dateTime.ToString(DailyCodeChurn.DATE_FORMAT)
+                    }
+                }
+            }};
 
             dataDocumentRepositoryMock.Setup(x =>
                     x.GetAllDocumentsByProjectAndDocumentType<DailyCodeChurn>(ProjectName, DocumentType.CodeChurn))
