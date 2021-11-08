@@ -24,7 +24,7 @@ namespace vcsparser.unittests
         {
             loggerMock = new Mock<ILogger>();
             dataDocumentRepositoryMock = new Mock<IDataDocumentRepository>();
-            sut = new CosmosDbOutputProcessor(loggerMock.Object, dataDocumentRepositoryMock.Object, ProjectName, batchSize);
+            sut = new CosmosDbOutputProcessor(loggerMock.Object, dataDocumentRepositoryMock.Object, new DataConverter(), ProjectName, batchSize);
         }
 
         [Fact]
