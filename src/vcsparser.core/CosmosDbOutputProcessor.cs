@@ -86,27 +86,40 @@ namespace vcsparser.core
             }
 
             logger.LogToConsole($"[Converting Cosmos Data] Found: {data.Count} documents for project:  ('{projectName}')  of ('{DocumentTypeHelper.GetDocumentType<T>()}') type.");
+            
+            ConvertDataFromCosmosDb(documents, data);
+            
+            logger.LogToConsole($"[Converting Cosmos Data] Finished converting cosmos data. Returning {data.Count} ('{projectName}') documents with data of ('{DocumentTypeHelper.GetDocumentType<T>()}') type.");
 
+            return data;
+        }
+
+        private void ConvertDataFromCosmosDb<T>(List<CosmosDataDocument<T>> documents, Dictionary<DateTime, Dictionary<string, T>> data) where T : IOutputJson
+        {
             foreach (var cosmosDocument in documents)
             {
                 var documentDate = DateTime.ParseExact(cosmosDocument.DateTime, CosmosDataDocument<T>.DATE_FORMAT, CultureInfo.InvariantCulture);
                 if (!data.ContainsKey(documentDate))
-                {
-                    logger.LogToConsole($"[Converting Cosmos Data] Found new document day with data. Day: ('{documentDate}')");
-                    var outputData = cosmosDocument.Data.ToDictionary(fileData => fileData.GetFileLongName());
-                    data.Add(documentDate, outputData);
-                }
+                    AddNewDataItem(cosmosDocument, documentDate, data);
                 else
-                    foreach (var existingData in cosmosDocument.Data)
-                    {
-                        logger.LogToConsole($"[Converting Cosmos Data] Adding a new document to existing day: ('{documentDate}'))");
-                        data[documentDate].Add(existingData.GetFileLongName(), existingData);
-                    }
+                    AddExistingDataToTheSameDay(cosmosDocument, documentDate, data);
             }
+        }
 
-            logger.LogToConsole($"[Converting Cosmos Data] Finished converting cosmos data. Returning {data.Count} ('{projectName}') documents with data of ('{DocumentTypeHelper.GetDocumentType<T>()}') type.");
+        private void AddNewDataItem<T>(CosmosDataDocument<T> cosmosDocument, DateTime documentDate, Dictionary<DateTime, Dictionary<string, T>> data) where T : IOutputJson
+        {
+            logger.LogToConsole($"[Converting Cosmos Data] Found new document day with data. Day: ('{documentDate}')");
+            var outputData = cosmosDocument.Data.ToDictionary(fileData => fileData.GetFileLongName());
+            data.Add(documentDate, outputData);
+        }
 
-            return data;
+        private void AddExistingDataToTheSameDay<T>(CosmosDataDocument<T> cosmosDocument, DateTime documentDate, Dictionary<DateTime, Dictionary<string, T>> data) where T : IOutputJson
+        {
+            foreach (var existingData in cosmosDocument.Data)
+            {
+                logger.LogToConsole($"[Converting Cosmos Data] Adding a new document to existing day: ('{documentDate}'))");
+                data[documentDate].Add(existingData.GetFileLongName(), existingData);
+            }
         }
 
         private CosmosDataDocument<T> ConvertOutputJsonToCosmosDataDocument<T>(T data, DocumentType documentType, DateTime occurrenceDate) where T : IOutputJson
