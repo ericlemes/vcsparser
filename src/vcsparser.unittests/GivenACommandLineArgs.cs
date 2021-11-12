@@ -423,9 +423,51 @@ namespace vcsparser.unittests
                     Assert.Equal("some-project-name", a.CosmosProjectName);
                     return 0;
                 },
-                (IEnumerable<Error> errs) => {
-                    throw new Exception("Should not fail.");
-                });
+                errs => throw new Exception("Should not fail."));
+        }
+
+        [Fact]
+        public void WhenParsingCodeChurnFromFilesCommandLineArgsShouldReturnExpectedValues()
+        {
+            var args = new List<string>
+            {
+                "data-from-files-to-cosmos-db",
+                "--path",
+                "output",
+                "--cosmos-db-key",
+                "cosmos-db-key",
+                "--cosmos-db-database-id",
+                "cosmos-db-database-id",
+                "--cosmos-db-code-churn-cosmos-container",
+                "cosmos-db-code-churn-cosmos-container",
+                "--cosmos-endpoint",
+                "cosmos-endpoint",
+                "--cosmos-project-name",
+                "some-project-name",
+                "--cosmos-document-type",
+                "CodeChurn",
+            };
+
+            Parser.Default.ParseArguments<DataFromFilesToCosmosDbCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
+                .MapResult(
+                    (DataFromFilesToCosmosDbCommandLineArgs a) => {
+
+                        Assert.Equal("output", a.Path);
+                        Assert.Equal("cosmos-db-key", a.CosmosDbKey);
+                        Assert.Equal("cosmos-db-database-id", a.DatabaseId);
+                        Assert.Equal("cosmos-db-code-churn-cosmos-container", a.CodeChurnCosmosContainer);
+                        Assert.Equal("cosmos-endpoint", a.CosmosEndpoint);
+                        Assert.Equal("some-project-name", a.CosmosProjectName);
+                        Assert.Equal(DocumentType.CodeChurn, a.DocumentType);
+
+                        return 0;
+                    },
+                    (SonarGenericMetricsCommandLineArgs a) =>
+                    {
+                        Assert.Null(a.EndDate);
+                        return 0;
+                    },
+                    errs => throw new Exception("Should not fail."));
         }
     }
 }

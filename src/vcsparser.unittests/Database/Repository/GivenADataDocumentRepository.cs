@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Azure.Documents;
 using Moq;
+using vcsparser.core;
 using vcsparser.core.bugdatabase;
 using vcsparser.core.Database.Cosmos;
 using vcsparser.core.Database.Repository;
@@ -13,6 +14,7 @@ namespace vcsparser.unittests.Database.Repository
     public class GivenADataDocumentRepository
     {
         private readonly string someProjectName = "some-project-name";
+        private readonly string someFileName = "some-file-name";
         private readonly string cosmosContainer = "some-cosmos-container";
         private readonly DataDocumentRepository sut;
         private readonly Mock<ICosmosConnection> cosmosConnectionMock;
@@ -201,6 +203,85 @@ namespace vcsparser.unittests.Database.Repository
             Assert.True(document.ClosedDate == toCompare.ClosedDate);
         }
 
+        [Fact]
+        public void WhenBatchInsertCosmosDocumentsShouldCallBulkInsertByBatchSizeFromCosmosConnection()
+        {
+            var data = new List<CosmosDataDocument<DailyCodeChurn>>
+            {
+                new CosmosDataDocument<DailyCodeChurn>
+                {
+                    Data = new List<DailyCodeChurn>
+                    {
+                        new DailyCodeChurn
+                        {
+                            FileName = someFileName
+                        }
+                    }
+                }
+            };
 
+            sut.BatchInsertCosmosDocuments(data, x => { });
+
+            cosmosConnectionMock.Verify(x => x.BulkInsertByBatchSize(cosmosContainer, data, It.IsAny<Action<CosmosBulkImportSummary>>()), Times.Once);
+        }
+
+        [Fact]
+        public void WhenBatchDeleteDocumentsShouldMakeAProperQueryAndCallBulkDeleteDocumentsFromCosmosConnection()
+        {
+            var documentType = DocumentType.CodeChurn;
+            var startDate = DateTime.Now.AddDays(-1);
+            var endDate = DateTime.Now;
+            var documentsToDeleteToReturn = new List<CosmosDataDocument<DailyCodeChurn>>
+            {
+                new CosmosDataDocument<DailyCodeChurn>
+                {
+                    DateTime = startDate.ToString("yyyy-MM-ddTHH:mm:ss")
+                }
+            };
+
+            var sqlQuery =  $"SELECT * FROM c WHERE c.documentType = '{documentType}' and c.projectName = '{someProjectName}' and (c.occurrenceDate between '{startDate.AddDays(-1):yyyy/MM/ddTHH:mm:ss}' and '{endDate:yyyy/MM/ddTHH:mm:ss}')";
+
+            cosmosConnectionMock.Setup(x =>
+                    x.CreateDocumentQuery<CosmosDocumentBase>(It.IsAny<string>(), It.Is<SqlQuerySpec>(query => query.QueryText == sqlQuery), null))
+                .Returns(documentsToDeleteToReturn.AsEnumerable().AsQueryable());
+
+            sut.BatchDeleteDocuments(startDate, endDate, someProjectName, documentType);
+
+            cosmosConnectionMock.Verify(x => x.BulkDeleteDocuments(cosmosContainer, It.IsAny<List<Tuple<string, string>>>()), Times.Once);
+        }
+
+        [Fact]
+        public void WhenBatchDeleteDocumentsAndNoDocumentsFoundShouldNeverCallBulkDeleteCommentsFromCosmosConnection()
+        {
+            var documentType = DocumentType.CodeChurn;
+            var startDate = DateTime.Now.AddDays(-1);
+            var endDate = DateTime.Now;
+
+            var sqlQuery = $"SELECT * FROM c WHERE c.documentType = '{documentType}' and c.projectName = '{someProjectName}' and (c.occurrenceDate between '{startDate.AddDays(-1):yyyy/MM/ddTHH:mm:ss}' and '{endDate:yyyy/MM/ddTHH:mm:ss}')";
+
+            cosmosConnectionMock.Setup(x =>
+                    x.CreateDocumentQuery<CosmosDocumentBase>(It.IsAny<string>(), It.Is<SqlQuerySpec>(query => query.QueryText == sqlQuery), null))
+                .Returns(new List<CosmosDataDocument<DailyCodeChurn>>().AsEnumerable().AsQueryable());
+
+            sut.BatchDeleteDocuments(startDate, endDate, someProjectName, documentType);
+
+            cosmosConnectionMock.Verify(x => x.BulkDeleteDocuments(cosmosContainer, It.IsAny<List<Tuple<string, string>>>()), Times.Never);
+        }
+
+        [Fact]
+        public void WhenGetAllDocumentsByProjectAndDocumentTypeShouldReturnCorrectData()
+        {
+            var documentType = DocumentType.CodeChurn;
+            var sqlQuery =
+                $"SELECT * FROM c WHERE c.projectName = '{someProjectName}' and c.documentType = '{documentType}' order by c.occurrenceDate desc";
+
+            cosmosConnectionMock.Setup(x =>
+                    x.CreateDocumentQuery<CosmosDocumentBase>(It.IsAny<string>(), It.Is<SqlQuerySpec>(query => query.QueryText == sqlQuery), null))
+                .Returns(new List<CosmosDataDocument<DailyCodeChurn>>().AsEnumerable().AsQueryable());
+
+            sut.GetAllDocumentsByProjectAndDocumentType<DailyCodeChurn>(someProjectName, documentType);
+
+            cosmosConnectionMock.Verify(x => x.CreateDocumentQuery<CosmosDataDocument<DailyCodeChurn>>(cosmosContainer, It.Is<SqlQuerySpec>(query => query.QueryText == sqlQuery), null), Times.Exactly(1));
+        }
     }
 }

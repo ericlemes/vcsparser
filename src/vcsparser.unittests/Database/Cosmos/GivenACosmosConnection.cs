@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Azure.CosmosDB.BulkExecutor;
+using Microsoft.Azure.CosmosDB.BulkExecutor.BulkImport;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Moq;
-using Moq.Language.Flow;
 using Newtonsoft.Json;
 using vcsparser.core.Database.Cosmos;
 using vcsparser.core.Factory;
@@ -25,20 +26,27 @@ namespace vcsparser.unittests.Database.Cosmos
         private readonly string someDocumentETag = "Some Document ETag";
         private readonly string someSelfLink = "Some Self Link";
 
+        private readonly int someBatchBulkSize = 600;
+
         private Uri someCollectionUri;
         private Uri someDocumentUri;
+        private Uri someDatabaseUri;
         private Document someDocument;
         private RequestOptions someRequestOptions;
         private FeedOptions someFeedOptions;
 
         private Mock<IDatabaseFactory> databaseFactory;
         private Mock<IDocumentClient> documentClient;
+        private Mock<IBulkExecutor> bulkExecutor;
+        private Mock<IBulkExecutorWrapper> bulkExecutorWrapper;
         private ConnectionPolicy connectionPolicy;
-        private RetryOptions retryOptions;
+        private Mock<RetryOptions> retryOptions;
         private CosmosConnection sut;
 
         private DummyCosmosDocument someDummyDocument;
         private JsonSerializerSettings jsonSerializerSettings;
+        private DocumentCollection someDocumentCollection;
+        private BulkImportResponse someBulkImportResponse;
 
         public GivenACosmosConnection()
         {
@@ -61,12 +69,10 @@ namespace vcsparser.unittests.Database.Cosmos
             someDocumentUri = UriFactory.CreateDocumentUri(someDatabaseId, someCollectionId, someDocumentId);
 
             connectionPolicy = new ConnectionPolicy();
-            retryOptions = new RetryOptions
-            {
-                MaxRetryWaitTimeInSeconds = 30,
-                MaxRetryAttemptsOnThrottledRequests = 9
-            };
-            connectionPolicy.RetryOptions = retryOptions;
+            retryOptions = new Mock<RetryOptions>();
+            retryOptions.Object.MaxRetryAttemptsOnThrottledRequests = 9;
+            retryOptions.Object.MaxRetryWaitTimeInSeconds = 30;
+            connectionPolicy.RetryOptions = retryOptions.Object;
 
             documentClient = new Mock<IDocumentClient>();
             documentClient.Setup(x =>  x.ConnectionPolicy).Returns(connectionPolicy);
@@ -82,7 +88,44 @@ namespace vcsparser.unittests.Database.Cosmos
             databaseFactory = new Mock<IDatabaseFactory>();
             databaseFactory.Setup(x => x.DocumentClient()).Returns(documentClient.Object);
 
-            sut = new CosmosConnection(databaseFactory.Object, someDatabaseId);
+            someDocumentCollection = new DocumentCollection
+            {
+                Id = someCollectionId
+            };
+
+            bulkExecutor = new Mock<IBulkExecutor>();
+            bulkExecutorWrapper = new Mock<IBulkExecutorWrapper>();
+            someBulkImportResponse = new BulkImportResponse();
+
+            bulkExecutor
+                .Setup(b => b.BulkImportAsync(It.Is<IEnumerable<CosmosDocumentBase>>(l => l.Count() == 1), true, false, null, null, default))
+                .Callback(() =>
+                {
+                    someBulkImportResponse.GetType().GetProperty("NumberOfDocumentsImported").SetValue(someBulkImportResponse, 1);
+                    someBulkImportResponse.GetType().GetProperty("TotalRequestUnitsConsumed").SetValue(someBulkImportResponse, 1);
+                    someBulkImportResponse.GetType().GetProperty("TotalTimeTaken").SetValue(someBulkImportResponse, TimeSpan.FromSeconds(10));
+                })
+                .Returns(Task.FromResult(someBulkImportResponse));
+
+            bulkExecutor
+                .Setup(b => b.BulkImportAsync(It.Is<IEnumerable<CosmosDocumentBase>>(l => l.Count() == 2), true, false, null, null, default))
+                .Callback(() =>
+                {
+                    someBulkImportResponse.GetType().GetProperty("NumberOfDocumentsImported").SetValue(someBulkImportResponse, 2);
+                    someBulkImportResponse.GetType().GetProperty("TotalRequestUnitsConsumed").SetValue(someBulkImportResponse, 2);
+                    someBulkImportResponse.GetType().GetProperty("TotalTimeTaken").SetValue(someBulkImportResponse, TimeSpan.FromSeconds(20));
+                })
+                .Returns(Task.FromResult(someBulkImportResponse));
+
+            someDatabaseUri = UriFactory.CreateDatabaseUri(someDatabaseId);
+
+            documentClient.Setup(x => x.CreateDocumentCollectionQuery(someDatabaseUri, It.IsAny<FeedOptions>()))
+                .Returns(new List<DocumentCollection> { someDocumentCollection }.AsQueryable().OrderBy(x => x.PartitionKey));
+            databaseFactory.Setup(x => x.DocumentClient()).Returns(documentClient.Object);
+            databaseFactory.Setup(x => x.BulkExecutor(documentClient.Object, someDocumentCollection)).Returns(bulkExecutor.Object);
+            databaseFactory.Setup(x => x.BulkExecutorWrapper(bulkExecutor.Object)).Returns(bulkExecutorWrapper.Object);
+
+            sut = new CosmosConnection(databaseFactory.Object, someDatabaseId, someBatchBulkSize);
         }
 
         [Fact]
@@ -154,6 +197,95 @@ namespace vcsparser.unittests.Database.Cosmos
             sut.DeleteDocument(someCollectionId, someDocumentId, someRequestOptions).Wait();
 
             documentClient.Verify(x=> x.DeleteDocumentAsync(someDocumentUri, someRequestOptions, It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public void WhenBulkInsertBatchesShouldRunCorrectCalls()
+        {
+            var documentBatch = new List<CosmosDocumentBase> { someDummyDocument };
+            var documentBatches = new List<List<CosmosDocumentBase>> { documentBatch };
+
+            var result = sut.BulkInsertBatches(someCollectionId, documentBatches, null).Result;
+
+            documentClient.Verify(x => x.CreateDocumentCollectionQuery(someDatabaseUri, It.IsAny<FeedOptions>()), Times.Exactly(1));
+            databaseFactory.Verify(x=> x.BulkExecutor(documentClient.Object, someDocumentCollection), Times.Exactly(1));
+            bulkExecutor.Verify(x => x.InitializeAsync(), Times.Exactly(1));
+            bulkExecutor.Verify(x => x.BulkImportAsync(documentBatch,
+                true,false, null, null, default), Times.Exactly(1));
+
+            Assert.NotNull(result);
+            Assert.Equal(30, retryOptions.Object.MaxRetryWaitTimeInSeconds);
+            Assert.Equal(9, retryOptions.Object.MaxRetryAttemptsOnThrottledRequests);
+        }
+
+        [Fact]
+        public void WhenBulkInsertBatchesWithActionShouldCallAction()
+        {
+            var documentBatch = new List<CosmosDocumentBase> { someDummyDocument };
+            var documentBatches = new List<List<CosmosDocumentBase>> { documentBatch };
+            var batchAction = new Mock<Action<CosmosBulkImportSummary>>();
+
+            var result = sut.BulkInsertBatches(someCollectionId, documentBatches, batchAction.Object).Result;
+
+            batchAction.Verify(x => x.Invoke(It.IsAny<CosmosBulkImportSummary>()), Times.Exactly(1));
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void WhenBulkDeleteDocumentsShouldCallBulkDelete()
+        {
+            var list = new List<Tuple<string, string>>();
+            list.Add(new Tuple<string, string>("some partition key", "some document id"));
+            list.Add(new Tuple<string, string>("some other partition key", "some other document id"));
+
+            var result = sut.BulkDeleteDocuments(someCollectionId, list);
+
+            documentClient.Verify(x => x.CreateDocumentCollectionQuery(someDatabaseUri, It.IsAny<FeedOptions>()), Times.Exactly(1));
+            databaseFactory.Verify(x => x.BulkExecutor(documentClient.Object, someDocumentCollection), Times.Exactly(1));
+            bulkExecutor.Verify(x => x.InitializeAsync(), Times.Exactly(1));
+
+            databaseFactory.Verify(x => x.BulkExecutorWrapper(bulkExecutor.Object), Times.Exactly(1));
+            bulkExecutorWrapper.Verify(x => x.BulkDeleteAsync(list, someBatchBulkSize, default), Times.Exactly(1));
+
+            Assert.NotNull(result);
+
+            Assert.Equal(30, retryOptions.Object.MaxRetryWaitTimeInSeconds);
+            Assert.Equal(9, retryOptions.Object.MaxRetryAttemptsOnThrottledRequests);
+        }
+
+        public static IEnumerable<object[]> WhenBulkInsertByBatchSizeShouldCreateBatchesData(int numTests)
+        {
+            var testDocument = new CosmosDocumentBase();
+            var allData = new List<object[]>
+            {
+                new object[] {2, new CosmosDocumentBase[] {testDocument}, 1, 1},
+                new object[] {1, new CosmosDocumentBase[] {testDocument, testDocument}, 2, 2},
+                new object[] {2, new CosmosDocumentBase[] {testDocument, testDocument}, 2, 1},
+                new object[] {2, new CosmosDocumentBase[] {testDocument, testDocument, testDocument}, 3, 2}
+            };
+
+            return allData.Take(numTests);
+        }
+
+        [Theory]
+        [MemberData(nameof(WhenBulkInsertByBatchSizeShouldCreateBatchesData), parameters:4)]
+        public void WhenBulkInsertByBatchSizeShouldCreateBatches(int numberOfDocumentsPerBatch, CosmosDocumentBase[] documents, int numberOfDocumentsInserted, int numberOfBatches)
+        {
+            sut = new CosmosConnection(databaseFactory.Object, someDatabaseId, numberOfDocumentsPerBatch);
+
+            var result = sut.BulkInsertByBatchSize(someCollectionId, documents).Result;
+
+            Assert.Equal(numberOfDocumentsInserted, result.NumberOfDocumentsInserted);
+            Assert.Equal(numberOfBatches, result.NumberOfBatches);
+        }
+
+        [Fact]
+        public void WhenCreateDocumentCollectionQueryAndHasCollectionShouldReturnDocumentCollection()
+        {
+            var result = sut.CreateDocumentCollectionQuery(someCollectionId, someFeedOptions);
+
+            documentClient.Verify(x => x.CreateDocumentCollectionQuery(someDatabaseUri, someFeedOptions), Times.Exactly(1));
+            Assert.Equal(result, someDocumentCollection);
         }
     }
 }

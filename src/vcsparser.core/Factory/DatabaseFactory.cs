@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Azure.CosmosDB.BulkExecutor;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Newtonsoft.Json;
@@ -22,9 +23,19 @@ namespace vcsparser.core.Factory
             this.jsonSerializerSettings = jsonSerializerSettings;
         }
 
-        public ICosmosConnection CosmosConnection(string databaseId)
+        public IBulkExecutor BulkExecutor(IDocumentClient documentClient, DocumentCollection documentCollection)
         {
-            return new CosmosConnection(this, databaseId);
+            return new BulkExecutor(documentClient as DocumentClient, documentCollection);
+        }
+
+        public IBulkExecutorWrapper BulkExecutorWrapper(IBulkExecutor bulkExecutor)
+        {
+            return new BulkExecutorWrapper(bulkExecutor as BulkExecutor);
+        }
+
+        public ICosmosConnection CosmosConnection(string databaseId, int bulkBatchSize)
+        {
+            return new CosmosConnection(this, databaseId, bulkBatchSize);
         }
 
         public IDocumentClient DocumentClient()

@@ -46,8 +46,14 @@
     <Reference Include="CommandLine, Version=2.6.0.0, Culture=neutral, PublicKeyToken=5a870481e358d379, processorArchitecture=MSIL">
       <HintPath>..\packages\CommandLineParser.2.6.0\lib\net461\CommandLine.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Azure.CosmosDB.BulkImport, Version=2.5.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.CosmosDB.BulkExecutor.1.8.9\lib\net451\Microsoft.Azure.CosmosDB.BulkImport.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Azure.Documents.Client, Version=2.16.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Azure.DocumentDB.2.16.1\lib\net461\Microsoft.Azure.Documents.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Bson, Version=2.4.4.0, Culture=neutral, PublicKeyToken=15b1115599983c50, processorArchitecture=MSIL">
+      <HintPath>..\packages\MongoDB.Bson.signed.2.4.4\lib\net45\MongoDB.Bson.dll</HintPath>
     </Reference>
     <Reference Include="Moq, Version=4.16.0.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\packages\Moq.4.16.1\lib\net45\Moq.dll</HintPath>
@@ -154,6 +160,7 @@
     <Compile Include="bugdatabase\GivenAWorkItem.cs" />
     <Compile Include="Database\Cosmos\DummyCosmosDocument.cs" />
     <Compile Include="Database\Cosmos\GivenACosmosConnection.cs" />
+    <Compile Include="GivenADataFromFileToCosmosDb.cs" />
     <Compile Include="GivenACosmosDbOutputProcessor.cs" />
     <Compile Include="Database\Repository\GivenADataDocumentRepository.cs" />
     <Compile Include="Factory\GivenADatabaseFactory.cs" />

@@ -1,7 +1,11 @@
-﻿using Microsoft.Azure.Documents.Client;
+﻿using Microsoft.Azure.CosmosDB.BulkExecutor;
+using Microsoft.Azure.Documents.Client;
+using Moq;
 using Newtonsoft.Json;
 using System;
+using Microsoft.Azure.Documents;
 using vcsparser.core;
+using vcsparser.core.Database.Cosmos;
 using vcsparser.core.Factory;
 using Xunit;
 
@@ -11,6 +15,7 @@ namespace vcsparser.unittests.Factory
     {
         private readonly string cosmosEndpoint = "https://somedatabase:443";
         private readonly string cosmosDBKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
+        private readonly int someBatchBulkSize = 600;
         private readonly DownloadFromCosmosDbCommandLineArgs args;
 
        private readonly DatabaseFactory sut;
@@ -43,7 +48,7 @@ namespace vcsparser.unittests.Factory
         {
             var result = Record.Exception(() =>
             {
-                sut.CosmosConnection("some-id");
+                sut.CosmosConnection("some-id", someBatchBulkSize);
             });
             Assert.Null(result);
         }
@@ -109,6 +114,23 @@ namespace vcsparser.unittests.Factory
             var dbFactory = new DatabaseFactory(commandLineArgs, new JsonSerializerSettings());
 
             Assert.NotNull(dbFactory);
+        }
+
+
+        [Fact]
+        public void WhenBulkExecutorWrapperShouldDoesNotThrowExceptions()
+        {
+            var exception = Record.Exception(() => sut.BulkExecutorWrapper(new Mock<IBulkExecutor>().Object));
+
+            Assert.Null(exception);
+        }
+
+        [Fact]
+        public void WhenBulkExecutorShouldDoesNotThrowExceptions()
+        {
+            var exception = Record.Exception(() => sut.BulkExecutor(sut.DocumentClient(), new Mock<DocumentCollection>().Object));
+
+            Assert.Null(exception);
         }
     }
 }
