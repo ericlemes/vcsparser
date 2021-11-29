@@ -178,7 +178,6 @@
     <Compile Include="git\GitLogParserContext.cs" />
     <Compile Include="git\IGitLogParser.cs" />
     <Compile Include="Helpers\DocumentTypeHelper.cs" />
-    <Compile Include="IBugDatabaseCommandLineArgs.cs" />
     <Compile Include="IChangesetProcessor.cs" />
     <Compile Include="ICosmosCommandLineArgs.cs" />
     <Compile Include="IDataConverter.cs" />
@@ -186,7 +185,6 @@
     <Compile Include="IInclusionsProcessor.cs" />
     <Compile Include="IMeasureAggregator.cs" />
     <Compile Include="InclusionsProcessor.cs" />
-    <Compile Include="IP4CommandLineArgs.cs" />
     <Compile Include="ISonarGenericMetrics.cs" />
     <Compile Include="JsonOutputData.cs" />
     <Compile Include="JsonDateTimeCustomConverter.cs" />

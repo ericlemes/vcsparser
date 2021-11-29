@@ -18,7 +18,7 @@ namespace vcsparser.core
     }
 
     [Verb("p4extract", HelpText = "Extracts code churn information from p4 and outputs to json")]
-    public class P4ExtractCommandLineArgs : IP4CommandLineArgs
+    public class P4ExtractCommandLineArgs
     {
         [Option("changes", HelpText = "p4 changes command line to get changesets. Usually \"p4 changes -s submitted //path/to/your/depot/...@YYYY/MM/DD,YYYY/MM/DD\" or something similar", Required = true)]
         public string P4ChangesCommandLine { get; set; }
@@ -171,7 +171,7 @@ namespace vcsparser.core
     }
 
     [Verb("p4extract-to-cosmosdb", HelpText = "Extracts code churn information from p4 and outputs to cosmos db")]
-    public class P4ExtractToCosmosDbCommandLineArgs : ICosmosCommandLineArgs, IP4CommandLineArgs
+    public class P4ExtractToCosmosDbCommandLineArgs : ICosmosCommandLineArgs
     {
         [Option("cosmos-db-key", HelpText = "CosmosConnection: Cosmos database key", Required = true)]
         public string CosmosDbKey { get; set; }

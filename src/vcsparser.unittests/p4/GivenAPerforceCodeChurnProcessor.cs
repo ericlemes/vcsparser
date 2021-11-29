@@ -353,9 +353,7 @@ namespace vcsparser.unittests
                 BugDatabaseDLL = "some/path/to.dll"
             };
 
-            this.processor = new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, bugDatabseMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object, commandLineArgs);
-
-            Action collect = () => processor.QueryBugDatabase();
+            Action collect = () => new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, bugDatabseMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object, commandLineArgs);
 
             var exception = Assert.Throws<Exception>(collect);
             Assert.Equal("Dll specified without known output file", exception.Message);
