@@ -154,6 +154,7 @@
   <ItemGroup>
     <Compile Include="bugdatabase\GivenABugDatabaseDllLoader.cs" />
     <Compile Include="bugdatabase\GivenABugDatabaseProcessor.cs" />
+    <Compile Include="bugdatabase\GivenACosmosDbBugDatabaseProcessor.cs" />
     <Compile Include="bugdatabase\GivenAHttpClientWrapperFactory.cs" />
     <Compile Include="bugdatabase\GivenATimeKeeper.cs" />
     <Compile Include="bugdatabase\GivenAWebRequest.cs" />
