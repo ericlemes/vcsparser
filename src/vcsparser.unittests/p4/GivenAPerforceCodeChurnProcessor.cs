@@ -415,5 +415,18 @@ namespace vcsparser.unittests
 
             Assert.Throws<Exception>(newObjectAction);
         }
+
+        [Fact]
+        public void WhenCreatingNewObjectWithP4ExtractToCosmosDbCommandLineArgsShouldNotThrow()
+        {
+            var args = new P4ExtractCommandLineArgs()
+            {
+                BugDatabaseDLL = "some/path/to.dll"
+            };
+
+            var exception = Record.Exception(() => this.processor = new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, bugDatabseMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object, new P4ExtractToCosmosDbCommandLineArgs()));
+
+            Assert.Null(exception);
+        }
     }
 }
