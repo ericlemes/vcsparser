@@ -73,8 +73,6 @@ namespace vcsparser.core.p4
         {
             if (string.IsNullOrWhiteSpace(bugDatabaseDLL))
                 return;
-            if (string.IsNullOrWhiteSpace(bugDatabaseOutputFile))
-                throw new Exception("Dll specified without known output file");
 
             var bugCache = bugDatabaseProcessor.ProcessBugDatabase(bugDatabaseDLL, bugDatabaseDllArgs);
             if (bugCache == null)

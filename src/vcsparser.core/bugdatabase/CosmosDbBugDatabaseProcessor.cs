@@ -15,12 +15,14 @@ namespace vcsparser.core.bugdatabase
         private readonly IDataDocumentRepository dataDocumentRepository;
         private readonly string projectName;
 
-        public CosmosDbBugDatabaseProcessor(IBugDatabaseDllLoader bugDatabaseDllLoader, IFileSystem fileSystem, IWebRequest webRequest, ILogger logger)
+        public CosmosDbBugDatabaseProcessor(IBugDatabaseDllLoader bugDatabaseDllLoader, IFileSystem fileSystem, IWebRequest webRequest, ILogger logger, IDataDocumentRepository dataDocumentRepository, string projectName)
         {
             this.bugDatabaseDllLoader = bugDatabaseDllLoader;
             this.webRequest = webRequest;
             this.fileSystem = fileSystem;
             this.logger = logger;
+            this.dataDocumentRepository = dataDocumentRepository;
+            this.projectName = projectName;
         }
 
         public Dictionary<DateTime, Dictionary<string, WorkItem>> ProcessBugDatabase(string dllPath, IEnumerable<string> dllArgs)

@@ -234,7 +234,7 @@ namespace vcsparser
             var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
             var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, new DataConverter(), a.CosmosProjectName, Properties.Settings.Default.CosmosBulkBatchSize);
 
-            var bugDatabaseProcessor = new CosmosDbBugDatabaseProcessor(bugDatabaseDllLoader, fileSystem, webRequest, logger);
+            var bugDatabaseProcessor = new CosmosDbBugDatabaseProcessor(bugDatabaseDllLoader, fileSystem, webRequest, logger, dataDocumentRepository, a.CosmosProjectName);
             var processor = new PerforceCodeChurnProcessor(processWrapper, changesParser, describeParser, commandLineParser, bugDatabaseProcessor, logger, stopWatch, cosmosOutputProcessor, a);
 
             processor.QueryBugDatabase();
