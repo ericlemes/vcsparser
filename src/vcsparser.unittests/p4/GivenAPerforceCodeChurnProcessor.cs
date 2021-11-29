@@ -402,5 +402,18 @@ namespace vcsparser.unittests
                 .Verify(o => o.ProcessOutput(this.commandLineArgs.BugDatabaseOutputType, this.commandLineArgs.BugDatabaseOutputFile, It.IsAny<Dictionary<DateTime, Dictionary<string, WorkItem>>>()),
                 Times.Once);
         }
+
+        [Fact]
+        public void WhenCreatingNewObjectWithBugDatabaseCacheAndbugDatabaseNotSetShouldThrow()
+        {
+            var args = new P4ExtractCommandLineArgs()
+            {
+                BugDatabaseDLL = "some/path/to.dll"
+            };
+
+            Action newObjectAction = () => this.processor = new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, bugDatabseMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object, args);
+
+            Assert.Throws<Exception>(newObjectAction);
+        }
     }
 }
