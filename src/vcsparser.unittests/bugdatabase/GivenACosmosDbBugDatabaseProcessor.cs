@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Moq;
 using vcsparser.core;
 using vcsparser.core.bugdatabase;
+using vcsparser.core.Database.Cosmos;
 using vcsparser.core.Database.Repository;
 using Xunit;
 
@@ -103,6 +104,53 @@ namespace vcsparser.unittests.bugdatabase
             this.sut.ProcessBugDatabase(someDllPath, someDllArgs);
 
             this.bugDatabaseProviderMock.Verify(b => b.Process(), Times.Once);
+        }
+
+        [Fact]
+        public void WhenProcessCacheFilesFoundNullChangesetShouldSkipIt()
+        {
+            var fileMock = new Mock<IFile>();
+            fileMock.Setup(f => f.FileName).Returns("SomeFile.json");
+
+            this.fileSystemMock
+                .Setup(f => f.GetFiles(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(new List<IFile>() { fileMock.Object });
+
+            dataDocumentRepository.Setup(x => x.GetAllDocumentsByProjectAndDocumentType<WorkItem>(SomeProjectName, DocumentType.BugDatabase))
+                .Returns(new List<CosmosDataDocument<WorkItem>>()
+            {
+                new CosmosDataDocument<WorkItem>
+                {
+                    Data = new List<WorkItem>
+                    {
+                        new WorkItem
+                        {
+                            ChangesetId = "SameChangeSetId",
+                            ClosedDate =  new DateTime(2019, 04, 11),
+                            WorkItemId = "1"
+                        }
+                    }
+                },
+
+                new CosmosDataDocument<WorkItem>
+                {
+                    Data = new List<WorkItem>
+                    {
+                        new WorkItem
+                        {
+                            ChangesetId = null,
+                            ClosedDate =  new DateTime(2019, 04, 11),
+                            WorkItemId = "2"
+                        }
+                    }
+                }
+
+            });
+
+            this.sut.ProcessCache(this.changesetProcessorMock.Object);
+
+            var list = Assert.Single(this.changesetProcessorMock.Object.WorkItemCache).Value;
+            Assert.Single(list);
         }
     }
 }
