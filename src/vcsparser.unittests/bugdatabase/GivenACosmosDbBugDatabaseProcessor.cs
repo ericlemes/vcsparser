@@ -20,6 +20,7 @@ namespace vcsparser.unittests.bugdatabase
         private Mock<IBugDatabaseDllLoader> bugDatabaseLoaderMock;
         private Mock<IFileSystem> fileSystemMock;
         private Mock<IDataDocumentRepository> dataDocumentRepository;
+        private Mock<IChangesetProcessor> changesetProcessorMock;
 
         private Mock<IWebRequest> webRequest;
         private Mock<ILogger> loggerMock;
@@ -51,6 +52,8 @@ namespace vcsparser.unittests.bugdatabase
                 }
             });
 
+            this.changesetProcessorMock = new Mock<IChangesetProcessor>();
+            this.changesetProcessorMock.Setup(c => c.WorkItemCache).Returns(new Dictionary<string, List<WorkItem>>());
             this.webRequest = new Mock<IWebRequest>();
             this.bugDatabaseLoaderMock = new Mock<IBugDatabaseDllLoader>();
             this.bugDatabaseLoaderMock
@@ -100,6 +103,23 @@ namespace vcsparser.unittests.bugdatabase
             this.sut.ProcessBugDatabase(someDllPath, someDllArgs);
 
             this.bugDatabaseProviderMock.Verify(b => b.Process(), Times.Once);
+        }
+
+        [Fact]
+        public void WhenProcessCacheFilesFoundShouldAddToChangesetProcessor()
+        {
+            var fileMock = new Mock<IFile>();
+            fileMock.Setup(f => f.FileName).Returns("SomeFile.json");
+
+            this.fileSystemMock
+                .Setup(f => f.GetFiles(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(new List<IFile>() { fileMock.Object });
+
+            this.sut.ProcessCache(this.changesetProcessorMock.Object);
+
+            this.changesetProcessorMock.Verify(c => c.WorkItemCache, Times.Exactly(3));
+            var list = Assert.Single(this.changesetProcessorMock.Object.WorkItemCache).Value;
+            Assert.Single(list);
         }
     }
 }
