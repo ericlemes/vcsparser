@@ -271,6 +271,8 @@ namespace vcsparser.unittests
         public void WhenProcessingWithMultipleFilesShouldProcessOutputForMultipleFiles()
         {
             commandLineArgs.OutputType = OutputType.MultipleFile;
+            this.processor = new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, bugDatabseMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object, commandLineArgs);
+
             var changesLines = new List<string>();
             var describeLines1 = new List<string>();
             var describeLines2 = new List<string>();
