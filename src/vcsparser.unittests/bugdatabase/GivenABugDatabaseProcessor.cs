@@ -284,7 +284,7 @@ namespace vcsparser.unittests.bugdatabase
         [Fact]
         public void WhenProcessCacheCacheWithEmptyCacheOutputShouldDoNothing()
         {
-            bugDatabaseProcessor = this.bugDatabaseProcessor = new BugDatabaseProcessor(this.bugDatabaseLoaderMock.Object, this.webRequest.Object, this.fileSystemMock.Object, this.workItemParser.Object, this.loggerMock.Object, null);
+            this.bugDatabaseProcessor = new BugDatabaseProcessor(this.bugDatabaseLoaderMock.Object, this.webRequest.Object, this.fileSystemMock.Object, this.workItemParser.Object, this.loggerMock.Object, null);
             this.bugDatabaseProcessor.ProcessCache(this.changesetProcessorMock.Object);
 
             this.changesetProcessorMock.Verify(c => c.WorkItemCache, Times.Never);

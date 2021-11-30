@@ -143,14 +143,25 @@ namespace vcsparser.unittests.bugdatabase
                             WorkItemId = "2"
                         }
                     }
-                }
+                },
+                new CosmosDataDocument<WorkItem>
+                {
+                    Data = new List<WorkItem>
+                    {
+                        new WorkItem
+                        {
+                            ChangesetId = "SameChangeSetId3",
+                            ClosedDate =  new DateTime(2019, 04, 11),
+                            WorkItemId = "3"
+                        }
+                    }
+                },
 
             });
 
             this.sut.ProcessCache(this.changesetProcessorMock.Object);
 
-            var list = Assert.Single(this.changesetProcessorMock.Object.WorkItemCache).Value;
-            Assert.Single(list);
+            Assert.Equal(2, this.changesetProcessorMock.Object.WorkItemCache.Count);
         }
     }
 }
