@@ -36,6 +36,8 @@ namespace vcsparser.core.bugdatabase
         {
             var workItemDocuments = dataDocumentRepository.GetAllDocumentsByProjectAndDocumentType<WorkItem>(projectName, DocumentType.BugDatabase);
 
+            logger.LogToConsole($"Processing {workItemDocuments.Count} work items of {projectName} project");
+
             foreach (var workDocument in workItemDocuments)
             {
                 foreach (var workItemList in workDocument.Data)
