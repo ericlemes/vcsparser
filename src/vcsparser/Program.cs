@@ -25,7 +25,7 @@ namespace vcsparser
                 config.HelpWriter = Console.Error;
                 config.EnableDashDash = true;
             });
-            var result = parser.ParseArguments<P4ExtractCommandLineArgs, GitExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs, DailyCodeChurnCommandLineArgs, GitExtractToCosmosDbCommandLineArgs, DownloadFromCosmosDbCommandLineArgs, SonarGenericMetricsCosmosDbCommandLineArgs, DataFromFilesToCosmosDbCommandLineArgs>(args)
+            var result = parser.ParseArguments<P4ExtractCommandLineArgs, GitExtractCommandLineArgs, SonarGenericMetricsCommandLineArgs, DailyCodeChurnCommandLineArgs, GitExtractToCosmosDbCommandLineArgs, DownloadFromCosmosDbCommandLineArgs, SonarGenericMetricsCosmosDbCommandLineArgs, DataFromFilesToCosmosDbCommandLineArgs, P4ExtractToCosmosDbCommandLineArgs>(args)
                 .MapResult(
                     (P4ExtractCommandLineArgs a) => RunPerforceCodeChurnProcessor(a),
                     (GitExtractCommandLineArgs a) => RunGitCodeChurnProcessor(a),
@@ -35,6 +35,7 @@ namespace vcsparser
                     (DownloadFromCosmosDbCommandLineArgs a) => RunDownloadCodeChurnFromCosmosDbToJsonFiles(a),
                     (SonarGenericMetricsCosmosDbCommandLineArgs a) => RunSonarGenericMetricsFromCosmosDb(a),
                     (DataFromFilesToCosmosDbCommandLineArgs a) => RunCodeChurnFromFiles(a),
+                    (P4ExtractToCosmosDbCommandLineArgs a) => RunPerforceToCosmosDbCodeChurnProcessor(a),
                     err => 1); 
             return result;
         }
@@ -47,12 +48,13 @@ namespace vcsparser
             var commandLineParser = new CommandLineParser();
             var logger = new ConsoleLoggerWithTimestamp();
             var stopWatch = new StopWatchWrapper();
-            var outputProcessor = new JsonOutputProcessor(new DataConverter(), new FileStreamFactory(), logger); var bugDatabaseFactory = new BugDatabaseFactory();
+            var outputProcessor = new JsonOutputProcessor(new DataConverter(), new FileStreamFactory(), logger);
+            var bugDatabaseFactory = new BugDatabaseFactory();
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
             var fileSystem = new FileSystem();
             var jsonParser = new JsonListParser<WorkItem>(new FileStreamFactory());
-            var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, webRequest, fileSystem, jsonParser, logger);
+            var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, webRequest, fileSystem, jsonParser, logger, a.BugDatabaseOutputFile);
             var processor = new PerforceCodeChurnProcessor(processWrapper, changesParser, describeParser, commandLineParser, bugDatabaseProcessor, logger, stopWatch, outputProcessor, a);
 
             processor.QueryBugDatabase();
@@ -71,7 +73,7 @@ namespace vcsparser
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
             var fileSystem = new FileSystem();
             var jsonParser = new JsonListParser<WorkItem>(new FileStreamFactory());
-            var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, webRequest, fileSystem, jsonParser, logger);
+            var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, webRequest, fileSystem, jsonParser, logger, a.BugDatabaseOutputFile);
             var processor = new GitCodeChurnProcessor(commandLineParser, processWrapper, gitLogParser, outputProcessor, bugDatabaseProcessor, logger, a);
 
             processor.QueryBugDatabase();
@@ -120,7 +122,8 @@ namespace vcsparser
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
             var fileSystem = new FileSystem();
             var jsonParser = new JsonListParser<WorkItem>(new FileStreamFactory());
-            var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, webRequest, fileSystem, jsonParser, logger);
+            var bugDatabaseProcessor = new BugDatabaseProcessor(bugDatabaseDllLoader, webRequest, fileSystem, jsonParser, logger, string.Empty);
+            //, a.BugDatabaseOutputFile
 
             var processor = new GitCodeChurnProcessor(commandLineParser, processWrapper, gitLogParser, cosmosOutputProcessor, bugDatabaseProcessor, logger, a);
             processor.QueryBugDatabase();
@@ -212,6 +215,30 @@ namespace vcsparser
             var output = codeChurnFromFileToCosmosDb.Extract();
 
             return output;
+        }
+
+        private static int RunPerforceToCosmosDbCodeChurnProcessor(P4ExtractToCosmosDbCommandLineArgs a)
+        {
+            var processWrapper = new ProcessWrapper();
+            var changesParser = new ChangesParser();
+            var describeParser = new DescribeParser();
+            var commandLineParser = new CommandLineParser();
+            var logger = new ConsoleLoggerWithTimestamp();
+            var stopWatch = new StopWatchWrapper();
+            var bugDatabaseFactory = new BugDatabaseFactory();
+            var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
+            var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
+            var fileSystem = new FileSystem();
+
+            var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId, Properties.Settings.Default.CosmosBulkBatchSize);
+            var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
+            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, new DataConverter(), a.CosmosProjectName, Properties.Settings.Default.CosmosBulkBatchSize);
+
+            var bugDatabaseProcessor = new CosmosDbBugDatabaseProcessor(bugDatabaseDllLoader, fileSystem, webRequest, logger, dataDocumentRepository, a.CosmosProjectName);
+            var processor = new PerforceCodeChurnProcessor(processWrapper, changesParser, describeParser, commandLineParser, bugDatabaseProcessor, logger, stopWatch, cosmosOutputProcessor, a);
+
+            processor.QueryBugDatabase();
+            return processor.Extract();
         }
     }
 }

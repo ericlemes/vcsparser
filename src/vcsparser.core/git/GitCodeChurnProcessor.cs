@@ -93,7 +93,7 @@ namespace vcsparser.core.git
             var changesets = gitLogParser.Parse(invoke.Item2);
             logger.LogToConsole($"Found {changesets.Count} changesets to parse");
 
-            this.bugDatabaseProcessor.ProcessCache(bugDatabaseOutputFile, this.changesetProcessor);
+            this.bugDatabaseProcessor.ProcessCache(this.changesetProcessor);
 
             foreach (var changeset in changesets)
                 this.changesetProcessor.ProcessChangeset(changeset);

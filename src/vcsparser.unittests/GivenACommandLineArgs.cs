@@ -469,5 +469,61 @@ namespace vcsparser.unittests
                     },
                     errs => throw new Exception("Should not fail."));
         }
+
+        [Fact]
+        public void WhenP4ExtractToCosmosDbCommandLineArgsShouldReturnExpectedValues()
+        {
+            var args = new List<string>
+            {
+                "p4extract-to-cosmosdb",
+                "--changes",
+                "changes",
+                "--describe",
+                "describe",
+                "--cosmos-db-key",
+                "cosmos-db-key",
+                "--cosmos-db-database-id",
+                "cosmos-db-database-id",
+                "--cosmos-db-code-churn-cosmos-container",
+                "cosmos-db-code-churn-cosmos-container",
+                "--cosmos-endpoint",
+                "cosmos-endpoint",
+                "--cosmos-project-name",
+                "some-project-name",
+                "--bugregexes",
+                "regex1; regex2; regex3",
+                "--bugdatabase-dll",
+                "bugdatabase-dll",
+                "--bugdatabase-args",
+                "bugdatabase-args1 bugdatabase-args2",
+
+            };
+
+            Parser.Default.ParseArguments<P4ExtractToCosmosDbCommandLineArgs, SonarGenericMetricsCommandLineArgs>(args)
+                .MapResult(
+                    (P4ExtractToCosmosDbCommandLineArgs a) => {
+
+                        Assert.Equal("cosmos-db-key", a.CosmosDbKey);
+                        Assert.Equal("cosmos-db-database-id", a.DatabaseId);
+                        Assert.Equal("cosmos-db-code-churn-cosmos-container", a.CodeChurnCosmosContainer);
+                        Assert.Equal("cosmos-endpoint", a.CosmosEndpoint);
+                        Assert.Equal("some-project-name", a.CosmosProjectName);
+                        Assert.Equal("regex1; regex2; regex3", a.BugRegexes);
+                        Assert.Equal("bugdatabase-dll", a.BugDatabaseDLL);
+                        Assert.Equal("changes", a.P4ChangesCommandLine);
+                        Assert.Equal("describe", a.P4DescribeCommandLine);
+
+                        var bugDatabaseDllArgsList = a.BugDatabaseDllArgs.ToList();
+                        Assert.Equal("bugdatabase-args1", bugDatabaseDllArgsList[0]);
+                        Assert.Equal("bugdatabase-args2", bugDatabaseDllArgsList[1]);
+
+                        return 0;
+                    },
+                    (SonarGenericMetricsCommandLineArgs a) =>
+                    {
+                        return 0;
+                    },
+                    errs => throw new Exception("Should not fail."));
+        }
     }
 }

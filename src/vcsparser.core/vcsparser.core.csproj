@@ -134,6 +134,7 @@
     <Compile Include="AuthorsData.cs" />
     <Compile Include="bugdatabase\BugDatabaseDllLoader.cs" />
     <Compile Include="bugdatabase\BugDatabaseFactory.cs" />
+    <Compile Include="bugdatabase\CosmosDbBugDatabaseProcessor.cs" />
     <Compile Include="bugdatabase\HttpClientWrapper.cs" />
     <Compile Include="bugdatabase\HttpClientWrapperFactory.cs" />
     <Compile Include="bugdatabase\IBugDatabaseDllLoader.cs" />

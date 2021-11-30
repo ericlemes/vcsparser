@@ -76,7 +76,7 @@ namespace vcsparser.unittests.bugdatabase
 
             this.someDllPath = "some/path/to/dll";
             this.someDllArgs = new List<string>() { "--some", "dll", "-arguments" };
-            this.bugDatabaseProcessor = new BugDatabaseProcessor(this.bugDatabaseLoaderMock.Object, this.webRequest.Object, this.fileSystemMock.Object, this.workItemParser.Object, this.loggerMock.Object);
+            this.bugDatabaseProcessor = new BugDatabaseProcessor(this.bugDatabaseLoaderMock.Object, this.webRequest.Object, this.fileSystemMock.Object, this.workItemParser.Object, this.loggerMock.Object, "some\\path\\to\\cache");
 
         }
 
@@ -119,7 +119,7 @@ namespace vcsparser.unittests.bugdatabase
         [Fact]
         public void WhenProcessCacheChangesetProviderNullShouldExit()
         {
-            this.bugDatabaseProcessor.ProcessCache("", null);
+            this.bugDatabaseProcessor.ProcessCache(null);
 
             this.changesetProcessorMock.Verify(c => c.WorkItemCache, Times.Never);
             Assert.Empty(this.changesetProcessorMock.Object.WorkItemCache);
@@ -128,7 +128,7 @@ namespace vcsparser.unittests.bugdatabase
         [Fact]
         public void WhenProcessCacheCacheOutputShouldExit()
         {
-            this.bugDatabaseProcessor.ProcessCache(null, this.changesetProcessorMock.Object);
+            this.bugDatabaseProcessor.ProcessCache(this.changesetProcessorMock.Object);
 
             this.changesetProcessorMock.Verify(c => c.WorkItemCache, Times.Never);
             Assert.Empty(this.changesetProcessorMock.Object.WorkItemCache);
@@ -165,7 +165,7 @@ namespace vcsparser.unittests.bugdatabase
                 }
             });
 
-            this.bugDatabaseProcessor.ProcessCache("some\\path\\to\\cache", this.changesetProcessorMock.Object);
+            this.bugDatabaseProcessor.ProcessCache(this.changesetProcessorMock.Object);
 
             this.loggerMock.Verify(l => l.LogToConsole($"Processing SomeFile.json"), Times.Once);
             this.loggerMock.Verify(l => l.LogToConsole($"Processing SomeOtherFile.json"), Times.Once);
@@ -176,7 +176,7 @@ namespace vcsparser.unittests.bugdatabase
         {
             this.fileSystemMock.Setup(f => f.GetFiles(It.IsAny<string>(), It.IsAny<string>())).Returns(new List<IFile>());
 
-            this.bugDatabaseProcessor.ProcessCache("some\\path\\to\\cache", this.changesetProcessorMock.Object);
+            this.bugDatabaseProcessor.ProcessCache(this.changesetProcessorMock.Object);
 
             this.loggerMock.Verify(l => l.LogToConsole(It.IsAny<string>()), Times.Never);
         }
@@ -191,7 +191,7 @@ namespace vcsparser.unittests.bugdatabase
                 .Setup(f => f.GetFiles(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(new List<IFile>() { fileMock.Object });
 
-            this.bugDatabaseProcessor.ProcessCache("some\\path\\to\\cache", this.changesetProcessorMock.Object);
+            this.bugDatabaseProcessor.ProcessCache(this.changesetProcessorMock.Object);
 
             this.changesetProcessorMock.Verify(c => c.WorkItemCache, Times.Exactly(3));
             var list = Assert.Single(this.changesetProcessorMock.Object.WorkItemCache).Value;
@@ -224,7 +224,7 @@ namespace vcsparser.unittests.bugdatabase
                 }
             });
 
-            this.bugDatabaseProcessor.ProcessCache("some\\path\\to\\cache", this.changesetProcessorMock.Object);
+            this.bugDatabaseProcessor.ProcessCache(this.changesetProcessorMock.Object);
 
             var list = Assert.Single(this.changesetProcessorMock.Object.WorkItemCache).Value;
             Assert.Equal(2, list.Count);
@@ -242,7 +242,7 @@ namespace vcsparser.unittests.bugdatabase
 
             this.workItemParser.Setup(w => w.ParseFile(It.IsAny<string>())).Returns(new List<WorkItem>());
 
-            this.bugDatabaseProcessor.ProcessCache("some\\path\\to\\cache", this.changesetProcessorMock.Object);
+            this.bugDatabaseProcessor.ProcessCache(this.changesetProcessorMock.Object);
 
             this.changesetProcessorMock.Verify(c => c.WorkItemCache, Times.Never);
             Assert.Empty(this.changesetProcessorMock.Object.WorkItemCache);
@@ -275,10 +275,19 @@ namespace vcsparser.unittests.bugdatabase
                 }
             });
 
-            this.bugDatabaseProcessor.ProcessCache("some\\path\\to\\cache", this.changesetProcessorMock.Object);
+            this.bugDatabaseProcessor.ProcessCache(this.changesetProcessorMock.Object);
 
             var list = Assert.Single(this.changesetProcessorMock.Object.WorkItemCache).Value;
             Assert.Single(list);
+        }
+
+        [Fact]
+        public void WhenProcessCacheCacheWithEmptyCacheOutputShouldDoNothing()
+        {
+            this.bugDatabaseProcessor = new BugDatabaseProcessor(this.bugDatabaseLoaderMock.Object, this.webRequest.Object, this.fileSystemMock.Object, this.workItemParser.Object, this.loggerMock.Object, null);
+            this.bugDatabaseProcessor.ProcessCache(this.changesetProcessorMock.Object);
+
+            this.changesetProcessorMock.Verify(c => c.WorkItemCache, Times.Never);
         }
     }
 }

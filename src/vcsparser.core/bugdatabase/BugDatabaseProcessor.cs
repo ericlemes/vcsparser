@@ -20,8 +20,9 @@ namespace vcsparser.core.bugdatabase
         private readonly IFileSystem fileSystem;
         private readonly IJsonListParser<WorkItem> workItemParser;
         private readonly ILogger logger;
+        private readonly string cacheOutput;
 
-        public BugDatabaseProcessor(IBugDatabaseDllLoader bugDatabaseDllLoader, IWebRequest webRequest, IFileSystem fileSystem, IJsonListParser<WorkItem> workItemParser, ILogger logger)
+        public BugDatabaseProcessor(IBugDatabaseDllLoader bugDatabaseDllLoader, IWebRequest webRequest, IFileSystem fileSystem, IJsonListParser<WorkItem> workItemParser, ILogger logger, string cacheOutput)
         {
             this.bugDatabaseDllLoader = bugDatabaseDllLoader;
             this.webRequest = webRequest;
@@ -29,6 +30,7 @@ namespace vcsparser.core.bugdatabase
             this.fileSystem = fileSystem;
             this.workItemParser = workItemParser;
             this.logger = logger;
+            this.cacheOutput = cacheOutput;
         }
 
         public Dictionary<DateTime, Dictionary<string, WorkItem>> ProcessBugDatabase(string dllPath, IEnumerable<string> dllArgs)
@@ -38,7 +40,7 @@ namespace vcsparser.core.bugdatabase
             return databaseProvider.Process();
         }
 
-        public void ProcessCache(string cacheOutput, IChangesetProcessor changesetProcessor)
+        public void ProcessCache(IChangesetProcessor changesetProcessor)
         {
             if (string.IsNullOrEmpty(cacheOutput))
                 return;
@@ -49,13 +51,13 @@ namespace vcsparser.core.bugdatabase
             {
                 logger.LogToConsole($"Processing {file.FileName}");
                 var workItemList = workItemParser.ParseFile(file.FileName);
-                foreach(var workitem in workItemList)
+                foreach(var workItem in workItemList)
                 {
-                    if (workitem.ChangesetId == null) continue;
-                    if (!changesetProcessor.WorkItemCache.ContainsKey(workitem.ChangesetId))
-                        changesetProcessor.WorkItemCache.Add(workitem.ChangesetId, new List<WorkItem>());
+                    if (workItem.ChangesetId == null) continue;
+                    if (!changesetProcessor.WorkItemCache.ContainsKey(workItem.ChangesetId))
+                        changesetProcessor.WorkItemCache.Add(workItem.ChangesetId, new List<WorkItem>());
 
-                    changesetProcessor.WorkItemCache[workitem.ChangesetId].Add(workitem);
+                    changesetProcessor.WorkItemCache[workItem.ChangesetId].Add(workItem);
                 }
             }
         }

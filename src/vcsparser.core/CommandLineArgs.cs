@@ -170,6 +170,40 @@ namespace vcsparser.core
         public IEnumerable<string> BugDatabaseDllArgs { get; set; }
     }
 
+    [Verb("p4extract-to-cosmosdb", HelpText = "Extracts code churn information from p4 and outputs to cosmos db")]
+    public class P4ExtractToCosmosDbCommandLineArgs : ICosmosCommandLineArgs
+    {
+        [Option("cosmos-db-key", HelpText = "CosmosConnection: Cosmos database key", Required = true)]
+        public string CosmosDbKey { get; set; }
+
+        [Option("cosmos-db-database-id", HelpText = "CosmosConnection: Cosmos database id", Required = true)]
+        public string DatabaseId { get; set; }
+
+        [Option("cosmos-db-code-churn-cosmos-container", HelpText = "CosmosConnection: Cosmos database container name", Required = true)]
+        public string CodeChurnCosmosContainer { get; set; }
+
+        [Option("cosmos-endpoint", HelpText = "CosmosConnection: Cosmos endpoint", Required = true)]
+        public string CosmosEndpoint { get; set; }
+
+        [Option("cosmos-project-name", HelpText = "CosmosDocuments: Document's id prefix", Required = true)]
+        public string CosmosProjectName { get; set; }
+
+        [Option("changes", HelpText = "p4 changes command line to get changesets. Usually \"p4 changes -s submitted //path/to/your/depot/...@YYYY/MM/DD,YYYY/MM/DD\" or something similar", Required = true)]
+        public string P4ChangesCommandLine { get; set; }
+
+        [Option("describe", HelpText = "p4 describe command line to describe every changeset. Usually \"p4 describe -ds {0}\" should work. {0} will be substituted by the change number during execution", Required = true)]
+        public string P4DescribeCommandLine { get; set; }
+
+        [Option("bugregexes", HelpText = "Regexes, separated by semi colon (;) to identify if this changeset is a bug fix")]
+        public string BugRegexes { get; set; }
+
+        [Option("bugdatabase-dll", HelpText = "BugDatabase: File path to the dll to load", Required = false)]
+        public string BugDatabaseDLL { get; set; }
+
+        [Option("bugdatabase-args", HelpText = "BugDatabase: Options for the dll", Separator = ' ', Required = false, Min = 1)]
+        public IEnumerable<string> BugDatabaseDllArgs { get; set; }
+    }
+
     [Verb("cosmosdb-download-data", HelpText = "Process code churn documents that are stored in azure cosmos database")]
     public class DownloadFromCosmosDbCommandLineArgs : ICosmosCommandLineArgs
     {

@@ -271,6 +271,8 @@ namespace vcsparser.unittests
         public void WhenProcessingWithMultipleFilesShouldProcessOutputForMultipleFiles()
         {
             commandLineArgs.OutputType = OutputType.MultipleFile;
+            this.processor = new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, bugDatabseMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object, commandLineArgs);
+
             var changesLines = new List<string>();
             var describeLines1 = new List<string>();
             var describeLines2 = new List<string>();
@@ -353,9 +355,7 @@ namespace vcsparser.unittests
                 BugDatabaseDLL = "some/path/to.dll"
             };
 
-            this.processor = new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, bugDatabseMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object, commandLineArgs);
-
-            Action collect = () => processor.QueryBugDatabase();
+            Action collect = () => new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, bugDatabseMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object, commandLineArgs);
 
             var exception = Assert.Throws<Exception>(collect);
             Assert.Equal("Dll specified without known output file", exception.Message);
@@ -401,6 +401,27 @@ namespace vcsparser.unittests
             this.outputProcessorMock
                 .Verify(o => o.ProcessOutput(this.commandLineArgs.BugDatabaseOutputType, this.commandLineArgs.BugDatabaseOutputFile, It.IsAny<Dictionary<DateTime, Dictionary<string, WorkItem>>>()),
                 Times.Once);
+        }
+
+        [Fact]
+        public void WhenCreatingNewObjectWithBugDatabaseCacheAndbugDatabaseNotSetShouldThrow()
+        {
+            var args = new P4ExtractCommandLineArgs()
+            {
+                BugDatabaseDLL = "some/path/to.dll"
+            };
+
+            Action newObjectAction = () => this.processor = new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, bugDatabseMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object, args);
+
+            Assert.Throws<Exception>(newObjectAction);
+        }
+
+        [Fact]
+        public void WhenCreatingNewObjectWithP4ExtractToCosmosDbCommandLineArgsShouldNotThrow()
+        {
+            var exception = Record.Exception(() => this.processor = new PerforceCodeChurnProcessor(processWrapperMock.Object, changesParserMock.Object, describeParserMock.Object, commandLineParserMock.Object, bugDatabseMock.Object, loggerMock.Object, stopWatchMock.Object, outputProcessorMock.Object, new P4ExtractToCosmosDbCommandLineArgs()));
+
+            Assert.Null(exception);
         }
     }
 }
