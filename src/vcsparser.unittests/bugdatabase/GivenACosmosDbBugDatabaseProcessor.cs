@@ -150,7 +150,7 @@ namespace vcsparser.unittests.bugdatabase
                     {
                         new WorkItem
                         {
-                            ChangesetId = "SameChangeSetId3",
+                            ChangesetId = "SameChangeSetId",
                             ClosedDate =  new DateTime(2019, 04, 11),
                             WorkItemId = "3"
                         }
@@ -161,7 +161,7 @@ namespace vcsparser.unittests.bugdatabase
 
             this.sut.ProcessCache(this.changesetProcessorMock.Object);
 
-            Assert.Equal(2, this.changesetProcessorMock.Object.WorkItemCache.Count);
+            Assert.Single(this.changesetProcessorMock.Object.WorkItemCache);
         }
     }
 }
