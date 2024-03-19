@@ -27,7 +27,6 @@ stages:
           inputs:
             command: 'restore'
             feedsToUse: 'config'
-            nugetConfigPath: '$(Build.SourcesDirectory)\Nuget.config'
             projects: '**/*.sln'
 
         - task: VSBuild@1
