@@ -43,6 +43,7 @@ before_build:
   dotnet restore
 
 build_script:
+  dotnet build
 
 after_build:
 
