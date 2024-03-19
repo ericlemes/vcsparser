@@ -19,9 +19,6 @@
     <ProjectReference Include="..\vcsparser.core\vcsparser.core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\packages\xunit.analyzers.0.10.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
-  </ItemGroup>
-  <ItemGroup>
 	<PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Castle.Core" />
     <PackageReference Include="CommandLineParser" />

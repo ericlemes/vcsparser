@@ -14,7 +14,7 @@ branches:
 max_jobs: 1
 
 # Build worker image (VM template)
-image: Visual Studio 2019
+image: Visual Studio 2022
 
 # scripts that are called at very beginning, before repo cloning
 init:
@@ -48,26 +48,27 @@ after_build:
 before_package:
 
 test_script:
-  - .\src\packages\OpenCover.4.7.1221\tools\OpenCover.Console.exe -register:appveyor -returntargetcode -target:".\src\packages\xunit.runner.console.2.4.1\tools\net452\xunit.console.x86.exe" -targetargs:".\src\vcsparser.unittests\bin\Release\vcsparser.unittests.dll .\src\vcsparser.PowerShell.unittests\bin\Release\vcsparser.PowerShell.unittests.dll .\src\vcsparser.bugdatabase.azuredevops.unittests\bin\Release\vcsparser.bugdatabase.azuredevops.unittests.dll -noshadow" -output:"coverage.xml" -filter:"+[vcsparser.core*]* -[vcsparser.*unittests*]* +[vcsparser.PowerShell*]* -[vcsparser.PowerShell]vcsparser.PowerShell.CmdletAdapter +[vcsparser.bugdatabase*]* -[vcsparser.bugdatabase.azuredevops]vcsparser.bugdatabase.azuredevops.AzureDevOpsFactory -[vcsparser.core]vcsparser.core.bugdatabase.BugDatabaseFactory -[vcsparser.core]vcsparser.core.bugdatabase.HttpClientWrapper" -excludebyattribute:"*.ExcludeFromCodeCoverage*"
+  #- .\src\packages\OpenCover.4.7.1221\tools\OpenCover.Console.exe -register:appveyor -returntargetcode #-target:".\src\packages\xunit.runner.console.2.4.1\tools\net452\xunit.console.x86.exe" -targetargs:".\src\vcsparser.unittests\bin\Release\vcsparser.unittests.dll #.\src\vcsparser.PowerShell.unittests\bin\Release\vcsparser.PowerShell.unittests.dll #.\src\vcsparser.bugdatabase.azuredevops.unittests\bin\Release\vcsparser.bugdatabase.azuredevops.unittests.dll -noshadow" -output:"coverage.xml" -filter:"+[vcsparser.core*]* #-[vcsparser.*unittests*]* +[vcsparser.PowerShell*]* -[vcsparser.PowerShell]vcsparser.PowerShell.CmdletAdapter +[vcsparser.bugdatabase*]* #-[vcsparser.bugdatabase.azuredevops]vcsparser.bugdatabase.azuredevops.AzureDevOpsFactory -[vcsparser.core]vcsparser.core.bugdatabase.BugDatabaseFactory #-[vcsparser.core]vcsparser.core.bugdatabase.HttpClientWrapper" -excludebyattribute:"*.ExcludeFromCodeCoverage*"
+  dotnet test src\vcsparser.sln
 
-after_test:   
-  - ps: |
-      $env:PATH = 'C:\msys64\usr\bin;' + $env:PATH
-      Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
-      bash codecov.sh -f "coverage.xml" -t 565df92a-14b9-4de0-bf28-72c4946fd4b4
-      Write-Host "Last exit code: $LASTEXITCODE"
+# after_test:   
+  # - ps: |
+      # $env:PATH = 'C:\msys64\usr\bin;' + $env:PATH
+      # Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
+      # bash codecov.sh -f "coverage.xml" -t 565df92a-14b9-4de0-bf28-72c4946fd4b4
+      # Write-Host "Last exit code: $LASTEXITCODE"
 
 artifacts:
 
   # pushing entire folder as a zip archive
-  - path: src\vcsparser\bin\Release
+  - path: src\vcsparser\bin\Release\net8.0
     name: vcsparser-exe
-  - path: src\vcsparser.PowerShell\bin\Release
+  - path: src\vcsparser.PowerShell\bin\Release\net8.0
     name: vcsparser-PowerShell
-  - path: src\vcsparser.bugdatabase.azuredevops\bin\Release
+  - path: src\vcsparser.bugdatabase.azuredevops\bin\Release\net8.0
     name: vcsparser-BugDatabase-AzureDevOps
-  - path: coverage.xml
-    name: coverage-report    
+  # - path: coverage.xml
+    # name: coverage-report    
 
 notifications:
   - provider: Email

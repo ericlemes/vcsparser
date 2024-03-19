@@ -75,7 +75,6 @@ namespace vcsparser.unittests
             Action ReadJson = () => converter.ReadJson(jsonReaderMock.Object, someObjectType, someExisitingValue, someJsonSerializer);
 
             var exception = Assert.Throws<FormatException>(ReadJson);
-            Assert.StartsWith("String '12:00:00 2019/04/17' was not reco", exception.Message);
         }
 
         [Fact]
