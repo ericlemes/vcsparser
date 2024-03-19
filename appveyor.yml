@@ -40,6 +40,7 @@ build:
   project: src\vcsparser.sln
 
 before_build:
+  dotnet restore
 
 build_script:
 
