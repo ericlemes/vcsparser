@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.Azure.CosmosDB.BulkExecutor;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Newtonsoft.Json;
@@ -7,7 +6,7 @@ using vcsparser.core.Database.Cosmos;
 
 namespace vcsparser.core.Factory
 {
-    public class DatabaseFactory : IDatabaseFactory
+    /*public class DatabaseFactory : IDatabaseFactory
     {
         private readonly ICosmosCommandLineArgs cosmosCommandLineArgs;
         private readonly JsonSerializerSettings jsonSerializerSettings;
@@ -55,5 +54,5 @@ namespace vcsparser.core.Factory
 
             return new DocumentClient(serviceEndPoint, cosmosCommandLineArgs.CosmosDbKey, jsonSerializerSettings, connectionPolicy, ConsistencyLevel.Session);
         }
-    }
+    }*/
 }

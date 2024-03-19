@@ -16,7 +16,7 @@ namespace vcsparser.core.bugdatabase
             return new HttpClientWrapper();
         }
 
-        public _Assembly LoadFile(string file)
+        public Assembly LoadFile(string file)
         {
             return Assembly.LoadFile(file);
         }

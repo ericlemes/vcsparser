@@ -75,7 +75,7 @@ namespace vcsparser.unittests
             Action ReadJson = () => converter.ReadJson(jsonReaderMock.Object, someObjectType, someExisitingValue, someJsonSerializer);
 
             var exception = Assert.Throws<FormatException>(ReadJson);
-            Assert.Equal("String was not recognized as a valid DateTime.", exception.Message);
+            Assert.StartsWith("String '12:00:00 2019/04/17' was not reco", exception.Message);
         }
 
         [Fact]
@@ -96,7 +96,7 @@ namespace vcsparser.unittests
             Action writeJson = () => converter.WriteJson(jsonWriterMock.Object, someValue, someJsonSerializer);
 
             var exception = Assert.Throws<FormatException>(writeJson);
-            Assert.StartsWith("The string was not recognized as a valid DateTime.", exception.Message);
+            Assert.StartsWith("The string 'Some String that is not in Da", exception.Message);
         }
 
         [Fact]

@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Azure.CosmosDB.BulkExecutor;
-using Microsoft.Azure.CosmosDB.BulkExecutor.BulkDelete;
 
 namespace vcsparser.core.Database.Cosmos
 {
     [ExcludeFromCodeCoverage]
-    public class BulkExecutorWrapper : IBulkExecutorWrapper
+    public class BulkExecutorWrapper //: IBulkExecutorWrapper
     {
-        private readonly BulkExecutor bulkExecutor;
+        /*private readonly BulkExecutor bulkExecutor;
 
         public BulkExecutorWrapper(BulkExecutor bulkExecutor)
         {
@@ -22,6 +20,6 @@ namespace vcsparser.core.Database.Cosmos
         public async Task<BulkDeleteResponse> BulkDeleteAsync(List<Tuple<string, string>> pkIdTuplesToDelete, int? deleteBatchSize = null, CancellationToken cancellationToken = default)
         {
             return await bulkExecutor.BulkDeleteAsync(pkIdTuplesToDelete, deleteBatchSize, cancellationToken);
-        }
+        }*/
     }
 }

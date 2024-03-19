@@ -65,11 +65,11 @@ namespace vcsparser.unittests.bugdatabase
         }
 
         [Fact]
-        public void WhenActionThrowsTaskCancledThenBreakTask()
+        public async Task WhenActionThrowsTaskCancledThenBreakTask()
         {
             var waitHandle = new ManualResetEvent(false);
             timeKeeper = new TimeKeeper(TimeSpan.Zero, () => timeKeeper.Cancel());
-            timeKeeper.Start().Wait();
+            await timeKeeper.Start();
             Assert.True(timeKeeper.IsCompleted);
         }
 
@@ -85,7 +85,7 @@ namespace vcsparser.unittests.bugdatabase
         }
 
         [Fact]
-        public void WhenActionThrowsTaskCanceledExceptionThenDoNothing()
+        public async Task WhenActionThrowsTaskCanceledExceptionThenDoNothing()
         {
             Mock<Action> someAction = new Mock<Action>();
             someAction.SetupSequence(a => a()).Throws(new TaskCanceledException("Some Exceptiom!")).Pass();
@@ -95,7 +95,7 @@ namespace vcsparser.unittests.bugdatabase
                 someAction.Object();
                 timeKeeper.Cancel();
             });
-            timeKeeper.Start().Wait();
+            await timeKeeper.Start();
 
             Assert.True(timeKeeper.IsCompleted);
             someAction.Verify(a => a(), Times.Exactly(2));

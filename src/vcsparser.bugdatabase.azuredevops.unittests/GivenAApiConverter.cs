@@ -74,7 +74,7 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
             Action action = () => apiConverter.ConvertToWorkItem(fullItem.ToObject<object>());
 
             var exception = Assert.Throws<FormatException>(action);
-            Assert.StartsWith("The string was not recognized as a valid DateTime.", exception.Message);
+            Assert.StartsWith("The string 'This is not a Date' was not recognized", exception.Message);
         }
 
         [Fact]

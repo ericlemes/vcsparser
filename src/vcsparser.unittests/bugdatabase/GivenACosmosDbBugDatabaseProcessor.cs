@@ -7,12 +7,12 @@ using Moq;
 using vcsparser.core;
 using vcsparser.core.bugdatabase;
 using vcsparser.core.Database.Cosmos;
-using vcsparser.core.Database.Repository;
+//using vcsparser.core.Database.Repository;
 using Xunit;
 
 namespace vcsparser.unittests.bugdatabase
 {
-    public class GivenACosmosDbBugDatabaseProcessor
+    /*public class GivenACosmosDbBugDatabaseProcessor
     {
         private const string SomeProjectName = "Some-Project-Name";
         private string someDllPath;
@@ -163,5 +163,5 @@ namespace vcsparser.unittests.bugdatabase
 
             Assert.Single(this.changesetProcessorMock.Object.WorkItemCache);
         }
-    }
+    }*/
 }

@@ -55,14 +55,14 @@ namespace vcsparser.unittests.bugdatabase
         }
 
         [Fact]
-        public void WhenSendThenSendMessage()
+        public async Task WhenSendThenSendMessage()
         {
             Uri someUri = new Uri("http://some/uri");
             HttpMethod someMethod = HttpMethod.Get;
 
             var request = this.webRequest.NewHttpRequestMessage(someUri, someMethod);
 
-            this.webRequest.Send(request).Wait();
+            await this.webRequest.Send(request);
 
             this.httpClientWrapperMock.Verify((h) => h.SendAsync(request), Times.Once);
         }

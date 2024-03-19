@@ -1,0 +1,38 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+  <ItemGroup Label="nuget.org">
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
+    <PackageVersion Include="Microsoft.NET.Sdk.Functions" Version="3.2.0" />
+	
+	<PackageVersion Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageVersion Include="System.ComponentModel.Composition" Version="8.0.0" />
+    <PackageVersion Include="System.Data.DataSetExtensions" Version="4.5.0" />
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageVersion Include="System.Net.Http.WinHttpHandler" Version="9.0.0-preview.2.24128.5" />
+    <PackageVersion Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
+    <PackageVersion Include="CommandLineParser" Version="2.6.0" />
+    <PackageVersion Include="Microsoft.Azure.Cosmos" Version="3.38.1" />
+    <PackageVersion Include="MongoDB.Bson.signed" Version="2.4.4" />
+	<PackageVersion Include="Castle.Core" Version="5.1.1" />
+	<PackageVersion Include="Moq" Version="4.20.70" />
+	<PackageVersion Include="OpenCover" Version="4.7.1221" />
+	<PackageVersion Include="ReportGenerator" Version="4.8.13" />
+	
+	<PackageVersion Include="xunit" Version="2.7.0" />
+	<PackageVersion Include="xunit.abstractions" Version="2.0.3" />
+	<PackageVersion Include="xunit.analyzers" Version="1.11.0" />
+	<PackageVersion Include="xunit.assert" Version="2.7.0" />
+	<PackageVersion Include="xunit.core" Version="2.7.0" />
+	<PackageVersion Include="xunit.extensibility.core" Version="2.7.0" />
+	<PackageVersion Include="xunit.extensibility.execution" Version="2.7.0" />
+	<PackageVersion Include="xunit.runner.console" Version="2.7.0" />
+	<PackageVersion Include="xunit.runner.visualstudio" Version="2.5.7" />
+
+	<PackageVersion Include="System.Management.Automation" Version="7.4.1" />
+	<PackageVersion Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
+    
+  </ItemGroup>
+</Project>

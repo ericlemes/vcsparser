@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Azure.CosmosDB.BulkExecutor.BulkDelete;
 using Moq;
 using vcsparser.core;
 using vcsparser.core.bugdatabase;
 using vcsparser.core.Database.Cosmos;
-using vcsparser.core.Database.Repository;
+//using vcsparser.core.Database.Repository;
 using Xunit;
 
 namespace vcsparser.unittests
 {
-    public class GivenACosmosDbOutputProcessor
+    /*public class GivenACosmosDbOutputProcessor
     {
         private const string ProjectName = "some-project-name";
         private readonly CosmosDbOutputProcessor sut;
@@ -242,5 +241,5 @@ namespace vcsparser.unittests
                    && item1.TotalLinesChanged == item2.TotalLinesChanged
                    && item1.TotalLinesChangedWithFixes == item2.TotalLinesChangedWithFixes;
         }
-    }
+    }*/
 }

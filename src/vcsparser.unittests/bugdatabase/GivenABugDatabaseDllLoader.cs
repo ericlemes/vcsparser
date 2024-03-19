@@ -16,7 +16,7 @@ namespace vcsparser.unittests.bugdatabase
 
     public class GivenABugDatabaseDllLoader
     {
-        private Mock<_Assembly> assemblyMock;
+        private Mock<Assembly> assemblyMock;
         private Mock<IBugDatabaseProvider> bugDatabaseProviderMock;
         private Mock<IBugDatabaseFactory> bugDatabaseFactoryMock;
         private Mock<IWebRequest> webRequestMock;
@@ -29,7 +29,7 @@ namespace vcsparser.unittests.bugdatabase
 
         public GivenABugDatabaseDllLoader()
         {
-            this.assemblyMock = new Mock<_Assembly>();
+            this.assemblyMock = new Mock<Assembly>();
             this.assemblyMock.Setup((a) => a.GetExportedTypes()).Returns(new Type[] { typeof(IBugDatabaseProvider) });
 
             this.bugDatabaseProviderMock = new Mock<IBugDatabaseProvider>();

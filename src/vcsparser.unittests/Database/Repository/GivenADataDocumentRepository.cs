@@ -6,12 +6,12 @@ using Moq;
 using vcsparser.core;
 using vcsparser.core.bugdatabase;
 using vcsparser.core.Database.Cosmos;
-using vcsparser.core.Database.Repository;
+//using vcsparser.core.Database.Repository;
 using Xunit;
 
 namespace vcsparser.unittests.Database.Repository
 {
-    public class GivenADataDocumentRepository
+    /*public class GivenADataDocumentRepository
     {
         private readonly string someProjectName = "some-project-name";
         private readonly string someFileName = "some-file-name";
@@ -283,5 +283,5 @@ namespace vcsparser.unittests.Database.Repository
 
             cosmosConnectionMock.Verify(x => x.CreateDocumentQuery<CosmosDataDocument<DailyCodeChurn>>(cosmosContainer, It.Is<SqlQuerySpec>(query => query.QueryText == sqlQuery), null), Times.Exactly(1));
         }
-    }
+    }*/
 }

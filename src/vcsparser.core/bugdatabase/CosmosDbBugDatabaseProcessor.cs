@@ -5,7 +5,7 @@ using vcsparser.core.Database.Repository;
 
 namespace vcsparser.core.bugdatabase
 {
-    public class CosmosDbBugDatabaseProcessor : IBugDatabaseProcessor
+    /*public class CosmosDbBugDatabaseProcessor : IBugDatabaseProcessor
     {
         private readonly IBugDatabaseDllLoader bugDatabaseDllLoader;
         private readonly IWebRequest webRequest;
@@ -50,5 +50,5 @@ namespace vcsparser.core.bugdatabase
                 }
             }
         }
-    }
+    }*/
 }

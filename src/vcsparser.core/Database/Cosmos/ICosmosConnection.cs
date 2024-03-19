@@ -4,20 +4,16 @@ using Microsoft.Azure.Documents.Client;
 using System.Linq;
 using System.Collections.Generic;
 using System;
-using Microsoft.Azure.CosmosDB.BulkExecutor.BulkDelete;
+using Microsoft.Azure.Cosmos;
 
 namespace vcsparser.core.Database.Cosmos
 {
     public interface ICosmosConnection
     {
-        Task<Document> CreateDocument(string collectionId, object document, RequestOptions options = null);
+        Task<T> CreateItem<T>(string containerId, T item) where T : CosmosDocumentBase;
 
-        Task DeleteDocument(string collectionId, string documentId, RequestOptions options = null);
-
-        IQueryable<T> CreateDocumentQuery<T>(string collectionId, SqlQuerySpec query, FeedOptions options = null);
-
-        Task<CosmosBulkImportSummary> BulkInsertByBatchSize(string collectionId, IEnumerable<CosmosDocumentBase> documents, Action<CosmosBulkImportSummary> batchFinished = null);
-
-        Task<BulkDeleteResponse> BulkDeleteDocuments(string collectionId, List<Tuple<string, string>> idsToDelete);
+        Task DeleteItem<T>(string containerId, string partitionKey, T item) where T : CosmosDocumentBase;
+        Task DeleteItems<T>(string containerId, string partitionKey, IEnumerable<T> items) where T : CosmosDocumentBase;
+        Task<List<T>> QueryItems<T>(string containerId, QueryDefinition queryDefinition) where T : CosmosDocumentBase;
     }
 }

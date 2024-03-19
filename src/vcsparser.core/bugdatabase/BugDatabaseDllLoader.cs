@@ -21,7 +21,7 @@ namespace vcsparser.core.bugdatabase
 
         public IBugDatabaseProvider Load(string path, IEnumerable<string> args, IWebRequest webRequest)
         {
-            _Assembly dll = bugDatabaseFactory.LoadFile(path);
+            Assembly dll = bugDatabaseFactory.LoadFile(path);
 
             IEnumerable<Type> validTypes = dll.GetExportedTypes().Where((type) => typeof(IBugDatabaseProvider).IsAssignableFrom(type));
             if (!validTypes.Any())

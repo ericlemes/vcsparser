@@ -5,8 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Azure.CosmosDB.BulkExecutor;
-using Microsoft.Azure.CosmosDB.BulkExecutor.BulkImport;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Moq;
@@ -17,7 +15,7 @@ using Xunit;
 
 namespace vcsparser.unittests.Database.Cosmos
 {
-    public class GivenACosmosConnection
+    /*public class GivenACosmosConnection
     {
         private readonly string someDatabaseId = "SomeDatabaseId";
         private readonly string someCollectionId = "SomeCollectionId";
@@ -37,7 +35,6 @@ namespace vcsparser.unittests.Database.Cosmos
 
         private Mock<IDatabaseFactory> databaseFactory;
         private Mock<IDocumentClient> documentClient;
-        private Mock<IBulkExecutor> bulkExecutor;
         private Mock<IBulkExecutorWrapper> bulkExecutorWrapper;
         private ConnectionPolicy connectionPolicy;
         private Mock<RetryOptions> retryOptions;
@@ -287,5 +284,5 @@ namespace vcsparser.unittests.Database.Cosmos
             documentClient.Verify(x => x.CreateDocumentCollectionQuery(someDatabaseUri, someFeedOptions), Times.Exactly(1));
             Assert.Equal(result, someDocumentCollection);
         }
-    }
+    }*/
 }

@@ -11,13 +11,15 @@ using System.Threading.Tasks;
 using vcsparser.core.bugdatabase;
 using vcsparser.core.Database;
 using vcsparser.core.Database.Cosmos;
-using vcsparser.core.Database.Repository;
+//using vcsparser.core.Database.Repository;
 using vcsparser.core.Factory;
 
 namespace vcsparser
 {
     class Program
     {
+        //private static readonly int CosmosBatchSize = 600;
+
         static int Main(string[] args)
         {
             var parser = new Parser(config =>
@@ -31,11 +33,11 @@ namespace vcsparser
                     (GitExtractCommandLineArgs a) => RunGitCodeChurnProcessor(a),
                     (SonarGenericMetricsCommandLineArgs a) => RunSonarGenericMetrics(a),
                     (DailyCodeChurnCommandLineArgs a) => RunDailyCodeChurn(a),
-                    (GitExtractToCosmosDbCommandLineArgs a) => RunGitToCosmosDbCodeChurnProcessor(a),
-                    (DownloadFromCosmosDbCommandLineArgs a) => RunDownloadCodeChurnFromCosmosDbToJsonFiles(a),
-                    (SonarGenericMetricsCosmosDbCommandLineArgs a) => RunSonarGenericMetricsFromCosmosDb(a),
-                    (DataFromFilesToCosmosDbCommandLineArgs a) => RunCodeChurnFromFiles(a),
-                    (P4ExtractToCosmosDbCommandLineArgs a) => RunPerforceToCosmosDbCodeChurnProcessor(a),
+                    //(GitExtractToCosmosDbCommandLineArgs a) => RunGitToCosmosDbCodeChurnProcessor(a),
+                    //(DownloadFromCosmosDbCommandLineArgs a) => RunDownloadCodeChurnFromCosmosDbToJsonFiles(a),
+                    //(SonarGenericMetricsCosmosDbCommandLineArgs a) => RunSonarGenericMetricsFromCosmosDb(a),
+                    //(DataFromFilesToCosmosDbCommandLineArgs a) => RunCodeChurnFromFiles(a),
+                    //(P4ExtractToCosmosDbCommandLineArgs a) => RunPerforceToCosmosDbCodeChurnProcessor(a),
                     err => 1); 
             return result;
         }
@@ -108,15 +110,15 @@ namespace vcsparser
             return 0;
         }
 
-        private static int RunGitToCosmosDbCodeChurnProcessor(GitExtractToCosmosDbCommandLineArgs a)
+        /*private static int RunGitToCosmosDbCodeChurnProcessor(GitExtractToCosmosDbCommandLineArgs a)
         {
             var processWrapper = new ProcessWrapper();
             var commandLineParser = new CommandLineParser();
             var gitLogParser = new GitLogParser();
             var logger = new ConsoleLoggerWithTimestamp();
-            var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId, Properties.Settings.Default.CosmosBulkBatchSize);
+            var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId, CosmosBatchSize);
             var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
-            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, new DataConverter(), a.CosmosProjectName, Properties.Settings.Default.CosmosBulkBatchSize);
+            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, new DataConverter(), a.CosmosProjectName, CosmosBatchSize);
             var bugDatabaseFactory = new BugDatabaseFactory();
             var bugDatabaseDllLoader = new BugDatabaseDllLoader(logger, bugDatabaseFactory);
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
@@ -129,14 +131,14 @@ namespace vcsparser
             processor.QueryBugDatabase();
 
             return processor.Extract();
-        }
+        }*/
 
-        private static int RunDownloadCodeChurnFromCosmosDbToJsonFiles(DownloadFromCosmosDbCommandLineArgs a)
+        /*private static int RunDownloadCodeChurnFromCosmosDbToJsonFiles(DownloadFromCosmosDbCommandLineArgs a)
         {
             var logger = new ConsoleLoggerWithTimestamp();
-            var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId, Properties.Settings.Default.CosmosBulkBatchSize);
+            var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId, CosmosBatchSize);
             var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
-            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, new DataConverter(), a.CosmosProjectName, Properties.Settings.Default.CosmosBulkBatchSize);
+            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, new DataConverter(), a.CosmosProjectName, CosmosBatchSize);
             var jsonOutputProcessor = new JsonOutputProcessor(new DataConverter(), new FileStreamFactory(), logger);
             var environment = new EnvironmentImpl();
 
@@ -161,18 +163,18 @@ namespace vcsparser
             }
 
             return 0;
-        }
+        }*/
 
 
-        private static int RunSonarGenericMetricsFromCosmosDb(SonarGenericMetricsCosmosDbCommandLineArgs a)
+        /*private static int RunSonarGenericMetricsFromCosmosDb(SonarGenericMetricsCosmosDbCommandLineArgs a)
         {
             var logger = new ConsoleLoggerWithTimestamp();
             var jsonParser = new JsonListParser<DailyCodeChurn>(new FileStreamFactory());
             var jsonExporter = new JsonExporter(new FileStreamFactory());
 
-            var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId, Properties.Settings.Default.CosmosBulkBatchSize);
+            var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId, CosmosBatchSize);
             var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
-            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, new DataConverter(), a.CosmosProjectName, Properties.Settings.Default.CosmosBulkBatchSize);
+            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, new DataConverter(), a.CosmosProjectName, CosmosBatchSize);
             var environment = new EnvironmentImpl();
 
             var converters = new MeasureConverterListBuilder(environment).Build(a);
@@ -195,15 +197,15 @@ namespace vcsparser
 
             processor.Process(a, data);
             return 0;
-        }
+        }*/
 
-        private static int RunCodeChurnFromFiles(DataFromFilesToCosmosDbCommandLineArgs a)
+        /*private static int RunCodeChurnFromFiles(DataFromFilesToCosmosDbCommandLineArgs a)
         {
             var fileSystem = new FileSystem();
             var logger = new ConsoleLoggerWithTimestamp();
-            var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId, Properties.Settings.Default.CosmosBulkBatchSize);
+            var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId, CosmosBatchSize);
             var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
-            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, new DataConverter(), a.CosmosProjectName, Properties.Settings.Default.CosmosBulkBatchSize);
+            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, new DataConverter(), a.CosmosProjectName, CosmosBatchSize);
 
             IDataFromFileToCosmosDb codeChurnFromFileToCosmosDb;
 
@@ -215,9 +217,9 @@ namespace vcsparser
             var output = codeChurnFromFileToCosmosDb.Extract();
 
             return output;
-        }
+        }*/
 
-        private static int RunPerforceToCosmosDbCodeChurnProcessor(P4ExtractToCosmosDbCommandLineArgs a)
+        /*private static int RunPerforceToCosmosDbCodeChurnProcessor(P4ExtractToCosmosDbCommandLineArgs a)
         {
             var processWrapper = new ProcessWrapper();
             var changesParser = new ChangesParser();
@@ -230,15 +232,15 @@ namespace vcsparser
             var webRequest = new WebRequest(new HttpClientWrapperFactory(bugDatabaseFactory));
             var fileSystem = new FileSystem();
 
-            var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId, Properties.Settings.Default.CosmosBulkBatchSize);
+            var cosmosConnection = new CosmosConnection(new DatabaseFactory(a, JsonSerializerSettingsFactory.CreateDefaultSerializerSettingsForCosmosDB()), a.DatabaseId, CosmosBatchSize);
             var dataDocumentRepository = new DataDocumentRepository(cosmosConnection, a.CodeChurnCosmosContainer);
-            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, new DataConverter(), a.CosmosProjectName, Properties.Settings.Default.CosmosBulkBatchSize);
+            var cosmosOutputProcessor = new CosmosDbOutputProcessor(logger, dataDocumentRepository, new DataConverter(), a.CosmosProjectName, CosmosBatchSize);
 
             var bugDatabaseProcessor = new CosmosDbBugDatabaseProcessor(bugDatabaseDllLoader, fileSystem, webRequest, logger, dataDocumentRepository, a.CosmosProjectName);
             var processor = new PerforceCodeChurnProcessor(processWrapper, changesParser, describeParser, commandLineParser, bugDatabaseProcessor, logger, stopWatch, cosmosOutputProcessor, a);
 
             processor.QueryBugDatabase();
             return processor.Extract();
-        }
+        }*/
     }
 }

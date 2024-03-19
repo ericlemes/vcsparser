@@ -1,6 +1,6 @@
 ﻿using System;
-using Microsoft.Azure.Documents;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace vcsparser.core.Database.Cosmos
 {

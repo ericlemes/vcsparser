@@ -9,7 +9,7 @@ using vcsparser.core.Helpers;
 
 namespace vcsparser.core
 {
-    public class CosmosDbOutputProcessor : IOutputProcessor
+    /*public class CosmosDbOutputProcessor : IOutputProcessor
     {
         private readonly IDataDocumentRepository dataDocumentRepository;
         private readonly ILogger logger;
@@ -170,5 +170,5 @@ namespace vcsparser.core
             logger.LogToConsole($"Inserted batch {batchSummary.NumberOfBatchesCompleted}/{batchSummary.NumberOfBatches} " +
                                 $"{batchSummary.NumberOfDocumentsInserted} doc(s) in {batchSummary.TotalTimeTaken.TotalSeconds} sec(s)");
         }
-    }
+    }*/
 }

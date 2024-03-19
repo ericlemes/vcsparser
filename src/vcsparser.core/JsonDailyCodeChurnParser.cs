@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace vcsparser.core
 {
-    public class JsonDailyCodeChurnParser : IDailyCodeChurnParser
+    /*public class JsonDailyCodeChurnParser : IDailyCodeChurnParser
     {
         private IStreamFactory streamFactory;
 
@@ -32,5 +32,5 @@ namespace vcsparser.core
                throw new Exception($"Version mismatch. Expecting {OutputProcessor.SchemaVersion} found {content.SchemaVersion}");
             }
         }
-    }
+    }*/
 }

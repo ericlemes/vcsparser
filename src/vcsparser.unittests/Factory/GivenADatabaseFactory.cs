@@ -1,17 +1,13 @@
-﻿using Microsoft.Azure.CosmosDB.BulkExecutor;
-using Microsoft.Azure.Documents.Client;
-using Moq;
+﻿using Moq;
 using Newtonsoft.Json;
 using System;
-using Microsoft.Azure.Documents;
 using vcsparser.core;
-using vcsparser.core.Database.Cosmos;
 using vcsparser.core.Factory;
 using Xunit;
 
 namespace vcsparser.unittests.Factory
 {
-    public class GivenADatabaseFactory
+    /*public class GivenADatabaseFactory
     {
         private readonly string cosmosEndpoint = "https://somedatabase:443";
         private readonly string cosmosDBKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
@@ -132,5 +128,5 @@ namespace vcsparser.unittests.Factory
 
             Assert.Null(exception);
         }
-    }
+    }*/
 }

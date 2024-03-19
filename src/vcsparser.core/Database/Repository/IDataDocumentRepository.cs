@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Azure.CosmosDB.BulkExecutor.BulkDelete;
 using vcsparser.core.Database.Cosmos;
 
 namespace vcsparser.core.Database.Repository
 {
-    public interface IDataDocumentRepository
+    /*public interface IDataDocumentRepository
     {
         List<CosmosDataDocument<T>> GetDocumentsInDateRange<T>(string projectName, DocumentType documentType,
             DateTime fromDateTime,
@@ -23,5 +22,5 @@ namespace vcsparser.core.Database.Repository
 
         List<CosmosDataDocument<T>> GetAllDocumentsByProjectAndDocumentType<T>(string projectName,
             DocumentType documentType) where T : IOutputJson;
-    }
+    }*/
 }

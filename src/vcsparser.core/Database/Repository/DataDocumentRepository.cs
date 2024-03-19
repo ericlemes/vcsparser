@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Azure.CosmosDB.BulkExecutor.BulkDelete;
+using System.Threading.Tasks;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Documents;
 using vcsparser.core.Database.Cosmos;
 
 namespace vcsparser.core.Database.Repository
 {
-    public class DataDocumentRepository : IDataDocumentRepository
+    /*public class DataDocumentRepository : IDataDocumentRepository
     {
         private readonly string cosmosDbContainer;
         private readonly ICosmosConnection cosmosConnection;
@@ -58,12 +59,17 @@ namespace vcsparser.core.Database.Repository
             return cosmosConnection.BulkInsertByBatchSize(cosmosDbContainer, cosmosDataDocuments, batchFinished).Result;
         }
 
-        public BulkDeleteResponse BatchDeleteDocuments(DateTime startDate, DateTime endDate, string projectName, DocumentType documentType)
+        public async Task BatchDeleteDocuments(DateTime startDate, DateTime endDate, string projectName, DocumentType documentType)
         {
-            var query = new SqlQuerySpec($"SELECT * FROM c WHERE c.documentType = '{documentType}' and c.projectName = '{projectName}' and (c.occurrenceDate between '{startDate.AddDays(-1):yyyy/MM/ddTHH:mm:ss}' and '{endDate:yyyy/MM/ddTHH:mm:ss}')");
-            var documents = cosmosConnection.CreateDocumentQuery<CosmosDocumentBase>(cosmosDbContainer, query).ToList();
+            var query = new QueryDefinition($"SELECT * FROM c WHERE c.documentType = '{documentType}' and c.projectName = '{projectName}' and (c.occurrenceDate between '{startDate.AddDays(-1):yyyy/MM/ddTHH:mm:ss}' and '{endDate:yyyy/MM/ddTHH:mm:ss}')");
+
+//            return (await brainCityDatabase.CosmosConnection.QueryItems<AgentJobItem>(BrainCityDatabase.Containers.AgentJob, query)).FirstOrDefault()!;
+
+            var documents = (await cosmosConnection.QueryItems<CosmosDocumentBase>(cosmosDbContainer, query)).ToList();
             if (documents.Count == 0)
-                return new BulkDeleteResponse();
+                return;
+
+            await cosmosConnection.DeleteItems(cosmosDbContainer, )
 
             var idsToDelete = new List<Tuple<string, string>>();
             foreach (var document in documents)
@@ -72,5 +78,5 @@ namespace vcsparser.core.Database.Repository
             var summary = cosmosConnection.BulkDeleteDocuments(cosmosDbContainer, idsToDelete).Result;
             return summary;
         }
-    }
+    }*/
 }

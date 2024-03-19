@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using vcsparser.core.bugdatabase;
@@ -81,7 +82,7 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
         }
 
         [Fact]
-        public void WhenSendRequestThenSetAuthorizationHeader()
+        public async Task WhenSendRequestThenSetAuthorizationHeader()
         {
             this.webRequestMock.Setup(w => w.Send(It.IsAny<HttpRequestMessage>()))
                 .Returns(GetResponseMessage(
@@ -89,7 +90,7 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
                     HttpStatusCode.OK));
             var someHttpRequest = new HttpRequestMessage();
 
-            this.request.SendRequest<dynamic>(someHttpRequest).Wait();
+            await this.request.SendRequest<dynamic>(someHttpRequest);
 
             Assert.Equal(this.request.Authorization, someHttpRequest.Headers.Authorization);
         }
@@ -110,21 +111,21 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
         }
 
         [Fact]
-        public void WhenResponseSuccessThenDeserializeResponseObject()
+        public async Task WhenResponseSuccessThenDeserializeResponseObject()
         {
             var someResponseMessage = JsonConvert.SerializeObject(new { Message = "Some Response Message" });
             this.webRequestMock.Setup(w => w.Send(It.IsAny<HttpRequestMessage>()))
                 .Returns(GetResponseMessage(someResponseMessage, HttpStatusCode.OK));
             var someHttpRequest = new HttpRequestMessage();
 
-            var response = this.request.SendRequest<object>(someHttpRequest).Result;
+            var response = await this.request.SendRequest<object>(someHttpRequest);
 
             Assert.Equal(someResponseMessage, JsonConvert.SerializeObject(response));
         }
 
 
         [Fact]
-        public void WhenGetFullWorkItemThenNewHttpRequestMessage()
+        public async Task WhenGetFullWorkItemThenNewHttpRequestMessage()
         {
             var someResponseMessage = JsonConvert.SerializeObject(new { Message = "Some Response Message" });
             this.webRequestMock.Setup(w => w.Send(It.IsAny<HttpRequestMessage>()))
@@ -133,13 +134,13 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
                 .Returns(new HttpRequestMessage());
             var someUri = new Uri("http://some/uri");
 
-            this.request.GetFullWorkItem(someUri).Wait();
+            await this.request.GetFullWorkItem(someUri);
 
             this.webRequestMock.Verify(w => w.NewHttpRequestMessage(someUri, HttpMethod.Get), Times.Once);
         }
 
         [Fact]
-        public void WhenGetFullWorkListThenSetContentHeaders()
+        public async Task WhenGetFullWorkListThenSetContentHeaders()
         {
             var someResponseMessage = JsonConvert.SerializeObject(new { Message = "Some Response Message" });
             this.webRequestMock.Setup(w => w.Send(It.IsAny<HttpRequestMessage>()))
@@ -150,14 +151,14 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
             this.webRequestMock.Setup(w => w.NewHttpRequestMessage(It.IsAny<Uri>(), It.IsAny<HttpMethod>()))
                 .Returns(someHttpRequest);
 
-            this.request.GetWorkItemList().Wait();
+            await this.request.GetWorkItemList();
 
-            Assert.Equal(this.request.JsonQuery, someHttpRequest.Content.ReadAsStringAsync().Result);
+            Assert.Equal(this.request.JsonQuery, await someHttpRequest.Content.ReadAsStringAsync());
             Assert.Equal(core.bugdatabase.WebRequest.MEDIA_JSON, someHttpRequest.Content.Headers.ContentType.MediaType);
         }
 
         [Fact]
-        public void WhenGetFullWorkListThenNewhttpRequestMessage()
+        public async Task WhenGetFullWorkListThenNewhttpRequestMessage()
         {
             var someResponseMessage = JsonConvert.SerializeObject(new { Message = "Some Response Message" });
             this.webRequestMock.Setup(w => w.Send(It.IsAny<HttpRequestMessage>()))
@@ -168,7 +169,7 @@ namespace vcsparser.bugdatabase.azuredevops.unittests
             this.webRequestMock.Setup(w => w.NewHttpRequestMessage(It.IsAny<Uri>(), It.IsAny<HttpMethod>()))
                 .Returns(someHttpRequest);
 
-            this.request.GetWorkItemList().Wait();
+            await this.request.GetWorkItemList();
 
             this.webRequestMock.Verify(w => w.NewHttpRequestMessage(
                 new Uri($"https://dev.azure.com/{this.SomeDllArgs.Organisation}/{this.SomeDllArgs.Project}/{this.SomeDllArgs.Team}/_apis/wit/wiql?api-version=4.1"),
